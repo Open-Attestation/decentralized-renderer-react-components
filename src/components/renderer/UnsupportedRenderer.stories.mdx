@@ -1,0 +1,24 @@
+import { Meta, Preview, Props, Description, Story } from "@storybook/addon-docs/blocks";
+import { UnsupportedRenderer } from "./UnsupportedRenderer";
+
+<Meta title="MDX|UnsupportedRenderer" component={UnsupportedRenderer} />
+
+# Counter component
+
+<Description of={UnsupportedRenderer} />
+
+# Props
+
+<Props of={UnsupportedRenderer} />
+
+# Usage
+
+<Preview withSource>
+  <Story name="basic example">
+    <UnsupportedRenderer
+      attachment={{
+        type: "text/html"
+      }}
+    />
+  </Story>
+</Preview>

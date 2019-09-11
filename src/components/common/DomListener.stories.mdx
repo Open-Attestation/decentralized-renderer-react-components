@@ -1,0 +1,54 @@
+import { Meta, Preview, Props, Description, Story } from "@storybook/addon-docs/blocks";
+import { DomListener } from "./DomListener";
+import { action } from "@storybook/addon-actions";
+import Component from "react-component-component";
+
+<Meta title="MDX|DomListener" component={DomListener} />
+
+# DomListener component
+
+<Description of={DomListener} />
+
+# Props
+
+<Props of={DomListener} />
+
+# Usage
+
+When used as a root component, it will fire an action for any dom mutation and resize of the window. When clicking on the buttons below, the DOM is updated and `DomListener` fire an event, check in action panel.
+
+<Preview withSource>
+  <Story name="as root component">
+    <DomListener onUpdate={action("update")}>
+      <Component initialState={{ count: 0 }}>
+        {({ setState, state }) => (
+          <div>
+            <h3>Click on the buttons or resize the window and look at the actions triggered!</h3>
+            <button onClick={() => setState(state => ({ count: state.count - 1 }))}>-</button>
+            <span> {state.count} </span>
+            <button onClick={() => setState(state => ({ count: state.count + 1 }))}>+</button>
+          </div>
+        )}
+      </Component>
+    </DomListener>
+  </Story>
+</Preview>
+
+However be mindful that using it as a nested component will trigger DOM mutations only for children. In the following example clicking on buttons won't fire any event as the component is observing only the `+` button and no changes are made there. Resizing the window still works.
+
+<Preview withSource>
+  <Story name="as a nested component">
+    <Component initialState={{ count: 0 }}>
+      {({ setState, state }) => (
+        <div>
+          <h3>Resize the window and look at the actions triggered! Nothing is happening when clicking on buttons</h3>
+          <button onClick={() => setState(state => ({ count: state.count - 1 }))}>-</button>
+          <span> {state.count} </span>
+          <DomListener onUpdate={action("update")}>
+            <button onClick={() => setState(state => ({ count: state.count + 1 }))}>+</button>
+          </DomListener>
+        </div>
+      )}
+    </Component>
+  </Story>
+</Preview>

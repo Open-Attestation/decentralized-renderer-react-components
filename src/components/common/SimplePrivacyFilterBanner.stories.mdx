@@ -1,0 +1,21 @@
+import { Meta, Preview, Props, Description, Story } from "@storybook/addon-docs/blocks";
+import { SimplePrivacyFilterBanner } from "./SimplePrivacyFilterBanner";
+import { action } from "@storybook/addon-actions";
+
+<Meta title="MDX|SimplePrivacyFilterBanner" component={SimplePrivacyFilterBanner} />
+
+# SimplePrivacyFilterBanner component
+
+<Description of={SimplePrivacyFilterBanner} />
+
+# Props
+
+<Props of={SimplePrivacyFilterBanner} />
+
+# Usage
+
+<Preview withSource>
+  <Story name="basic usage">
+    <SimplePrivacyFilterBanner onToggleEditable={action("toggle obfuscation mode")} />
+  </Story>
+</Preview>

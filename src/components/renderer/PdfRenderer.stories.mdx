@@ -1,0 +1,25 @@
+import { Meta, Preview, Props, Description, Story } from "@storybook/addon-docs/blocks";
+import { SAMPLE_PDF } from "./fixtures/pdf";
+import { PdfRenderer } from "./PdfRenderer";
+
+<Meta title="MDX|PdfRenderer" component={PdfRenderer} />
+
+# Counter component
+
+<Description of={PdfRenderer} />
+
+# Props
+
+<Props of={PdfRenderer} />
+
+# Usage
+
+<Preview withSource>
+  <Story name="basic example">
+    <PdfRenderer
+      attachment={{
+        data: SAMPLE_PDF
+      }}
+    />
+  </Story>
+</Preview>

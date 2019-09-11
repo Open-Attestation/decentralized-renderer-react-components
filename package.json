@@ -1,0 +1,174 @@
+{
+  "name": "@govtechsg/react-component-template",
+  "version": "0.1.0",
+  "private": true,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "dependencies": {
+    "@emotion/core": "^10.0.17",
+    "@emotion/styled": "^10.0.17",
+    "@fortawesome/fontawesome-svg-core": "^1.2.22",
+    "@fortawesome/free-solid-svg-icons": "^5.10.2",
+    "@fortawesome/react-fontawesome": "^0.1.4",
+    "debug": "^4.1.1",
+    "penpal": "^4.1.1",
+    "react-pdf": "^4.1.0",
+    "typesafe-actions": "^4.4.2"
+  },
+  "scripts": {
+    "build": "webpack --mode production && tsc --module es6 --declaration --emitDeclarationOnly --outDir build",
+    "example:application": "webpack-dev-server --config ./example/application/webpack.config.js",
+    "example:renderer": "webpack-dev-server --config ./example/decentralized-renderer/webpack.config.js",
+    "lint": "eslint . --ext .ts,.tsx,.mdx --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
+    "storybook": "start-storybook -p 6006",
+    "storybook:build": "build-storybook -o docs",
+    "test": "jest --ci",
+    "test:coverage": "npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.5.5",
+    "@babel/plugin-proposal-optional-chaining": "7.2.0",
+    "@babel/preset-env": "7.5.5",
+    "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "7.3.3",
+    "@emotion/babel-preset-css-prop": "10.0.17",
+    "@storybook/addon-actions": "5.2.1",
+    "@storybook/addon-docs": "5.2.1",
+    "@storybook/addons": "5.2.1",
+    "@storybook/react": "5.2.1",
+    "@testing-library/react": "9.1.4",
+    "@types/debug": "4.1.5",
+    "@types/jest": "24.0.18",
+    "@types/react": "16.9.2",
+    "@types/react-pdf": "^4.0.3",
+    "@typescript-eslint/eslint-plugin": "2.1.0",
+    "@typescript-eslint/parser": "2.1.0",
+    "babel-jest": "24.9.0",
+    "babel-loader": "8.0.6",
+    "eslint": "6.3.0",
+    "eslint-config-prettier": "6.2.0",
+    "eslint-plugin-jest": "22.16.0",
+    "eslint-plugin-mdx": "1.4.6",
+    "eslint-plugin-prettier": "3.1.0",
+    "eslint-plugin-react": "7.14.3",
+    "eslint-plugin-react-hooks": "2.0.1",
+    "jest": "24.9.0",
+    "prettier": "1.18.2",
+    "react": "16.9.0",
+    "react-component-component": "1.2.1",
+    "react-docgen-typescript-loader": "3.2.0",
+    "react-dom": "16.9.0",
+    "react-frame-component": "^4.1.1",
+    "semantic-release": "15.13.24",
+    "typescript": "3.5.3",
+    "webpack": "4.39.3",
+    "webpack-cli": "3.3.7",
+    "webpack-dev-server": "3.8.0"
+  },
+  "license": "GPL-3.0",
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "@babel/preset-typescript",
+      "@babel/preset-react",
+      "@emotion/babel-preset-css-prop"
+    ]
+  },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Opera versions",
+    "last 2 Firefox versions",
+    "last 2 Edge versions",
+    "last 1 Safari version",
+    "IE >= 11"
+  ],
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "env": {
+      "browser": true,
+      "jest": true
+    },
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "plugin:react/recommended",
+      "plugin:jest/all",
+      "plugin:prettier/recommended",
+      "plugin:mdx/recommended",
+      "prettier/@typescript-eslint",
+      "prettier/react"
+    ],
+    "plugins": [
+      "react-hooks"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
+    "rules": {
+      "@typescript-eslint/explicit-function-return-type": [
+        "warn",
+        {
+          "allowExpressions": true,
+          "allowTypedFunctionExpressions": true
+        }
+      ],
+      "@typescript-eslint/no-explicit-any": "off",
+      "react/prop-types": "off",
+      "react/self-closing-comp": "error",
+      "jest/prefer-expect-assertions": "off",
+      "array-callback-return": "error",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error"
+    },
+    "overrides": [
+      {
+        "files": [
+          "*.md"
+        ],
+        "rules": {
+          "prettier/prettier": [
+            2,
+            {
+              "parser": "markdown"
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "*.mdx"
+        ],
+        "extends": [
+          "plugin:mdx/overrides"
+        ]
+      }
+    ]
+  },
+  "jest": {
+    "coverageDirectory": "coverage",
+    "G": "node"
+  },
+  "prettier": {
+    "printWidth": 120
+  }
+}

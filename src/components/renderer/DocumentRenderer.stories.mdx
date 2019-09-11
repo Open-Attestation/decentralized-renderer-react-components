@@ -1,0 +1,28 @@
+import { Meta, Preview, Props, Description, Story } from "@storybook/addon-docs/blocks";
+import { DocumentRenderer } from "./DocumentRenderer";
+import { action } from "@storybook/addon-actions";
+import { certificate, registry } from "../../../example/decentralized-renderer/templates";
+
+<Meta title="MDX|DocumentRenderer" component={DocumentRenderer} />
+
+# DocumentRenderer component
+
+<Description of={DocumentRenderer} />
+
+# Props
+
+<Props of={DocumentRenderer} />
+
+# Usage
+
+When the _editable_ property is set to false (or not set), the component will only display the value and no action will be possible
+
+<Preview withSource>
+  <Story name="non-editable value">
+    <DocumentRenderer
+      templateRegistry={registry}
+      document={certificate}
+      handleObfuscation={action("obfuscate please")}
+    />
+  </Story>
+</Preview>
