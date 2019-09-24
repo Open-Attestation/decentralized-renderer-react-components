@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 // no tests because js-dom doesn't support MutationObserver
 // https://github.com/jsdom/jsdom/issues/639
 
+// Why do we differentiate `resize` from `domChange`? `domChange` can be anything liek att, childList, subtree & characterData also
 type Event = "resize" | "domChange";
 interface DomListenerProps {
   /**
@@ -35,9 +36,11 @@ export class DomListener extends Component<DomListenerProps> {
     if (rootNode) {
       this.observer.observe(rootNode, { attributes: true, childList: true, subtree: true, characterData: true });
       // need an initial trigger, make it run on next tick :shrug:
+      // Why does it need to happen on the next tick?
       setTimeout(this.onUpdateHeight);
     }
-    window.addEventListener("resize", this.onResize); // ResizeObserver not good enough
+    // MutationObserver does not listen to resize events
+    window.addEventListener("resize", this.onResize);
   }
 
   componentWillUnmount(): void {
