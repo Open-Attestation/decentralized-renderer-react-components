@@ -35,6 +35,8 @@ When used as a root component, it will fire an action for any dom mutation and r
 </Preview>
 
 However be mindful that using it as a nested component will trigger DOM mutations only for children. In the following example clicking on buttons won't fire any event as the component is observing only the `+` button and no changes are made there. Resizing the window still works.
+^ This is a weird explanation. Were you trying to say that triggering an event without DOM changes will not fire `onUpdate`?
+^ Might want to consider showing that it does not work for iframe ie. dom < iframe < iframe stuffs.
 
 <Preview withSource>
   <Story name="as a nested component">
