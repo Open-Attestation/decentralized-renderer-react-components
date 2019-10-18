@@ -4,15 +4,11 @@ import { Action } from "../../types";
 import { HostActions } from "./host.actions";
 import { SerializedStyles } from "@emotion/core";
 
-interface FrameConnectorProps {
+interface BaseFrameConnectorProps {
   /**
    * URL of the content of the frame to render (URL to a decentralized renderer)
    */
   source: string;
-  /**
-   * Function that will listen for actions coming from the frame.
-   */
-  dispatch: (action: Action) => void;
   /**
    * Function called once the connection has been established with the frame. It provides another function to send actions to the frame.
    */
@@ -20,11 +16,17 @@ interface FrameConnectorProps {
   /**
    * style to apply to the frame using emotion css prop
    */
-  css?: SerializedStyles;
+  className?: string;
   /**
    * style to apply to the frame
    */
   style?: CSSProperties;
+}
+interface FrameConnectorProps extends BaseFrameConnectorProps {
+  /**
+   * Function that will listen for actions coming from the frame.
+   */
+  dispatch: (action: Action) => void;
 }
 
 /**
@@ -39,17 +41,63 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   source,
   onConnected,
   style,
-  css
+  className = ""
 }) => {
   const iframe = useRef<HTMLIFrameElement>(null);
 
-  const [connected, toFrame] = useChildFrame(dispatch, iframe);
+  const [connected, toFrame] = useChildFrame({ dispatch, iframe });
   useEffect(() => {
     if (connected) {
       onConnected(toFrame);
     }
   }, [connected, toFrame, onConnected]);
   return (
-    <iframe title="Decentralised Rendered Certificate" id="iframe" ref={iframe} src={source} style={style} css={css} />
+    <iframe
+      title="Decentralised Rendered Certificate"
+      id="iframe"
+      ref={iframe}
+      src={source}
+      style={style}
+      className={className}
+    />
+  );
+};
+
+interface LegacyFrameConnectorProps extends BaseFrameConnectorProps {
+  /**
+   * Objects containing function to communicate with host
+   */
+  methods: { [key: string]: Function };
+}
+
+/**
+ * @deprecated use FrameConnector
+ * @see FrameConnector
+ * Using decentralized renderer legacy API to communicate through custom methods instead of unified dispatch interface
+ */
+export const LegacyFrameConnector: FunctionComponent<LegacyFrameConnectorProps> = ({
+  methods,
+  source,
+  onConnected,
+  style,
+  className = ""
+}) => {
+  const iframe = useRef<HTMLIFrameElement>(null);
+
+  const [connected, toFrame] = useChildFrame({ methods, iframe });
+  useEffect(() => {
+    if (connected) {
+      onConnected(toFrame);
+    }
+  }, [connected, toFrame, onConnected]);
+  return (
+    <iframe
+      title="Decentralised Rendered Certificate"
+      id="iframe"
+      ref={iframe}
+      src={source}
+      style={style}
+      className={className}
+    />
   );
 };
