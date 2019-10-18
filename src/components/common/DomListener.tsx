@@ -50,6 +50,6 @@ export class DomListener extends Component<DomListenerProps> {
   }
 
   render(): React.ReactNode {
-    return this.props.children;
+    return <div>{this.props.children}</div>;
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "@govtechsg/react-component-template",
-  "version": "0.1.0",
+  "name": "@govtechsg/decentralized-renderer-react-components",
+  "version": "0.0.0-development",
   "private": true,
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -19,13 +19,16 @@
     "build": "webpack --mode production && tsc --module es6 --declaration --emitDeclarationOnly --outDir build",
     "example:application": "webpack-dev-server --config ./example/application/webpack.config.js",
     "example:renderer": "webpack-dev-server --config ./example/decentralized-renderer/webpack.config.js",
+    "example:legacy-application": "webpack-dev-server --config ./example/legacy-application/webpack.config.js",
+    "example:legacy-renderer": "webpack-dev-server --config ./example/legacy-decentralized-renderer/webpack.config.js",
     "lint": "eslint . --ext .ts,.tsx,.mdx --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "storybook": "start-storybook -p 6006",
     "storybook:build": "build-storybook -o docs",
     "test": "jest --ci",
     "test:coverage": "npm run test -- --coverage",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "semantic-release": "semantic-release"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -64,7 +67,7 @@
     "react-docgen-typescript-loader": "3.2.0",
     "react-dom": "16.9.0",
     "react-frame-component": "^4.1.1",
-    "semantic-release": "15.13.24",
+    "semantic-release": "^15.13.24",
     "typescript": "3.5.3",
     "webpack": "4.39.3",
     "webpack-cli": "3.3.7",
@@ -165,10 +168,13 @@
     ]
   },
   "jest": {
-    "coverageDirectory": "coverage",
-    "G": "node"
+    "coverageDirectory": "coverage"
   },
   "prettier": {
     "printWidth": 120
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Open-Attestation/decentralized-renderer-react-components.git"
   }
 }

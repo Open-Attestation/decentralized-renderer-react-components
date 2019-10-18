@@ -20,7 +20,36 @@ interface HostConnectorProps {
  * This component must be provided a `dispatch `function that will listen for actions coming from the host.
  */
 export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch, children, onConnected }) => {
-  const [connected, toHost] = useParentFrame(dispatch);
+  const [connected, toHost] = useParentFrame({ dispatch });
+  useEffect(() => {
+    if (connected) {
+      onConnected(toHost);
+    }
+  }, [connected, toHost, onConnected]);
+  return <>{children}</>;
+};
+
+interface LegacyHostConnectorProps {
+  /**
+   * Objects containing function to communicate with host
+   */
+  methods: { [key: string]: Function };
+  /**
+   * Function called once the connection has been established with the host. It provides another function to send actions to the host.
+   */
+  onConnected: (toHost: (action: FrameActions) => void) => void;
+}
+/**
+ * @deprecated use HostConnector
+ * @see HostConnector
+ * Using decentralized renderer legacy API to communicate through custom methods instead of unified dispatch interface
+ */
+export const LegacyHostConnector: FunctionComponent<LegacyHostConnectorProps> = ({
+  methods,
+  children,
+  onConnected
+}) => {
+  const [connected, toHost] = useParentFrame({ methods });
   useEffect(() => {
     if (connected) {
       onConnected(toHost);
