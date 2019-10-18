@@ -2,10 +2,7 @@ import React, { FunctionComponent, useCallback, useRef, useState } from "react";
 import { Document, TemplateRegistry } from "../../types";
 import { documentTemplates, inIframe, noop } from "../../utils";
 import { DomListener } from "../common/DomListener";
-import { getLogger } from "../../logger";
 import { LegacyHostConnector } from "../frame/HostConnector";
-
-const { trace } = getLogger("FramedDocumentRenderer");
 
 interface LegacyFramedDocumentRendererProps {
   templateRegistry: TemplateRegistry;

@@ -2,7 +2,6 @@ import React, { CSSProperties, FunctionComponent, useEffect, useRef } from "reac
 import { useChildFrame } from "./useFrame";
 import { Action } from "../../types";
 import { HostActions } from "./host.actions";
-import { SerializedStyles } from "@emotion/core";
 
 interface BaseFrameConnectorProps {
   /**

@@ -1,6 +1,6 @@
 {
   "name": "@govtechsg/decentralized-renderer-react-components",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "private": true,
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -27,7 +27,8 @@
     "storybook:build": "build-storybook -o docs",
     "test": "jest --ci",
     "test:coverage": "npm run test -- --coverage",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "semantic-release": "semantic-release"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -66,7 +67,7 @@
     "react-docgen-typescript-loader": "3.2.0",
     "react-dom": "16.9.0",
     "react-frame-component": "^4.1.1",
-    "semantic-release": "15.13.24",
+    "semantic-release": "^15.13.24",
     "typescript": "3.5.3",
     "webpack": "4.39.3",
     "webpack-cli": "3.3.7",
@@ -171,5 +172,9 @@
   },
   "prettier": {
     "printWidth": 120
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Open-Attestation/decentralized-renderer-react-components.git"
   }
 }
