@@ -1,7 +1,9 @@
 {
   "name": "@govtechsg/decentralized-renderer-react-components",
   "version": "0.0.0-development",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "dependencies": {
