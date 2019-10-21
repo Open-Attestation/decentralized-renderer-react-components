@@ -5,10 +5,11 @@ module.exports = {
     path: __dirname + "/build",
     filename: "index.js",
     libraryTarget: "umd",
-    library: "<please add the name of your library>"
+    library: "decentralizedRenderer"
   },
   externals: {
-    react: "react"
+    react: "react",
+    "react-dom": "react-dom"
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"]

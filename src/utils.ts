@@ -18,7 +18,10 @@ export const inIframe = (): boolean => {
 };
 
 // TODO this function is weird, returns current template + templates for attachments
-export const documentTemplates = (document: Document, templateRegistry: TemplateRegistry): Template[] => {
+export function documentTemplates<D extends Document>(
+  document: Document,
+  templateRegistry: TemplateRegistry<D>
+): Template<D>[] {
   if (!document) return [];
   // Find the template in the template registry or use a default template
   const templateName = document && document.$template && document.$template.name;
@@ -31,4 +34,4 @@ export const documentTemplates = (document: Document, templateRegistry: Template
     template: attachmentRenderer(attachment)
   }));
   return [...selectedTemplate, ...templatesFromAttachments];
-};
+}
