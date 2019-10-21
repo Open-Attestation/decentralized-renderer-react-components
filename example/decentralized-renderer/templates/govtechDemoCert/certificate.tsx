@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from "react";
 import { certificateBg } from "./common/backgrounds";
-import { TemplateProps } from "../../../../src/types";
+import { TemplateProps } from "../../../../src";
+import { OpencertsDocuments } from "../../../types";
 
-export const DemoCert: FunctionComponent<TemplateProps> = ({ document }) => (
+export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({ document }) => (
   <div
     className="p-2 container"
     style={{

@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Document, TemplateRegistry } from "../../types";
 import { documentTemplates, inIframe, noop } from "../../utils";
 import { DomListener } from "../common/DomListener";
 import { LegacyHostConnector } from "../frame/HostConnector";
 
-interface LegacyFramedDocumentRendererProps {
-  templateRegistry: TemplateRegistry;
+interface LegacyFramedDocumentRendererProps<D extends Document> {
+  templateRegistry: TemplateRegistry<D>;
 }
 
 /**
  * @deprecated use FramedDocumentRenderer
  */
-export const LegacyFramedDocumentRenderer: FunctionComponent<LegacyFramedDocumentRendererProps> = ({
+export function LegacyFramedDocumentRenderer<D extends Document>({
   templateRegistry
-}) => {
-  const [document, setDocument] = useState<Document>();
+}: LegacyFramedDocumentRendererProps<D>): JSX.Element {
+  const [document, setDocument] = useState<D>();
   const [templateIndex, setTemplateIndex] = useState(0);
   const toHost = useRef<any>(noop);
   const onConnected = useCallback(postMessage => {
@@ -36,7 +36,7 @@ export const LegacyFramedDocumentRenderer: FunctionComponent<LegacyFramedDocumen
       <LegacyHostConnector
         methods={{
           renderDocument: async (doc: Document) => {
-            setDocument(doc);
+            setDocument(doc as D);
             const templates = await documentTemplates(doc, templateRegistry).map(template => ({
               id: template.id,
               label: template.label
@@ -58,4 +58,4 @@ export const LegacyFramedDocumentRenderer: FunctionComponent<LegacyFramedDocumen
       </LegacyHostConnector>
     </DomListener>
   );
-};
+}

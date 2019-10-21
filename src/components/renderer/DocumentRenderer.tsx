@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { documentTemplates, noop } from "../../utils";
 import { Document, TemplateRegistry } from "../../types";
 
-interface DocumentViewerProps {
-  templateRegistry: TemplateRegistry;
-  document: Document;
+interface DocumentViewerProps<D extends Document> {
+  templateRegistry: TemplateRegistry<D>;
+  document: D;
   templateName?: string;
   handleObfuscation?: (field: string) => void;
 }
@@ -17,12 +17,12 @@ interface DocumentViewerProps {
 // errors...
 // https://www.html5rocks.com/en/tutorials/security/sandboxed-iframes-
 
-export const DocumentRenderer: FunctionComponent<DocumentViewerProps> = ({
+export function DocumentRenderer<D extends Document>({
   templateRegistry,
   document,
   templateName,
   handleObfuscation = noop
-}) => {
+}: DocumentViewerProps<D>): JSX.Element {
   const templates = documentTemplates(document, templateRegistry);
   const templateConfiguration = templates.find(template => template.id === templateName) || templates[0];
   const Template = templateConfiguration.template;
@@ -31,4 +31,4 @@ export const DocumentRenderer: FunctionComponent<DocumentViewerProps> = ({
       <Template document={document} handleObfuscation={handleObfuscation} />
     </div>
   );
-};
+}

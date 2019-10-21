@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Action, Document, TemplateRegistry } from "../../types";
 import { documentTemplates, inIframe, noop } from "../../utils";
 import { DocumentRenderer } from "./DocumentRenderer";
@@ -11,11 +11,13 @@ import { HostConnector } from "../frame/HostConnector";
 
 const { trace } = getLogger("FramedDocumentRenderer");
 
-interface FramedDocumentRendererProps {
-  templateRegistry: TemplateRegistry;
+interface FramedDocumentRendererProps<D extends Document> {
+  templateRegistry: TemplateRegistry<D>;
 }
-export const FramedDocumentRenderer: FunctionComponent<FramedDocumentRendererProps> = ({ templateRegistry }) => {
-  const [document, setDocument] = useState<Document>();
+export function FramedDocumentRenderer<D extends Document>({
+  templateRegistry
+}: FramedDocumentRendererProps<D>): JSX.Element {
+  const [document, setDocument] = useState<D>();
   const [templateName, setTemplateName] = useState<string>();
   const toHost = useRef<(actions: FrameActions) => void>(noop);
   const onConnected = useCallback(postMessage => {
@@ -27,7 +29,7 @@ export const FramedDocumentRenderer: FunctionComponent<FramedDocumentRendererPro
     async (action: Action): Promise<void> => {
       trace("in frame, received action", action.type);
       if (isActionOf(renderDocument, action)) {
-        setDocument(action.payload);
+        setDocument(action.payload as D);
         const templates = await documentTemplates(action.payload, templateRegistry).map(template => ({
           id: template.id,
           label: template.label
@@ -60,4 +62,4 @@ export const FramedDocumentRenderer: FunctionComponent<FramedDocumentRendererPro
       </HostConnector>
     </DomListener>
   );
-};
+}

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { FrameConnector } from "../../src/components/frame/FrameConnector";
+import { OpencertsDocuments } from "../types";
 
-const certificate = {
+const certificate: OpencertsDocuments = {
   id: "53b75bbe",
   description: "Govtech Demo Certificate",
   issuedOn: "2019-05-29T00:00:00+08:00",

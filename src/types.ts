@@ -7,24 +7,10 @@ export interface Attachment {
 }
 
 export interface Document {
-  $template?: {
-    name?: string;
-  };
-  attachments?: Attachment[];
-  additionalData: any;
-  recipient?: {
-    name?: string;
-    nric?: string;
-    course?: string;
-  };
-  issuedOn?: string;
-  name?: string;
-  admissionDate?: string;
-  graduationDate?: string;
   id?: string;
-  transcript?: Array<any>;
+  $template?: { name?: string; url?: string; type?: string };
+  attachments?: Attachment[];
 }
-
 export interface Renderer {
   /**
    * TODO please to document
@@ -32,20 +18,20 @@ export interface Renderer {
   attachment: Attachment;
 }
 
-export interface TemplateProps {
-  document: Document;
+export interface TemplateProps<D extends Document> {
+  document: D;
   handleObfuscation: (field: string) => void;
 }
 
-export interface Template {
+export interface Template<D extends Document> {
   id: string;
   label: string;
-  template: ComponentType<TemplateProps>;
+  template: ComponentType<TemplateProps<D>>;
 }
 
-export interface TemplateRegistry {
-  default: Template[];
-  [key: string]: Template[];
+export interface TemplateRegistry<D extends Document> {
+  default: Template<D>[];
+  [key: string]: Template<D>[];
 }
 
 export type Action = {
