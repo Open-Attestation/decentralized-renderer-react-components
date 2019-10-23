@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Action, Document, TemplateRegistry } from "../../types";
+import { Action, Document, SignedDocument, TemplateRegistry } from "../../types";
 import { documentTemplates, inIframe, noop } from "../../utils";
 import { DocumentRenderer } from "./DocumentRenderer";
 import { DomListener } from "../common/DomListener";
@@ -18,6 +18,7 @@ export function FramedDocumentRenderer<D extends Document>({
   templateRegistry
 }: FramedDocumentRendererProps<D>): JSX.Element {
   const [document, setDocument] = useState<D>();
+  const [rawDocument, setRawDocument] = useState<SignedDocument<D>>();
   const [templateName, setTemplateName] = useState<string>();
   const toHost = useRef<(actions: FrameActions) => void>(noop);
   const onConnected = useCallback(postMessage => {
@@ -29,8 +30,11 @@ export function FramedDocumentRenderer<D extends Document>({
     async (action: Action): Promise<void> => {
       trace("in frame, received action", action.type);
       if (isActionOf(renderDocument, action)) {
-        setDocument(action.payload as D);
-        const templates = await documentTemplates(action.payload, templateRegistry).map(template => ({
+        setDocument(action.payload.document as D);
+        if (action.payload.rawDocument) {
+          setRawDocument(action.payload.rawDocument as SignedDocument<D>);
+        }
+        const templates = await documentTemplates(action.payload.document, templateRegistry).map(template => ({
           id: template.id,
           label: template.label
         }));
@@ -54,6 +58,7 @@ export function FramedDocumentRenderer<D extends Document>({
         {document && (
           <DocumentRenderer
             document={document}
+            rawDocument={rawDocument}
             templateName={templateName}
             handleObfuscation={field => toHost.current(obfuscateField(field))}
             templateRegistry={templateRegistry}

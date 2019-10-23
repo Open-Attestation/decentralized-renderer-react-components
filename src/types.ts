@@ -11,6 +11,15 @@ export interface Document {
   $template?: { name?: string; url?: string; type?: string };
   attachments?: Attachment[];
 }
+
+export interface SignedDocument<D extends Document> {
+  data: D;
+  signature: {
+    merkleRoot: string;
+    targetHash: string;
+    type: string;
+  };
+}
 export interface Renderer {
   /**
    * TODO please to document
@@ -20,6 +29,7 @@ export interface Renderer {
 
 export interface TemplateProps<D extends Document> {
   document: D;
+  rawDocument?: SignedDocument<D>;
   handleObfuscation: (field: string) => void;
 }
 

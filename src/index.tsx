@@ -3,3 +3,5 @@ export { SimplePrivacyFilterBanner } from "./components/common/SimplePrivacyFilt
 export { FramedDocumentRenderer } from "./components/renderer/FramedDocumentRenderer";
 export { LegacyFramedDocumentRenderer } from "./components/renderer/LegacyFramedDocumentRenderer";
 export * from "./types";
+export { HostActions } from "./components/frame/host.actions";
+export { FrameActions } from "./components/frame/frame.actions";

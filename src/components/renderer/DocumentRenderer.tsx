@@ -1,10 +1,11 @@
 import React from "react";
 import { documentTemplates, noop } from "../../utils";
-import { Document, TemplateRegistry } from "../../types";
+import { Document, SignedDocument, TemplateRegistry } from "../../types";
 
 interface DocumentViewerProps<D extends Document> {
   templateRegistry: TemplateRegistry<D>;
   document: D;
+  rawDocument?: SignedDocument<D>;
   templateName?: string;
   handleObfuscation?: (field: string) => void;
 }
@@ -20,6 +21,7 @@ interface DocumentViewerProps<D extends Document> {
 export function DocumentRenderer<D extends Document>({
   templateRegistry,
   document,
+  rawDocument,
   templateName,
   handleObfuscation = noop
 }: DocumentViewerProps<D>): JSX.Element {
@@ -28,7 +30,7 @@ export function DocumentRenderer<D extends Document>({
   const Template = templateConfiguration.template;
   return (
     <div className="frameless-tabs" id="rendered-certificate">
-      <Template document={document} handleObfuscation={handleObfuscation} />
+      <Template document={document} handleObfuscation={handleObfuscation} rawDocument={rawDocument} />
     </div>
   );
 }
