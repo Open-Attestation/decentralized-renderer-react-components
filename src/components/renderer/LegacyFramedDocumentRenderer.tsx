@@ -29,7 +29,6 @@ export function LegacyFramedDocumentRenderer<D extends Document>({
   return (
     <DomListener
       onUpdate={height => {
-        console.log("fum");
         toHost.current.updateHeight(height);
       }}
     >
