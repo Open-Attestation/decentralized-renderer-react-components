@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { FrameConnector } from "../../src/components/frame/FrameConnector";
 import { OpencertsDocuments } from "../types";
+import { HostActions } from "../../src";
 
 const certificate: OpencertsDocuments = {
   id: "53b75bbe",
@@ -88,13 +89,18 @@ const fromFrame = ({ type }: { type: string }): void => {
   console.log("received action", type);
 };
 const App = (): React.ReactElement => {
-  const [toFrame, setToFrame] = useState();
+  const [toFrame, setToFrame] = useState<(action: HostActions) => void>();
   const fn = useCallback(toFrame => {
     setToFrame(() => toFrame);
   }, []);
   useEffect(() => {
     if (toFrame) {
-      toFrame({ type: "RENDER_DOCUMENT", payload: certificate });
+      toFrame({
+        type: "RENDER_DOCUMENT",
+        payload: {
+          document: certificate
+        }
+      });
     }
   }, [toFrame]);
 

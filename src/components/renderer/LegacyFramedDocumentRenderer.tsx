@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Document, TemplateRegistry } from "../../types";
+import { Document, SignedDocument, TemplateRegistry } from "../../types";
 import { documentTemplates, inIframe, noop } from "../../utils";
 import { DomListener } from "../common/DomListener";
 import { LegacyHostConnector } from "../frame/HostConnector";
@@ -15,6 +15,7 @@ export function LegacyFramedDocumentRenderer<D extends Document>({
   templateRegistry
 }: LegacyFramedDocumentRendererProps<D>): JSX.Element {
   const [document, setDocument] = useState<D>();
+  const [rawDocument, setRawDocument] = useState<SignedDocument<D>>();
   const [templateIndex, setTemplateIndex] = useState(0);
   const toHost = useRef<any>(noop);
   const onConnected = useCallback(postMessage => {
@@ -29,14 +30,16 @@ export function LegacyFramedDocumentRenderer<D extends Document>({
   return (
     <DomListener
       onUpdate={height => {
-        console.log("fum");
         toHost.current.updateHeight(height);
       }}
     >
       <LegacyHostConnector
         methods={{
-          renderDocument: async (doc: Document) => {
+          renderDocument: async (doc: Document, rawDoc?: SignedDocument<Document>) => {
             setDocument(doc as D);
+            if (rawDoc) {
+              setRawDocument(rawDoc as SignedDocument<D>);
+            }
             const templates = await documentTemplates(doc, templateRegistry).map(template => ({
               id: template.id,
               label: template.label
@@ -52,7 +55,11 @@ export function LegacyFramedDocumentRenderer<D extends Document>({
       >
         {document && Template && (
           <div className="frameless-tabs" id="rendered-certificate">
-            <Template document={document} handleObfuscation={field => toHost.current.handleObfuscation(field)} />
+            <Template
+              document={document}
+              rawDocument={rawDocument}
+              handleObfuscation={field => toHost.current.handleObfuscation(field)}
+            />
           </div>
         )}
       </LegacyHostConnector>
