@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { LegacyFrameConnector } from "../../src/components/frame/FrameConnector";
+import { FrameConnector } from "../../src/components/frame/FrameConnector";
 import { css } from "@emotion/core";
+import { LegacyHostActions } from "../../src";
 
 const certificate = {
   id: "53b75bbe",
@@ -83,24 +84,23 @@ const certificate = {
     ]
   }
 };
-
-const updateTemplates = (args: any): void => {
-  console.log("in legacy application - updateTemplates", args);
-};
 const handleObfuscation = (args: any): void => {
   console.log("in legacy application - handleObfuscation", args);
 };
 const App = (): React.ReactElement => {
-  const [toFrame, setToFrame] = useState();
+  const [toFrame, setToFrame] = useState<LegacyHostActions>();
   const [height, setHeight] = useState(50);
-  const style = css`
-    height: ${height}px;
-  `;
-  const updateHeight = (args: any): void => {
-    setHeight(args);
-    console.log("in legacy application - updateHeight", args);
+  const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<number>(0);
+  const updateHeight = (height: number): void => {
+    setHeight(height);
   };
-  const fn = useCallback(toFrame => {
+
+  const updateTemplates = (templates: { id: string; label: string }[]): void => {
+    setTemplates(templates);
+    setSelectedTemplate(0);
+  };
+  const fn = useCallback((toFrame: LegacyHostActions) => {
     setToFrame(() => toFrame);
   }, []);
   useEffect(() => {
@@ -108,14 +108,56 @@ const App = (): React.ReactElement => {
       toFrame.renderDocument(certificate);
     }
   }, [toFrame]);
+  useEffect(() => {
+    if (toFrame && isFinite(selectedTemplate)) {
+      toFrame.selectTemplateTab(selectedTemplate);
+    }
+  }, [selectedTemplate, toFrame]);
 
   return (
-    <LegacyFrameConnector
-      source="http://localhost:10000"
-      methods={{ updateHeight, updateTemplates, handleObfuscation }}
-      onConnected={fn}
-      css={style}
-    />
+    <div>
+      <div
+        css={css`
+          display: flex;
+          justify-content: center;
+          .tab {
+            margin-left: 1rem;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border: 1px solid black;
+            cursor: pointer;
+          }
+          .tab.selected {
+            border: 1px solid blue;
+          }
+        `}
+      >
+        {templates.map((template, index) => (
+          <div
+            key={template.id}
+            className={`tab ${selectedTemplate === index ? "selected" : ""}`}
+            onClick={() => setSelectedTemplate(index)}
+          >
+            {template.label}
+          </div>
+        ))}
+      </div>
+      <div>
+        <FrameConnector
+          source="http://localhost:9000"
+          methods={{ updateHeight, updateTemplates, handleObfuscation }}
+          onConnected={fn}
+          css={css`
+            display: block;
+            margin: auto;
+            max-width: 1120px;
+            width: 100%;
+            height: ${height}px;
+          `}
+        />
+      </div>
+    </div>
   );
 };
 

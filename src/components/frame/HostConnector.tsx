@@ -1,17 +1,19 @@
-import { FrameActions } from "./frame.actions";
+import { FrameActionsHandler, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
 import React, { FunctionComponent, useEffect } from "react";
 import { useParentFrame } from "./useFrame";
-import { Action } from "../../types";
+import { Document, SignedDocument } from "../../types";
+import { HostActions, renderDocument, selectTemplate } from "./host.actions";
+import { isActionOf } from "typesafe-actions";
 
 interface HostConnectorProps {
   /**
    * Function that will listen for actions coming from the host.
    */
-  dispatch: (action: Action) => void;
+  dispatch: (action: HostActions) => void;
   /**
    * Function called once the connection has been established with the host. It provides another function to send actions to the host.
    */
-  onConnected: (toHost: (action: FrameActions) => void) => void;
+  onConnected: (toHost: FrameActionsHandler) => void;
 }
 
 /**
@@ -20,39 +22,30 @@ interface HostConnectorProps {
  * This component must be provided a `dispatch `function that will listen for actions coming from the host.
  */
 export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch, children, onConnected }) => {
-  const [connected, toHost] = useParentFrame({ dispatch });
-  useEffect(() => {
-    if (connected) {
-      onConnected(toHost);
+  const [connected, toHost] = useParentFrame({
+    dispatch,
+    methods: {
+      renderDocument: (document: Document, rawDocument?: SignedDocument<Document>) => {
+        dispatch(renderDocument({ document, rawDocument }));
+      },
+      selectTemplateTab: (tabIndex: number) => {
+        dispatch(selectTemplate(tabIndex));
+      }
     }
-  }, [connected, toHost, onConnected]);
-  return <>{children}</>;
-};
-
-interface LegacyHostConnectorProps {
-  /**
-   * Objects containing function to communicate with host
-   */
-  methods: { [key: string]: Function };
-  /**
-   * Function called once the connection has been established with the host. It provides another function to send actions to the host.
-   */
-  onConnected: (toHost: (action: FrameActions) => void) => void;
-}
-/**
- * @deprecated use HostConnector
- * @see HostConnector
- * Using decentralized renderer legacy API to communicate through custom methods instead of unified dispatch interface
- */
-export const LegacyHostConnector: FunctionComponent<LegacyHostConnectorProps> = ({
-  methods,
-  children,
-  onConnected
-}) => {
-  const [connected, toHost] = useParentFrame({ methods });
+  });
   useEffect(() => {
     if (connected) {
-      onConnected(toHost);
+      onConnected(action => {
+        if (toHost.dispatch) {
+          toHost.dispatch(action);
+        } else if (isActionOf(updateHeight, action) && toHost.updateHeight) {
+          toHost.updateHeight(action.payload);
+        } else if (isActionOf(obfuscateField, action) && toHost.handleObfuscation) {
+          toHost.handleObfuscation(action.payload);
+        } else if (isActionOf(updateTemplates, action) && toHost.updateTemplates) {
+          toHost.updateTemplates(action.payload);
+        }
+      });
     }
   }, [connected, toHost, onConnected]);
   return <>{children}</>;

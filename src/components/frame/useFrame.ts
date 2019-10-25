@@ -1,65 +1,74 @@
-import { RefObject, useCallback, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import connectToParent from "penpal/lib/connectToParent";
 import connectToChild from "penpal/lib/connectToChild";
-import { getLogger } from "../../logger";
-import { Action } from "../../types";
-const { trace } = getLogger("toFrame");
+import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
+import { HostActionsHandler, LegacyHostActions } from "./host.actions";
 
 type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
-interface UseFrameProps {
-  dispatch: (action: Action) => void;
-  iframe?: RefObject<HTMLIFrameElement>;
-}
-interface UseLegacyFrameProps {
-  methods: { [key: string]: Function };
-  iframe?: RefObject<HTMLIFrameElement>;
-}
-const isLegacyFrameProps = (props: any): props is UseLegacyFrameProps => {
-  return props && props.methods !== undefined;
-};
 
-const buildUseFrame = (connect: typeof connectToChild | typeof connectToParent) => (
-  props: UseFrameProps | UseLegacyFrameProps
-): [boolean, (action: Action) => void] => {
+interface UseParentFrameProps {
+  dispatch: HostActionsHandler;
+  methods?: LegacyHostActions;
+}
+export const useParentFrame = function(
+  props: UseParentFrameProps
+): [boolean, Partial<LegacyFrameActions> & { dispatch: FrameActionsHandler }] {
   const [parentFrameConnection, setParentFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
-
-  // actions sent to host
-  let toFrame;
-  if (isLegacyFrameProps(props)) {
-    toFrame = parentFrameConnection;
-  } else {
-    toFrame = useCallback(
-      (action: Action): void => {
-        if (parentFrameConnection) {
-          trace(`frame sending ${action.type} to host`);
-          parentFrameConnection.dispatch(action);
-        }
-      },
-      [parentFrameConnection]
-    );
-  }
 
   useEffect(() => {
     const run = async (): Promise<void> => {
       setParentFrameConnection(
-        await connect({
-          methods: isLegacyFrameProps(props)
-            ? props.methods
-            : {
-                dispatch: props.dispatch
-              },
-          iframe: (props.iframe && props.iframe.current) || null
+        await connectToParent({
+          methods: {
+            dispatch: props.dispatch,
+            ...props.methods
+          }
         }).promise
       );
       setStatus("CONNECTED");
     };
-    if (((props.iframe && props.iframe.current) || !props.iframe) && status === "DISCONNECTED") {
+    if (status === "DISCONNECTED") {
       setStatus("CONNECTING");
       run();
     }
   }, [status, props]);
-  return [status === "CONNECTED", toFrame];
+  return [status === "CONNECTED", parentFrameConnection];
 };
-export const useParentFrame = buildUseFrame(connectToParent);
-export const useChildFrame = buildUseFrame(connectToChild);
+
+interface UseLegacyChildrenFrameProps {
+  dispatch?: undefined;
+  methods: LegacyFrameActions;
+  iframe: RefObject<HTMLIFrameElement>;
+}
+interface UseChildrenFrameProps {
+  dispatch: FrameActionsHandler;
+  methods?: undefined;
+  iframe: RefObject<HTMLIFrameElement>;
+}
+export const useChildFrame = function(
+  props: UseChildrenFrameProps | UseLegacyChildrenFrameProps
+): [boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
+  const [parentFrameConnection, setParentFrameConnection] = useState<any>();
+  const [status, setStatus] = useState<Status>("DISCONNECTED");
+
+  useEffect(() => {
+    const run = async (): Promise<void> => {
+      setParentFrameConnection(
+        await connectToChild({
+          methods: {
+            ...(props.dispatch ? { dispatch: props.dispatch } : {}),
+            ...props.methods
+          },
+          iframe: props.iframe.current
+        }).promise
+      );
+      setStatus("CONNECTED");
+    };
+    if (props.iframe.current && status === "DISCONNECTED") {
+      setStatus("CONNECTING");
+      run();
+    }
+  }, [status, props]);
+  return [status === "CONNECTED", parentFrameConnection];
+};

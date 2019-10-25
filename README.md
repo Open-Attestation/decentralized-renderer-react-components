@@ -16,7 +16,6 @@ open `localhost:9001`
 
 ```shell script
 npm run example:legacy-application
-npm run example:legacy-renderer
 ```
 
 open `localhost:10001`

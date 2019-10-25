@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { FrameConnector } from "../../src/components/frame/FrameConnector";
 import { OpencertsDocuments } from "../types";
-import { HostActions } from "../../src";
+import { FrameActions } from "../../src";
+import { css } from "@emotion/core";
+import { HostActionsHandler } from "../../src/components/frame/host.actions";
 
 const certificate: OpencertsDocuments = {
   id: "53b75bbe",
@@ -85,14 +87,25 @@ const certificate: OpencertsDocuments = {
   }
 };
 
-const fromFrame = ({ type }: { type: string }): void => {
-  console.log("received action", type);
-};
 const App = (): React.ReactElement => {
-  const [toFrame, setToFrame] = useState<(action: HostActions) => void>();
-  const fn = useCallback(toFrame => {
+  const [toFrame, setToFrame] = useState<HostActionsHandler>();
+  const [height, setHeight] = useState(50);
+  const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const fn = useCallback((toFrame: HostActionsHandler) => {
+    // wrap into a function otherwise toFrame function will be executed
     setToFrame(() => toFrame);
   }, []);
+
+  const fromFrame = (action: FrameActions): void => {
+    if (action.type === "UPDATE_HEIGHT") {
+      setHeight(action.payload);
+    }
+    if (action.type === "UPDATE_TEMPLATES") {
+      setTemplates(action.payload);
+      setSelectedTemplate(action.payload[0].id);
+    }
+  };
   useEffect(() => {
     if (toFrame) {
       toFrame({
@@ -103,8 +116,60 @@ const App = (): React.ReactElement => {
       });
     }
   }, [toFrame]);
+  useEffect(() => {
+    if (toFrame && selectedTemplate) {
+      toFrame({
+        type: "SELECT_TEMPLATE",
+        payload: selectedTemplate
+      });
+    }
+  }, [selectedTemplate, toFrame]);
 
-  return <FrameConnector source="http://localhost:9000" dispatch={fromFrame} onConnected={fn} />;
+  return (
+    <div>
+      <div
+        css={css`
+          display: flex;
+          justify-content: center;
+          .tab {
+            margin-left: 1rem;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border: 1px solid black;
+            cursor: pointer;
+          }
+          .tab.selected {
+            border: 1px solid blue;
+          }
+        `}
+      >
+        {templates.map(template => (
+          <div
+            key={template.id}
+            className={`tab ${selectedTemplate === template.id ? "selected" : ""}`}
+            onClick={() => setSelectedTemplate(template.id)}
+          >
+            {template.label}
+          </div>
+        ))}
+      </div>
+      <div>
+        <FrameConnector
+          source="http://localhost:9000"
+          dispatch={fromFrame}
+          onConnected={fn}
+          css={css`
+            display: block;
+            margin: auto;
+            max-width: 1120px;
+            width: 100%;
+            height: ${height}px;
+          `}
+        />
+      </div>
+    </div>
+  );
 };
 
 ReactDOM.render(<App />, document.getElementById("root"));
