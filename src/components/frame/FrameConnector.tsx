@@ -1,7 +1,8 @@
 import React, { CSSProperties, FunctionComponent, useEffect, useRef } from "react";
 import { useChildFrame } from "./useFrame";
-import { Action } from "../../types";
-import { HostActions } from "./host.actions";
+import { Document, SignedDocument } from "../../types";
+import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
+import { FrameActions, LegacyFrameActions } from "./frame.actions";
 
 interface BaseFrameConnectorProps {
   /**
@@ -11,7 +12,7 @@ interface BaseFrameConnectorProps {
   /**
    * Function called once the connection has been established with the frame. It provides another function to send actions to the frame.
    */
-  onConnected: (toFrame: (action: HostActions) => void) => void;
+  onConnected: (toFrame: HostActionsHandler & LegacyHostActions) => void;
   /**
    * style to apply to the frame using emotion css prop
    */
@@ -25,7 +26,16 @@ interface FrameConnectorProps extends BaseFrameConnectorProps {
   /**
    * Function that will listen for actions coming from the frame.
    */
-  dispatch: (action: Action) => void;
+  dispatch: (action: FrameActions) => void;
+  methods?: undefined;
+}
+
+interface LegacyFrameConnectorProps extends BaseFrameConnectorProps {
+  /**
+   * Functions that will listen for actions coming from the frame.
+   */
+  methods: LegacyFrameActions;
+  dispatch?: undefined;
 }
 
 /**
@@ -35,46 +45,8 @@ interface FrameConnectorProps extends BaseFrameConnectorProps {
  * - a `dispatch `function that will listen for actions coming from the frame
  * - the URL of the decentralized renderer to use as the `source` prop
  */
-export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
+export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrameConnectorProps> = ({
   dispatch,
-  source,
-  onConnected,
-  style,
-  className = ""
-}) => {
-  const iframe = useRef<HTMLIFrameElement>(null);
-
-  const [connected, toFrame] = useChildFrame({ dispatch, iframe });
-  useEffect(() => {
-    if (connected) {
-      onConnected(toFrame);
-    }
-  }, [connected, toFrame, onConnected]);
-  return (
-    <iframe
-      title="Decentralised Rendered Certificate"
-      id="iframe"
-      ref={iframe}
-      src={source}
-      style={style}
-      className={className}
-    />
-  );
-};
-
-interface LegacyFrameConnectorProps extends BaseFrameConnectorProps {
-  /**
-   * Objects containing function to communicate with host
-   */
-  methods: { [key: string]: Function };
-}
-
-/**
- * @deprecated use FrameConnector
- * @see FrameConnector
- * Using decentralized renderer legacy API to communicate through custom methods instead of unified dispatch interface
- */
-export const LegacyFrameConnector: FunctionComponent<LegacyFrameConnectorProps> = ({
   methods,
   source,
   onConnected,
@@ -83,10 +55,35 @@ export const LegacyFrameConnector: FunctionComponent<LegacyFrameConnectorProps> 
 }) => {
   const iframe = useRef<HTMLIFrameElement>(null);
 
-  const [connected, toFrame] = useChildFrame({ methods, iframe });
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore error because of typescript distributivity
+  // FrameConnectorProps can me mapped to UseLegacyChildrenFrameProps which is not correct. It could be solved using
+  // conditional but there is a hooks rules saying shouldn't use conditional
+  const [connected, toFrame] = useChildFrame({ methods, dispatch, iframe });
   useEffect(() => {
     if (connected) {
-      onConnected(toFrame);
+      type t = typeof toFrame;
+      onConnected(
+        Object.assign(
+          (action: HostActions) => {
+            if (toFrame.dispatch) {
+              toFrame.dispatch(action);
+            }
+          },
+          {
+            renderDocument: (document: Document, rawDocument?: SignedDocument<Document>) => {
+              if (toFrame.renderDocument) {
+                toFrame.renderDocument(document, rawDocument);
+              }
+            },
+            selectTemplateTab: (tabIndex: number) => {
+              if (toFrame.selectTemplateTab) {
+                toFrame.selectTemplateTab(tabIndex);
+              }
+            }
+          }
+        )
+      );
     }
   }, [connected, toFrame, onConnected]);
   return (
