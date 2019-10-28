@@ -62,7 +62,6 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrame
   const [connected, toFrame] = useChildFrame({ methods, dispatch, iframe });
   useEffect(() => {
     if (connected) {
-      type t = typeof toFrame;
       onConnected(
         Object.assign(
           (action: HostActions) => {

@@ -1,3 +1,4 @@
+export { FrameConnector } from "./components/frame/FrameConnector";
 export { ObfuscatableValue } from "./components/common/ObfuscatableValue";
 export { SimplePrivacyFilterBanner } from "./components/common/SimplePrivacyFilterBanner";
 export { FramedDocumentRenderer } from "./components/renderer/FramedDocumentRenderer";
