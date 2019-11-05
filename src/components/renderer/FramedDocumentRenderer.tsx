@@ -44,7 +44,7 @@ export function FramedDocumentRenderer<D extends Document>({
           setRawDocument(action.payload.rawDocument as SignedDocument<D>);
         }
 
-        const run = async () => {
+        const run = async (): Promise<void> => {
           const templates = await documentTemplates(action.payload.document, templateRegistry).map(template => ({
             id: template.id,
             label: template.label
@@ -60,7 +60,12 @@ export function FramedDocumentRenderer<D extends Document>({
           setTemplateName(action.payload);
         }
       } else if (isActionOf(getTemplates, action)) {
-        return documentTemplates(action.payload, templateRegistry);
+        const templates = documentTemplates(action.payload, templateRegistry).map(template => ({
+          id: template.id,
+          label: template.label
+        }));
+        toHost.current(updateTemplates(templates)); // send the result to the iframe
+        return templates; // react-native expect to get the result directly
       } else {
         throw new Error(`Action ${JSON.stringify(action)} is not handled`);
       }
