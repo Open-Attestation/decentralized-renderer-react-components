@@ -12,6 +12,9 @@ interface SimplePrivacyFilterBannerProps {
 }
 
 const style = css`
+  @media print {
+    display: none;
+  }
   background-color: whitesmoke;
   display: flex;
   justify-content: space-between;
