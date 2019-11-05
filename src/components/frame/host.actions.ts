@@ -7,9 +7,13 @@ export const renderDocument = createStandardAction("RENDER_DOCUMENT")<{
   rawDocument?: SignedDocument<Document>;
 }>();
 export const selectTemplate = createStandardAction("SELECT_TEMPLATE")<string | number>();
-export type HostActions = ActionType<typeof renderDocument | typeof selectTemplate>;
+export const getTemplates = createStandardAction("GET_TEMPLATES")<Document>();
+export type HostActions = ActionType<typeof renderDocument | typeof selectTemplate | typeof getTemplates>;
 export type HostActionsHandler = (action: HostActions) => void;
 
+/**
+ * @deprecated use HostActions
+ */
 export type LegacyHostActions = {
   renderDocument: (document: Document, rawDocument?: SignedDocument<Document>) => void;
   selectTemplateTab: (tabIndex: number) => void;

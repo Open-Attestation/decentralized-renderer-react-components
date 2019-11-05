@@ -4,7 +4,7 @@ import { documentTemplates, inIframe, noop } from "../../utils";
 import { DomListener } from "../common/DomListener";
 import { isActionOf } from "typesafe-actions";
 import { getLogger } from "../../logger";
-import { HostActions, renderDocument, selectTemplate } from "../frame/host.actions";
+import { getTemplates, HostActions, renderDocument, selectTemplate } from "../frame/host.actions";
 import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
 
@@ -35,7 +35,7 @@ export function FramedDocumentRenderer<D extends Document>({
 
   // actions received by the parent hosting the component
   const dispatch = useCallback(
-    async (action: HostActions): Promise<void> => {
+    (action: HostActions): any => {
       trace("in frame, received action", action.type);
       if (isActionOf(renderDocument, action)) {
         setDocument(action.payload.document as D);
@@ -43,12 +43,15 @@ export function FramedDocumentRenderer<D extends Document>({
         if (action.payload.rawDocument) {
           setRawDocument(action.payload.rawDocument as SignedDocument<D>);
         }
-        const templates = await documentTemplates(action.payload.document, templateRegistry).map(template => ({
-          id: template.id,
-          label: template.label
-        }));
-        // TODO remove cycle =)
-        toHost.current(updateTemplates(templates));
+
+        const run = async () => {
+          const templates = await documentTemplates(action.payload.document, templateRegistry).map(template => ({
+            id: template.id,
+            label: template.label
+          }));
+          toHost.current(updateTemplates(templates));
+        };
+        run();
       } else if (isActionOf(selectTemplate, action)) {
         if (typeof action.payload === "number") {
           const templates = documentTemplates(documentForLegacyUsage.current as Document, templateRegistry);
@@ -56,8 +59,10 @@ export function FramedDocumentRenderer<D extends Document>({
         } else {
           setTemplateName(action.payload);
         }
+      } else if (isActionOf(getTemplates, action)) {
+        return documentTemplates(action.payload, templateRegistry);
       } else {
-        throw new Error("Add a logger please");
+        throw new Error(`Action ${JSON.stringify(action)} is not handled`);
       }
     },
     [templateRegistry]
