@@ -1,37 +1,44 @@
 import React, { FunctionComponent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { css } from "@emotion/core";
 
 interface SimplePrivacyFilterBannerProps {
   /**
    * handler called when toggle edition is requested
    */
   onToggleEditable: () => void;
+  className?: string;
 }
 
+const style = css`
+  background-color: whitesmoke;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  .icon {
+    cursor: pointer;
+  }
+`;
 /**
  * Banner with icon to toggle certificate obfuscation mode
  */
-export const SimplePrivacyFilterBanner: FunctionComponent<SimplePrivacyFilterBannerProps> = ({ onToggleEditable }) => (
-  <div id="banner-privacy-filter" className="screen-only">
-    <div
-      className="row"
-      css={{
-        backgroundColor: "whitesmoke",
-        padding: 20,
-        marginBottom: 20
-      }}
-    >
-      <div css={{ display: "inline-block" }}>
-        <div className="h4">OpenCerts Privacy Filter Enabled</div>
-        <div>
-          Edit this certificate by removing sensitive information by clicking on the edit button. Downloaded certificate
-          remains valid!
-        </div>
+export const SimplePrivacyFilterBanner: FunctionComponent<SimplePrivacyFilterBannerProps> = ({
+  onToggleEditable,
+  className = ""
+}) => (
+  <div css={style} className={className}>
+    <div className="text-container">
+      <div>
+        <h4>OpenCerts Privacy Filter Enabled</h4>
       </div>
-      <div className="ml-auto h5 pointer" css={{ display: "inline-block" }} onClick={onToggleEditable}>
-        <FontAwesomeIcon icon={faEdit} title="toggle certificate obfuscation" css={{ cursor: "pointer" }} />
+      <div>
+        Edit this certificate by removing sensitive information by clicking on the edit button. Downloaded certificate
+        remains valid!
       </div>
     </div>
+    <h5 className="icon" onClick={onToggleEditable}>
+      <FontAwesomeIcon icon={faEdit} title="toggle certificate obfuscation" />
+    </h5>
   </div>
 );
