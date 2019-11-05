@@ -72,10 +72,8 @@ export function FramedDocumentRenderer<D extends Document>({
     },
     [templateRegistry]
   );
+  window.openAttestation = dispatch; // expose different actions for direct injection
 
-  if (!inIframe()) {
-    return <div>This component can&apos;t be renderer out of a frame</div>;
-  }
   return (
     <DomListener onUpdate={height => toHost.current(updateHeight(height))}>
       <HostConnector dispatch={dispatch} onConnected={onConnected}>

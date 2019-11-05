@@ -22,7 +22,6 @@ interface HostConnectorProps {
  * This component must be provided a `dispatch `function that will listen for actions coming from the host.
  */
 export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch, children, onConnected }) => {
-  window.openAttestation = dispatch;
   const [connected, toHost] = useParentFrame({
     dispatch,
     methods: {

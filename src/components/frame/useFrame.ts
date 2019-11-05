@@ -3,6 +3,7 @@ import connectToParent from "penpal/lib/connectToParent";
 import connectToChild from "penpal/lib/connectToChild";
 import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
 import { HostActionsHandler, LegacyHostActions } from "./host.actions";
+import { inIframe } from "../../utils";
 
 type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
@@ -28,7 +29,7 @@ export const useParentFrame = function(
       );
       setStatus("CONNECTED");
     };
-    if (status === "DISCONNECTED") {
+    if (inIframe() && status === "DISCONNECTED") {
       setStatus("CONNECTING");
       run();
     }
