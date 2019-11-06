@@ -4,8 +4,9 @@ import { documentTemplates, noop } from "../../utils";
 import { isActionOf } from "typesafe-actions";
 import { getLogger } from "../../logger";
 import { getTemplates, HostActions, renderDocument, selectTemplate } from "../frame/host.actions";
-import { FrameActions, obfuscateField, updateTemplates } from "../frame/frame.actions";
+import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
+import { DomListener } from "../common/DomListener";
 
 const { trace } = getLogger("FramedDocumentRenderer");
 
@@ -74,16 +75,18 @@ export function FramedDocumentRenderer<D extends Document>({
   window.openAttestation = dispatch; // expose different actions for direct injection
 
   return (
-    <HostConnector dispatch={dispatch} onConnected={onConnected}>
-      {document && Template && (
-        <div className="frameless-tabs" id="rendered-certificate">
-          <Template
-            document={document}
-            rawDocument={rawDocument}
-            handleObfuscation={field => toHost.current(obfuscateField(field))}
-          />
-        </div>
-      )}
-    </HostConnector>
+    <DomListener onUpdate={height => toHost.current(updateHeight(height))}>
+      <HostConnector dispatch={dispatch} onConnected={onConnected}>
+        {document && Template && (
+          <div className="frameless-tabs" id="rendered-certificate">
+            <Template
+              document={document}
+              rawDocument={rawDocument}
+              handleObfuscation={field => toHost.current(obfuscateField(field))}
+            />
+          </div>
+        )}
+      </HostConnector>
+    </DomListener>
   );
 }
