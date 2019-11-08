@@ -79,6 +79,11 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrame
               if (toFrame.selectTemplateTab) {
                 toFrame.selectTemplateTab(tabIndex);
               }
+            },
+            print: () => {
+              if (toFrame.print) {
+                toFrame.print();
+              }
             }
           }
         )

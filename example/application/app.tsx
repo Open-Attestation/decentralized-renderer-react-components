@@ -131,6 +131,49 @@ const App = (): React.ReactElement => {
         css={css`
           display: flex;
           justify-content: center;
+          margin-bottom: 0.5rem;
+          button {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+              box-shadow 0.15s ease-in-out;
+          }
+          button:hover {
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+          }
+        `}
+      >
+        <button
+          onClick={() => {
+            if (toFrame) {
+              toFrame({
+                type: "PRINT"
+              });
+            }
+          }}
+        >
+          Print
+        </button>
+      </div>
+      <div
+        css={css`
+          display: flex;
+          justify-content: center;
           .tab {
             margin-left: 1rem;
             margin-right: 1rem;

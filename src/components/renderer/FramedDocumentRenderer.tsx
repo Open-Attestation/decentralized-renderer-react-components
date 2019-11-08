@@ -3,7 +3,7 @@ import { Document, SignedDocument, TemplateRegistry } from "../../types";
 import { documentTemplates, noop } from "../../utils";
 import { isActionOf } from "typesafe-actions";
 import { getLogger } from "../../logger";
-import { getTemplates, HostActions, renderDocument, selectTemplate } from "../frame/host.actions";
+import { getTemplates, HostActions, renderDocument, selectTemplate, print } from "../frame/host.actions";
 import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
@@ -66,6 +66,8 @@ export function FramedDocumentRenderer<D extends Document>({
         }));
         toHost.current(updateTemplates(templates)); // send the result to the iframe
         return templates; // react-native expect to get the result directly
+      } else if (isActionOf(print, action)) {
+        window.print();
       } else {
         throw new Error(`Action ${JSON.stringify(action)} is not handled`);
       }

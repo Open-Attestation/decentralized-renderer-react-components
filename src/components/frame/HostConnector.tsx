@@ -2,7 +2,7 @@ import { FrameActionsHandler, obfuscateField, updateHeight, updateTemplates } fr
 import React, { FunctionComponent, useEffect } from "react";
 import { useParentFrame } from "./useFrame";
 import { Document, SignedDocument } from "../../types";
-import { HostActions, renderDocument, selectTemplate } from "./host.actions";
+import { HostActions, renderDocument, selectTemplate, print } from "./host.actions";
 import { isActionOf } from "typesafe-actions";
 
 interface HostConnectorProps {
@@ -30,6 +30,9 @@ export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch,
       },
       selectTemplateTab: (tabIndex: number) => {
         dispatch(selectTemplate(tabIndex));
+      },
+      print: () => {
+        dispatch(print());
       }
     }
   });
