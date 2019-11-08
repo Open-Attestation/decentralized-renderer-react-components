@@ -83,7 +83,9 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrame
             print: () => {
               if (toFrame.print) {
                 toFrame.print();
+                return true;
               }
+              return false;
             }
           }
         )
