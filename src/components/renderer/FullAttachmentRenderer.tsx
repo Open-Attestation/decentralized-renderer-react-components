@@ -16,10 +16,3 @@ export function fullAttachmentRenderer<D extends Document>(attachment: Attachmen
   // eslint-disable-next-line react/display-name
   return () => <UnsupportedRenderer attachment={attachment} />;
 }
-/**
- * Function using unsupported renderer for all kind of attachments
- */
-export function noAttachmentRenderer<D extends Document>(attachment: Attachment): React.FunctionComponent {
-  // eslint-disable-next-line react/display-name
-  return () => <UnsupportedRenderer attachment={attachment} />;
-}

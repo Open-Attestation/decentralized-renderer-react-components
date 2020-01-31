@@ -6,7 +6,8 @@
   },
   "sideEffects": false,
   "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "module": "build/esm/index.js",
+  "types": "build//esm/index.d.ts",
   "dependencies": {
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
@@ -19,7 +20,7 @@
     "typesafe-actions": "^4.4.2"
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack --mode production && tsc --module es6 --declaration --emitDeclarationOnly --outDir build",
+    "build": "NODE_ENV=production webpack --mode production && tsc --module es6 --declaration --outDir build/esm",
     "example:application": "webpack-dev-server --config ./example/application/webpack.config.js",
     "example:renderer": "webpack-dev-server --config ./example/decentralized-renderer/webpack.config.js",
     "example:legacy-application": "webpack-dev-server --config ./example/legacy-application/webpack.config.js",

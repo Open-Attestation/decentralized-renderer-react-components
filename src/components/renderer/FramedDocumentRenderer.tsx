@@ -7,7 +7,7 @@ import { getTemplates, HostActions, renderDocument, selectTemplate, print } from
 import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
-import { noAttachmentRenderer } from "./AttachmentRenderer";
+import { noAttachmentRenderer } from "./NoAttachmentRenderer";
 
 const { trace } = getLogger("FramedDocumentRenderer");
 
