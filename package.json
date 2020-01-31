@@ -4,6 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "dependencies": {
