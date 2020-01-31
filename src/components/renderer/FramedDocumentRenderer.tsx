@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Document, SignedDocument, TemplateRegistry } from "../../types";
+import { Attachment, Document, SignedDocument, TemplateRegistry } from "../../types";
 import { documentTemplates, noop } from "../../utils";
 import { isActionOf } from "typesafe-actions";
 import { getLogger } from "../../logger";
@@ -7,14 +7,17 @@ import { getTemplates, HostActions, renderDocument, selectTemplate, print } from
 import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
+import { noAttachmentRenderer } from "./AttachmentRenderer";
 
 const { trace } = getLogger("FramedDocumentRenderer");
 
 interface FramedDocumentRendererProps<D extends Document> {
   templateRegistry: TemplateRegistry<D>;
+  attachmentToComponent?: (attachment: Attachment) => React.FunctionComponent;
 }
 export function FramedDocumentRenderer<D extends Document>({
-  templateRegistry
+  templateRegistry,
+  attachmentToComponent = noAttachmentRenderer
 }: FramedDocumentRendererProps<D>): JSX.Element {
   const [document, setDocument] = useState<D>();
   // used only to handle legacy setSelectTemplate function
@@ -25,7 +28,7 @@ export function FramedDocumentRenderer<D extends Document>({
   const [templateName, setTemplateName] = useState<string>();
   const toHost = useRef<(actions: FrameActions) => void>(noop);
 
-  const templates = document ? documentTemplates(document, templateRegistry) : [];
+  const templates = document ? documentTemplates(document, templateRegistry, attachmentToComponent) : [];
   const templateConfiguration = templates.find(template => template.id === templateName) || templates[0] || {};
   const Template = templateConfiguration.template;
 
@@ -45,7 +48,11 @@ export function FramedDocumentRenderer<D extends Document>({
         }
 
         const run = async (): Promise<void> => {
-          const templates = await documentTemplates(action.payload.document, templateRegistry).map(template => ({
+          const templates = await documentTemplates(
+            action.payload.document,
+            templateRegistry,
+            attachmentToComponent
+          ).map(template => ({
             id: template.id,
             label: template.label
           }));
@@ -54,13 +61,17 @@ export function FramedDocumentRenderer<D extends Document>({
         run();
       } else if (isActionOf(selectTemplate, action)) {
         if (typeof action.payload === "number") {
-          const templates = documentTemplates(documentForLegacyUsage.current as Document, templateRegistry);
+          const templates = documentTemplates(
+            documentForLegacyUsage.current as Document,
+            templateRegistry,
+            attachmentToComponent
+          );
           setTemplateName(templates[action.payload].id);
         } else {
           setTemplateName(action.payload);
         }
       } else if (isActionOf(getTemplates, action)) {
-        const templates = documentTemplates(action.payload, templateRegistry).map(template => ({
+        const templates = documentTemplates(action.payload, templateRegistry, attachmentToComponent).map(template => ({
           id: template.id,
           label: template.label
         }));
@@ -72,7 +83,7 @@ export function FramedDocumentRenderer<D extends Document>({
         throw new Error(`Action ${JSON.stringify(action)} is not handled`);
       }
     },
-    [templateRegistry]
+    [templateRegistry, attachmentToComponent]
   );
   window.openAttestation = dispatch; // expose different actions for direct injection
 

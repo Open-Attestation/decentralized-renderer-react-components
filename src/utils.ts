@@ -1,5 +1,5 @@
-import { Document, Template, TemplateRegistry } from "./types";
-import { attachmentRenderer } from "./components/renderer/AttachmentRenderer";
+import { Attachment, Document, Template, TemplateRegistry } from "./types";
+import React from "react";
 
 export const repeat = (times: number) => (callback: (index: number) => any) =>
   Array(times)
@@ -20,7 +20,8 @@ export const inIframe = (): boolean => {
 // TODO this function is weird, returns current template + templates for attachments
 export function documentTemplates<D extends Document>(
   document: Document,
-  templateRegistry: TemplateRegistry<D>
+  templateRegistry: TemplateRegistry<D>,
+  attachmentToComponent: (attachment: Attachment) => React.FunctionComponent
 ): Template<D>[] {
   if (!document) return [];
   // Find the template in the template registry or use a default template
@@ -31,7 +32,7 @@ export function documentTemplates<D extends Document>(
   const templatesFromAttachments = (document.attachments || []).map((attachment, index) => ({
     id: `attachment-${index}`,
     label: attachment.filename || "Unknown filename",
-    template: attachmentRenderer(attachment)
+    template: attachmentToComponent(attachment)
   }));
   return [...selectedTemplate, ...templatesFromAttachments];
 }

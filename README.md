@@ -116,7 +116,7 @@ const action = {
 };
 ```
 
-- provide the name of a field on the document to obfuscate. The value must follow path property as handlded by [lodash#get](https://lodash.com/docs/4.17.15#get)
+- provide the name of a field on the document to obfuscate. The value must follow path property as handled by [lodash#get](https://lodash.com/docs/4.17.15#get)
   - type: "OBFUSCATE"
   - payload: (mandatory) path to the field
 
@@ -169,6 +169,10 @@ This component will establish a connection with a host embedding the application
   - id: a unique (withing the current array) identifier of the template
   - label: a string to represent what's the template is,
   - template: a `Template`, that is to say a react component that will render a document
+- `attachmentToComponent`: a function that map attachments to component depending on the attachment type. Currently the library exposes 2 functions:
+  - `noAttachmentRenderer`: which uses `UnsupportedRenderer` (basically it's doing nothing)
+  - `fullAttachmentRenderer`: which uses all the supported attachment type by the library (see the function).
+This property default to `noAttachmentRenderer`, to avoid bundles growing huge unnecessarily.
 
 `FramedDocumentRenderer` handle all the logic around the communication with the hosted application and the renderer:
 
