@@ -1,14 +1,7 @@
 import React, { FunctionComponent, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { css } from "@emotion/core";
 import { repeat } from "../../utils";
 import { Renderer } from "../../types";
-
-const pageStyle = css`
-  canvas {
-    margin: auto;
-  }
-`;
 
 // TODO check this https://github.com/wojtekmaj/react-pdf#browserify-and-others
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -21,16 +14,25 @@ export const PdfRenderer: FunctionComponent<Renderer> = ({ attachment }) => {
 
   return (
     <Document
-      className="container"
       file={`data:application/pdf;base64,${attachment.data}`}
       onLoadSuccess={({ numPages }) => {
         setNumberOfPages(numPages);
       }}
     >
+      <style
+        scoped
+        dangerouslySetInnerHTML={{
+          __html: `
+      canvas {
+        margin: auto;
+      }
+    `
+        }}
+      />
       {repeat(numberOfPages)(index => (
         // TODO: Dynamically resize width to fit container
         // https://github.com/wojtekmaj/react-pdf/issues/129
-        <Page css={pageStyle} key={`page_${index + 1}`} pageNumber={index + 1} />
+        <Page key={`page_${index + 1}`} pageNumber={index + 1} />
       ))}
     </Document>
   );

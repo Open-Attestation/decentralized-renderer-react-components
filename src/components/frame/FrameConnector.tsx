@@ -14,7 +14,7 @@ interface BaseFrameConnectorProps {
    */
   onConnected: (toFrame: HostActionsHandler & LegacyHostActions) => void;
   /**
-   * style to apply to the frame using emotion css prop
+   * style to apply to the frame
    */
   className?: string;
   /**

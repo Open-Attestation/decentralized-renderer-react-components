@@ -1,6 +1,5 @@
 export { FrameConnector } from "./components/frame/FrameConnector";
 export { ObfuscatableValue } from "./components/common/ObfuscatableValue";
-export { SimplePrivacyFilterBanner } from "./components/common/SimplePrivacyFilterBanner";
 export { FramedDocumentRenderer } from "./components/renderer/FramedDocumentRenderer";
 export * from "./components/renderer/NoAttachmentRenderer";
 export * from "./components/renderer/FullAttachmentRenderer";
