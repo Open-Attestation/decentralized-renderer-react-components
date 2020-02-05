@@ -9,8 +9,6 @@
   "module": "build/esm/index.js",
   "types": "build//esm/index.d.ts",
   "dependencies": {
-    "@emotion/core": "^10.0.17",
-    "@emotion/styled": "^10.0.17",
     "@fortawesome/fontawesome-svg-core": "^1.2.22",
     "@fortawesome/free-solid-svg-icons": "^5.10.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
@@ -43,6 +41,8 @@
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "7.3.3",
     "@emotion/babel-preset-css-prop": "10.0.17",
+    "@emotion/core": "^10.0.17",
+    "@emotion/styled": "^10.0.17",
     "@storybook/addon-actions": "5.2.1",
     "@storybook/addon-docs": "5.2.1",
     "@storybook/addons": "5.2.1",

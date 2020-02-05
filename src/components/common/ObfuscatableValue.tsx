@@ -34,9 +34,11 @@ export const ObfuscatableValue: FunctionComponent<ObfuscatableValueProps> = ({
           onObfuscationRequested();
         }
       }}
-      css={{ display: "inline-block" }}
+      style={{ display: "inline-block" }}
     >
       {value}{" "}
-      {editable && <FontAwesomeIcon title="Obfuscate value" icon={faTimes} css={{ color: "red", cursor: "pointer" }} />}
+      {editable && (
+        <FontAwesomeIcon title="Obfuscate value" icon={faTimes} style={{ color: "red", cursor: "pointer" }} />
+      )}
     </div>
   ) : null;

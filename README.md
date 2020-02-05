@@ -10,7 +10,6 @@ React components abstracting the communication with `Open Attestation` decentral
 - [**React**](http://reactjs.org/) - A JavaScript library for building user interfaces.
 - [**Webpack**](https://webpack.js.org/) - Component bundler.
 - [**React testing library**](https://testing-library.com/) - Simple and complete testing utilities that encourage good testing practices.
-- [**Emotion**](https://emotion.sh/) - Library designed for writing css styles with JavaScript.
 - [**Jest**](https://facebook.github.io/jest) - JavaScript testing framework used by Facebook.
 - [**ESLint**](http://eslint.org/) - Make sure you are writing a quality code.
 - [**Prettier**](https://prettier.io/) - Enforces a consistent style by parsing your code and re-printing it.
