@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { transcriptBg } from "./common/backgrounds";
 import { ObfuscatableValue } from "../../../../src/components/common/ObfuscatableValue";
-import { SimplePrivacyFilterBanner } from "../../../../src/components/common/SimplePrivacyFilterBanner";
+import { SimplePrivacyFilterBanner } from "./common/SimplePrivacyFilterBanner";
 import { TemplateProps } from "../../../../src/types";
 
-export class DemoTranscript extends Component<TemplateProps, { editable: boolean }> {
-  constructor(props: TemplateProps) {
+export class DemoTranscript extends Component<TemplateProps<any>, { editable: boolean }> {
+  constructor(props: TemplateProps<any>) {
     super(props);
     this.state = { editable: false };
   }
@@ -26,7 +26,7 @@ export class DemoTranscript extends Component<TemplateProps, { editable: boolean
 
     const transcriptData = document.transcript || [];
 
-    const transcriptSection = transcriptData.map((t, i) => (
+    const transcriptSection = transcriptData.map((t: any, i: number) => (
       <tr key={i}>
         <td>
           <ObfuscatableValue

@@ -3,12 +3,10 @@
 // exported object and that template will be used. If a template cannot be
 // found, the default template will be used instead.
 
-import DefaultTemplate from "./default";
 import CustomTemplate from "./customTemplate";
 import GovTechDemoCert from "./govtechDemoCert";
 
 export const registry = {
-  default: DefaultTemplate,
   CUSTOM_TEMPLATE: CustomTemplate,
   GOVTECH_DEMO: GovTechDemoCert,
   NULL: []

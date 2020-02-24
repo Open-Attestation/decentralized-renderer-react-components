@@ -1,5 +1,6 @@
 import { Attachment, Document, Template, TemplateRegistry } from "./types";
 import React from "react";
+import { defaultTemplate } from "./DefaultTemplate";
 
 export const repeat = (times: number) => (callback: (index: number) => any) =>
   Array(times)
@@ -26,7 +27,7 @@ export function documentTemplates<D extends Document>(
   if (!document) return [];
   // Find the template in the template registry or use a default template
   const templateName = document && document.$template && document.$template.name;
-  const selectedTemplate = (templateName && templateRegistry[templateName]) || templateRegistry.default;
+  const selectedTemplate = (templateName && templateRegistry[templateName]) || [defaultTemplate];
 
   // Create additional tabs from attachments
   const templatesFromAttachments = (document.attachments || []).map((attachment, index) => ({
