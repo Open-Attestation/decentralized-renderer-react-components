@@ -1,8 +1,9 @@
 import React, { CSSProperties, FunctionComponent, useEffect, useRef } from "react";
 import { useChildFrame } from "./useFrame";
-import { Document, SignedDocument } from "../../types";
+import { Document } from "../../types";
 import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
 import { FrameActions, LegacyFrameActions } from "./frame.actions";
+import { WrappedDocument } from "@govtechsg/open-attestation";
 
 interface BaseFrameConnectorProps {
   /**
@@ -70,7 +71,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrame
             }
           },
           {
-            renderDocument: (document: Document, rawDocument?: SignedDocument<Document>) => {
+            renderDocument: (document: Document, rawDocument?: WrappedDocument<Document>) => {
               if (toFrame.renderDocument) {
                 toFrame.renderDocument(document, rawDocument);
               }
