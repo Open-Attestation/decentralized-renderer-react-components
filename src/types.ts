@@ -1,35 +1,22 @@
 import { ComponentType } from "react";
+import { v2, WrappedDocument } from "@govtechsg/open-attestation";
 
-export interface Attachment {
-  type?: string;
-  filename?: string;
-  data?: string;
-}
+export type Attachment = Partial<v2.Attachment>;
+type TemplateObject = Partial<v2.TemplateObject>;
 
 export interface Document {
   id?: string;
-  $template?: { name?: string; url?: string; type?: string };
+  $template?: TemplateObject;
   attachments?: Attachment[];
 }
 
-export interface SignedDocument<D extends Document> {
-  data: D;
-  signature: {
-    merkleRoot: string;
-    targetHash: string;
-    type: string;
-  };
-}
 export interface Renderer {
-  /**
-   * TODO please to document
-   */
   attachment: Attachment;
 }
 
 export interface TemplateProps<D extends Document> {
   document: D;
-  rawDocument?: SignedDocument<D>;
+  wrappedDocument?: WrappedDocument<D>;
   handleObfuscation: (field: string) => void;
 }
 
@@ -43,8 +30,3 @@ export interface TemplateRegistry<D extends Document> {
   default: Template<D>[];
   [key: string]: Template<D>[];
 }
-
-export type Action = {
-  type: string;
-  payload?: any;
-};

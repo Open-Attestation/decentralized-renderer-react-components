@@ -1,9 +1,10 @@
 import { FrameActionsHandler, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
 import React, { FunctionComponent, useEffect } from "react";
 import { useParentFrame } from "./useFrame";
-import { Document, SignedDocument } from "../../types";
+import { Document } from "../../types";
 import { HostActions, renderDocument, selectTemplate, print } from "./host.actions";
 import { isActionOf } from "typesafe-actions";
+import { WrappedDocument } from "@govtechsg/open-attestation";
 
 interface HostConnectorProps {
   /**
@@ -25,7 +26,7 @@ export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch,
   const [connected, toHost] = useParentFrame({
     dispatch,
     methods: {
-      renderDocument: (document: Document, rawDocument?: SignedDocument<Document>) => {
+      renderDocument: (document: Document, rawDocument?: WrappedDocument<Document>) => {
         dispatch(renderDocument({ document, rawDocument }));
       },
       selectTemplateTab: (tabIndex: number) => {

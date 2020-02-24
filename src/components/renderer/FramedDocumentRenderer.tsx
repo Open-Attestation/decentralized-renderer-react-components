@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Attachment, Document, SignedDocument, TemplateRegistry } from "../../types";
+import { Attachment, Document, TemplateRegistry } from "../../types";
 import { documentTemplates, noop } from "../../utils";
 import { isActionOf } from "typesafe-actions";
 import { getLogger } from "../../logger";
@@ -8,6 +8,7 @@ import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
 import { noAttachmentRenderer } from "./NoAttachmentRenderer";
+import { WrappedDocument } from "@govtechsg/open-attestation";
 
 const { trace } = getLogger("FramedDocumentRenderer");
 
@@ -24,7 +25,7 @@ export function FramedDocumentRenderer<D extends Document>({
   // dispatch function (below) is connected once through the frame and the reference to this function never change is
   // host and iframe. We need to use a reference to allow object mutation
   const documentForLegacyUsage = useRef<D>();
-  const [rawDocument, setRawDocument] = useState<SignedDocument<D>>();
+  const [rawDocument, setRawDocument] = useState<WrappedDocument<D>>();
   const [templateName, setTemplateName] = useState<string>();
   const toHost = useRef<(actions: FrameActions) => void>(noop);
 
@@ -44,7 +45,7 @@ export function FramedDocumentRenderer<D extends Document>({
         setDocument(action.payload.document as D);
         documentForLegacyUsage.current = action.payload.document as D;
         if (action.payload.rawDocument) {
-          setRawDocument(action.payload.rawDocument as SignedDocument<D>);
+          setRawDocument(action.payload.rawDocument as WrappedDocument<D>);
         }
 
         const run = async (): Promise<void> => {
@@ -94,7 +95,7 @@ export function FramedDocumentRenderer<D extends Document>({
           <div className="frameless-tabs" id="rendered-certificate">
             <Template
               document={document}
-              rawDocument={rawDocument}
+              wrappedDocument={rawDocument}
               handleObfuscation={field => toHost.current(obfuscateField(field))}
             />
           </div>
