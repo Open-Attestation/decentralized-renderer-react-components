@@ -26,10 +26,7 @@ const style = css`
 /**
  * Banner with icon to toggle certificate obfuscation mode
  */
-export const SimplePrivacyFilterBanner: FunctionComponent<SimplePrivacyFilterBannerProps> = ({
-  onToggleEditable,
-  className = ""
-}) => (
+export const Banner: FunctionComponent<SimplePrivacyFilterBannerProps> = ({ onToggleEditable, className = "" }) => (
   <div css={style} className={className}>
     <div className="text-container">
       <div>
