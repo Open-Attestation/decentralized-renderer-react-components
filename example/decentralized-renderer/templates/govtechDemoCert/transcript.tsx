@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { transcriptBg } from "./common/backgrounds";
 import { ObfuscatableValue } from "../../../../src/components/common/ObfuscatableValue";
-import { SimplePrivacyFilterBanner } from "./common/SimplePrivacyFilterBanner";
+import { Banner } from "./common/Banner";
 import { TemplateProps } from "../../../../src/types";
 
 export class DemoTranscript extends Component<TemplateProps<any>, { editable: boolean }> {
@@ -68,7 +68,7 @@ export class DemoTranscript extends Component<TemplateProps<any>, { editable: bo
 
     return (
       <div className="container">
-        <SimplePrivacyFilterBanner onToggleEditable={() => this.setState({ editable: !editable })} />
+        <Banner onToggleEditable={() => this.setState({ editable: !editable })} />
         <div
           className="p-2 container"
           style={{
