@@ -27,6 +27,5 @@ export interface Template<D extends Document> {
 }
 
 export interface TemplateRegistry<D extends Document> {
-  default: Template<D>[];
   [key: string]: Template<D>[];
 }

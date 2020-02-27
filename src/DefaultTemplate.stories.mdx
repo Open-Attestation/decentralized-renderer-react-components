@@ -1,0 +1,33 @@
+import { Meta, Preview, Props, Description, Story } from "@storybook/addon-docs/blocks";
+import { DefaultTemplate } from "./DefaultTemplate";
+
+<Meta title="MDX|DefaultTemplate" component={DefaultTemplate} />
+
+# DefaultTemplate component
+
+<Description of={DefaultTemplate} />
+
+# Props
+
+<Props of={DefaultTemplate} />
+
+# Usage
+
+<Preview withSource>
+  <Story name="non-editable value">
+    <DefaultTemplate
+      document={{
+        foo: {
+          title: "Bar is awesome"
+        },
+        name: "John Doe",
+        institute: "Institute of John Doe",
+        $template: {
+          name: "custom",
+          type: "EMBEDDED_RENDERER",
+          url: "http://localhost:3000"
+        }
+      }}
+    />
+  </Story>
+</Preview>
