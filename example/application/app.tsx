@@ -5,6 +5,7 @@ import { OpencertsDocuments } from "../types";
 import { FrameActions } from "../../src";
 import { css } from "@emotion/core";
 import { HostActionsHandler } from "../../src/components/frame/host.actions";
+import { v2 } from "@govtechsg/open-attestation";
 
 const certificate: OpencertsDocuments = {
   id: "53b75bbe",
@@ -12,7 +13,7 @@ const certificate: OpencertsDocuments = {
   issuedOn: "2019-05-29T00:00:00+08:00",
   $template: {
     name: "GOVTECH_DEMO",
-    type: "GOVTECH_DEMO",
+    type: v2.TemplateType.EmbeddedRenderer,
     url: "https://demo-cnm.openattestation.com"
   },
   admissionDate: "2017-08-01T00:00:00+08:00",
