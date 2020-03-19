@@ -1,7 +1,7 @@
 import React from "react";
 import { Template, TemplateProps } from "./types";
 
-export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = () => {
+export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = props => {
   return (
     <div id="default-template">
       <h3
@@ -34,7 +34,7 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = () =
         </a>
         .
       </div>
-      <pre style={{ backgroundColor: "lightgray" }}>{JSON.stringify(document, null, 2)}</pre>
+      <pre style={{ backgroundColor: "lightgray" }}>{JSON.stringify(props.document, null, 2)}</pre>
     </div>
   );
 };
