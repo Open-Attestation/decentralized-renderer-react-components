@@ -4,7 +4,7 @@ export { FramedDocumentRenderer } from "./components/renderer/FramedDocumentRend
 export * from "./components/renderer/NoAttachmentRenderer";
 export * from "./components/renderer/FullAttachmentRenderer";
 export * from "./components/renderer/PdfRenderer";
-export * from "./components/renderer/NoAttachmentRenderer";
+export * from "./components/renderer/UnsupportedRenderer";
 export * from "./types";
 export { HostActions, HostActionsHandler, LegacyHostActions } from "./components/frame/host.actions";
 export { FrameActions, LegacyFrameActions, FrameActionsHandler } from "./components/frame/frame.actions";
