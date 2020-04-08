@@ -1,7 +1,7 @@
 import { PdfRenderer } from "./PdfRenderer";
 import { UnsupportedRenderer } from "./UnsupportedRenderer";
 import React from "react";
-import { Attachment } from "../../types";
+import { Attachment, Document } from "../../types";
 
 /**
  * Function returning the correct attachment renderer depending on the attachment type. Currently supports:

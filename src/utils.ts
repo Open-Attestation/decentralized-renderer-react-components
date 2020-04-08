@@ -22,7 +22,7 @@ export const inIframe = (): boolean => {
 export function documentTemplates<D extends Document>(
   document: Document,
   templateRegistry: TemplateRegistry<D>,
-  attachmentToComponent: (attachment: Attachment) => React.FunctionComponent
+  attachmentToComponent: (attachment: Attachment, document: Document) => React.FunctionComponent
 ): Template<D>[] {
   if (!document) return [];
   // Find the template in the template registry or use a default template
@@ -33,7 +33,7 @@ export function documentTemplates<D extends Document>(
   const templatesFromAttachments = (document.attachments || []).map((attachment, index) => ({
     id: `attachment-${index}`,
     label: attachment.filename || "Unknown filename",
-    template: attachmentToComponent(attachment)
+    template: attachmentToComponent(attachment, document)
   }));
   return [...selectedTemplate, ...templatesFromAttachments];
 }
