@@ -14,7 +14,7 @@ const { trace } = getLogger("FramedDocumentRenderer");
 
 interface FramedDocumentRendererProps<D extends Document> {
   templateRegistry: TemplateRegistry<D>;
-  attachmentToComponent?: (attachment: Attachment) => React.FunctionComponent;
+  attachmentToComponent?: (attachment: Attachment, document: Document) => React.FunctionComponent;
 }
 export function FramedDocumentRenderer<D extends Document>({
   templateRegistry,
