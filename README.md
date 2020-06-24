@@ -21,7 +21,7 @@ React components abstracting the communication with `Open Attestation` decentral
 
 ## How it works
 
-To begin with, makes sure you read the initial introduction and explanation about [decentralized renderer](https://docs.opencerts.io/announcements/schema2_update.html)
+To begin with, makes sure you read the initial introduction and explanation about [decentralized renderer](https://docs.opencerts.io/docs/migrations/v1_to_v2)
 
 In order to render a document, hosts will load the corresponding decentralized renderer (as specified by the document) and embed it using an iframe. Communication between host and iframe is made using [postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) and has been designed using actions.
 
