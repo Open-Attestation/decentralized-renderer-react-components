@@ -55,7 +55,8 @@ export function FramedDocumentRenderer<D extends Document>({
             attachmentToComponent
           ).map(template => ({
             id: template.id,
-            label: template.label
+            label: template.label,
+            type: template.type
           }));
           toHost.current(updateTemplates(templates));
         };
@@ -74,7 +75,8 @@ export function FramedDocumentRenderer<D extends Document>({
       } else if (isActionOf(getTemplates, action)) {
         const templates = documentTemplates(action.payload, templateRegistry, attachmentToComponent).map(template => ({
           id: template.id,
-          label: template.label
+          label: template.label,
+          type: template.type
         }));
         toHost.current(updateTemplates(templates)); // send the result to the iframe
         return templates; // react-native expect to get the result directly
