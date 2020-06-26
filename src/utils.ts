@@ -29,11 +29,17 @@ export function documentTemplates<D extends Document>(
   const templateName = document && document.$template && document.$template.name;
   const selectedTemplate = (templateName && templateRegistry[templateName]) || [defaultTemplate];
 
+  // Only render tabs for attachment with pdf type
+  const templatesFromPdfAttachmentOnly = (document.attachments || []).filter(attachment => {
+    return attachment.type === "application/pdf";
+  });
+
   // Create additional tabs from attachments
-  const templatesFromAttachments = (document.attachments || []).map((attachment, index) => ({
+  const templatesFromAttachments = templatesFromPdfAttachmentOnly.map((attachment, index) => ({
     id: `attachment-${index}`,
     label: attachment.filename || "Unknown filename",
     template: attachmentToComponent(attachment, document)
   }));
+
   return [...selectedTemplate, ...templatesFromAttachments];
 }
