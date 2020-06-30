@@ -29,3 +29,7 @@ export interface Template<D extends Document> {
 export interface TemplateRegistry<D extends Document> {
   [key: string]: Template<D>[];
 }
+
+export interface TemplateWithTypes<D extends Document> extends Template<D> {
+  type: string;
+}

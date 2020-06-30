@@ -1,4 +1,4 @@
-import { Attachment, Document, Template, TemplateRegistry } from "./types";
+import { Attachment, Document, TemplateRegistry, Template, TemplateWithTypes } from "./types";
 import React from "react";
 import { defaultTemplate } from "./DefaultTemplate";
 
@@ -23,17 +23,24 @@ export function documentTemplates<D extends Document>(
   document: Document,
   templateRegistry: TemplateRegistry<D>,
   attachmentToComponent: (attachment: Attachment, document: Document) => React.FunctionComponent
-): Template<D>[] {
+): TemplateWithTypes<D>[] {
   if (!document) return [];
   // Find the template in the template registry or use a default template
   const templateName = document && document.$template && document.$template.name;
-  const selectedTemplate = (templateName && templateRegistry[templateName]) || [defaultTemplate];
+  const selectedTemplate: Template<D>[] = (templateName && templateRegistry[templateName]) || [defaultTemplate];
+
+  // Add type property to differentiate between custom template tabs VS attachments tab
+  const templatesFromCustom: TemplateWithTypes<D>[] = selectedTemplate.map(template => {
+    return { ...template, type: "custom-template" };
+  });
 
   // Create additional tabs from attachments
-  const templatesFromAttachments = (document.attachments || []).map((attachment, index) => ({
+  const templatesFromAttachments = (document.attachments || []).map((attachment: Attachment, index: number) => ({
     id: `attachment-${index}`,
     label: attachment.filename || "Unknown filename",
+    type: attachment.type || "Unknown filetype",
     template: attachmentToComponent(attachment, document)
   }));
-  return [...selectedTemplate, ...templatesFromAttachments];
+
+  return [...templatesFromCustom, ...templatesFromAttachments];
 }
