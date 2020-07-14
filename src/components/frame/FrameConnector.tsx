@@ -101,7 +101,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrame
       src={source}
       style={style}
       className={className}
-      sandbox="allow-scripts allow-same-origin allow-modals"
+      sandbox="allow-scripts allow-same-origin allow-modals allow-popups"
     />
   );
 };

@@ -25,11 +25,7 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = prop
       >
         You see this template because the certificate issuer miconfigured the template configuration of your document.
         Please check with the certificate issuer. More information is available in{" "}
-        <a
-          href="https://openattestation.com/docs/verifiable-document/document-template"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://openattestation.com/docs/advanced/custom-renderer" target="_blank" rel="noopener noreferrer">
           the documentation
         </a>
         .
