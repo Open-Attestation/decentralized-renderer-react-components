@@ -1,5 +1,5 @@
 import React from "react";
-import { Template, TemplateProps } from "./types";
+import { TemplateProps, TemplateWithComponent } from "./types";
 
 export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = props => {
   return (
@@ -35,7 +35,7 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = prop
   );
 };
 
-export const defaultTemplate: Template<any> = {
+export const defaultTemplate: TemplateWithComponent<any> = {
   id: "default-template",
   label: "Default",
   template: DefaultTemplate

@@ -1,9 +1,8 @@
-import { FrameActionsHandler, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
+import { FrameActionsHandler } from "./frame.actions";
 import React, { FunctionComponent, useEffect } from "react";
 import { useParentFrame } from "./useFrame";
 import { Document } from "../../types";
 import { HostActions, renderDocument, selectTemplate, print } from "./host.actions";
-import { isActionOf } from "typesafe-actions";
 import { WrappedDocument } from "@govtechsg/open-attestation";
 
 interface HostConnectorProps {
@@ -30,7 +29,7 @@ export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch,
         dispatch(renderDocument({ document, rawDocument }));
       },
       selectTemplateTab: (tabIndex: number) => {
-        dispatch(selectTemplate(tabIndex));
+        dispatch(selectTemplate(tabIndex, {}));
       },
       print: () => {
         dispatch(print());
@@ -42,11 +41,11 @@ export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch,
       onConnected(action => {
         if (toHost.dispatch) {
           toHost.dispatch(action);
-        } else if (isActionOf(updateHeight, action) && toHost.updateHeight) {
+        } else if (action.type === "UPDATE_HEIGHT" && toHost.updateHeight) {
           toHost.updateHeight(action.payload);
-        } else if (isActionOf(obfuscateField, action) && toHost.handleObfuscation) {
+        } else if (action.type === "OBFUSCATE" && toHost.handleObfuscation) {
           toHost.handleObfuscation(action.payload);
-        } else if (isActionOf(updateTemplates, action) && toHost.updateTemplates) {
+        } else if (action.type === "UPDATE_TEMPLATES" && toHost.updateTemplates) {
           toHost.updateTemplates(action.payload);
         }
       });

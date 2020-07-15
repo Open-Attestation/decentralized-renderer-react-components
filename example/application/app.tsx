@@ -121,10 +121,13 @@ const App = (): React.ReactElement => {
     if (toFrame && selectedTemplate) {
       toFrame({
         type: "SELECT_TEMPLATE",
-        payload: selectedTemplate
+        payload: selectedTemplate,
+        meta: {
+          templates // this is only needed for backward compatibility with legacy renderer
+        }
       });
     }
-  }, [selectedTemplate, toFrame]);
+  }, [selectedTemplate, templates, toFrame]);
 
   return (
     <div>
@@ -200,7 +203,7 @@ const App = (): React.ReactElement => {
       </div>
       <div>
         <FrameConnector
-          source="http://localhost:9000"
+          source="http://localhost:8080"
           dispatch={fromFrame}
           onConnected={fn}
           css={css`

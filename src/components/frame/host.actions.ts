@@ -1,13 +1,14 @@
 // actions sent by host to frame
 import { ActionType, createStandardAction } from "typesafe-actions";
-import { Document } from "../../types";
+import { Document, Template } from "../../types";
 import { WrappedDocument } from "@govtechsg/open-attestation";
 
 export const renderDocument = createStandardAction("RENDER_DOCUMENT")<{
   document: Document;
   rawDocument?: WrappedDocument<Document>;
 }>();
-export const selectTemplate = createStandardAction("SELECT_TEMPLATE")<string | number>();
+
+export const selectTemplate = createStandardAction("SELECT_TEMPLATE")<string | number, { templates?: Template[] }>();
 export const getTemplates = createStandardAction("GET_TEMPLATES")<Document>();
 export const print = createStandardAction("PRINT")();
 export type HostActions = ActionType<

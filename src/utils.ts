@@ -1,4 +1,4 @@
-import { Attachment, Document, TemplateRegistry, Template, TemplateWithTypes } from "./types";
+import { Attachment, Document, TemplateRegistry, TemplateWithTypes, TemplateWithComponent } from "./types";
 import React from "react";
 import { defaultTemplate } from "./DefaultTemplate";
 
@@ -27,7 +27,9 @@ export function documentTemplates<D extends Document>(
   if (!document) return [];
   // Find the template in the template registry or use a default template
   const templateName = document && document.$template && document.$template.name;
-  const selectedTemplate: Template<D>[] = (templateName && templateRegistry[templateName]) || [defaultTemplate];
+  const selectedTemplate: TemplateWithComponent<D>[] = (templateName && templateRegistry[templateName]) || [
+    defaultTemplate
+  ];
 
   // Add type property to differentiate between custom template tabs VS attachments tab
   const templatesFromCustom: TemplateWithTypes<D>[] = selectedTemplate.map(template => {

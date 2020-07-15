@@ -20,16 +20,18 @@ export interface TemplateProps<D extends Document> {
   handleObfuscation: (field: string) => void;
 }
 
-export interface Template<D extends Document> {
+export interface Template {
   id: string;
   label: string;
+}
+export interface TemplateWithComponent<D extends Document> extends Template {
   template: ComponentType<TemplateProps<D>>;
 }
 
 export interface TemplateRegistry<D extends Document> {
-  [key: string]: Template<D>[];
+  [key: string]: TemplateWithComponent<D>[];
 }
 
-export interface TemplateWithTypes<D extends Document> extends Template<D> {
+export interface TemplateWithTypes<D extends Document> extends TemplateWithComponent<D> {
   type: string;
 }
