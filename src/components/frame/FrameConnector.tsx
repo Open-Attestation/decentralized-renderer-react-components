@@ -1,9 +1,7 @@
-import React, { CSSProperties, FunctionComponent, useEffect, useRef } from "react";
+import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useRef } from "react";
 import { useChildFrame } from "./useFrame";
-import { Document } from "../../types";
 import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
-import { FrameActions, LegacyFrameActions } from "./frame.actions";
-import { WrappedDocument } from "@govtechsg/open-attestation";
+import { FrameActions, LegacyFrameActions, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
 
 interface BaseFrameConnectorProps {
   /**
@@ -28,15 +26,6 @@ interface FrameConnectorProps extends BaseFrameConnectorProps {
    * Function that will listen for actions coming from the frame.
    */
   dispatch: (action: FrameActions) => void;
-  methods?: undefined;
-}
-
-interface LegacyFrameConnectorProps extends BaseFrameConnectorProps {
-  /**
-   * Functions that will listen for actions coming from the frame.
-   */
-  methods: LegacyFrameActions;
-  dispatch?: undefined;
 }
 
 /**
@@ -46,9 +35,8 @@ interface LegacyFrameConnectorProps extends BaseFrameConnectorProps {
  * - a `dispatch `function that will listen for actions coming from the frame
  * - the URL of the decentralized renderer to use as the `source` prop
  */
-export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrameConnectorProps> = ({
+export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   dispatch,
-  methods,
   source,
   onConnected,
   style,
@@ -56,40 +44,35 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps | LegacyFrame
 }) => {
   const iframe = useRef<HTMLIFrameElement>(null);
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore error because of typescript distributivity
-  // FrameConnectorProps can me mapped to UseLegacyChildrenFrameProps which is not correct. It could be solved using
-  // conditional but there is a hooks rules saying shouldn't use conditional
+  const methods = useMemo<LegacyFrameActions>(() => {
+    return {
+      updateHeight: (height: number) => dispatch(updateHeight(height)),
+      updateTemplates: templates => dispatch(updateTemplates(templates)),
+      handleObfuscation: field => dispatch(obfuscateField(field))
+    };
+  }, [dispatch]);
   const [connected, toFrame] = useChildFrame({ methods, dispatch, iframe });
   useEffect(() => {
     if (connected) {
       onConnected(
-        Object.assign(
-          (action: HostActions) => {
-            if (toFrame.dispatch) {
-              toFrame.dispatch(action);
+        Object.assign((action: HostActions) => {
+          if (toFrame.dispatch) {
+            toFrame.dispatch(action);
+          } else if (action.type === "RENDER_DOCUMENT" && toFrame.renderDocument) {
+            toFrame.renderDocument(action.payload.document, action.payload.rawDocument);
+          } else if (action.type === "SELECT_TEMPLATE" && toFrame.selectTemplateTab) {
+            if (typeof action.payload === "number") {
+              toFrame.selectTemplateTab(action.payload);
+            } else if (action.meta.templates) {
+              const index = action.meta.templates.findIndex(template => template.id === action.payload);
+              toFrame.selectTemplateTab(index);
+            } else {
+              throw new Error(`Unable to handle ${action.type} when payload is a string`);
             }
-          },
-          {
-            renderDocument: (document: Document, rawDocument?: WrappedDocument<Document>) => {
-              if (toFrame.renderDocument) {
-                toFrame.renderDocument(document, rawDocument);
-              }
-            },
-            selectTemplateTab: (tabIndex: number) => {
-              if (toFrame.selectTemplateTab) {
-                toFrame.selectTemplateTab(tabIndex);
-              }
-            },
-            print: () => {
-              if (toFrame.print) {
-                toFrame.print();
-                return true;
-              }
-              return false;
-            }
+          } else if (action.type === "PRINT" && toFrame.print) {
+            toFrame.print();
           }
-        )
+        })
       );
     }
   }, [connected, toFrame, onConnected]);

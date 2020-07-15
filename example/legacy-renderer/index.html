@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>iFrame Rendering</title>
+  </head>
+  <script src="https://unpkg.com/penpal@4.1.1/dist/penpal.min.js"></script>
+
+  <body>
+    <div id="template"></div>
+
+    <iframe
+      title="Rendered Certificate"
+      id="frameless-iframe"
+      src="http://localhost:9000/"
+      style="width: 100%; border: 0px; overflow: hidden;"
+    ></iframe>
+  </body>
+
+  <script type="text/javascript">
+    const iframe = document.getElementById("frameless-iframe");
+    let selectedTab = 0;
+    let host;
+    let certificate;
+
+    const templates = [
+      {
+        id: "certificate",
+        label: "Certificate",
+        render: certificate => {
+          const templateSelector = document.getElementById("template");
+          templateSelector.innerHTML = "";
+          templateSelector.append(`This is the certificate template ${certificate.id}`);
+        }
+      },
+      {
+        id: "transcript",
+        label: "Transcript",
+        render: certificate => {
+          const templateSelector = document.getElementById("template");
+          templateSelector.innerHTML = "";
+          templateSelector.append(`This is the transcript template`);
+        }
+      },
+      {
+        id: "media",
+        label: "Media",
+        render: certificate => {
+          const templateSelector = document.getElementById("template");
+          templateSelector.innerHTML = "";
+          templateSelector.append(`This is the media template ${certificate.id}`);
+        }
+      }
+    ];
+
+    renderDocument = function() {
+      console.log(selectedTab);
+      templates[selectedTab].render(certificate);
+      host.updateHeight(200);
+    };
+    selectTemplateTab = function(index) {
+      console.log("yeah");
+      selectedTab = index;
+      renderDocument();
+    };
+
+    window.connection = window.Penpal.connectToParent({
+      iframe,
+      methods: {
+        renderDocument: c => {
+          certificate = c;
+          renderDocument();
+        },
+        selectTemplateTab,
+        print: () => window.print()
+      }
+    });
+
+    window.connection.promise.then(h => {
+      host = h;
+      console.log({ h });
+      host.updateTemplates(templates.map(({ id, label }) => ({ id, label })));
+    });
+  </script>
+</html>

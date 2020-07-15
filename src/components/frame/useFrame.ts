@@ -37,18 +37,13 @@ export const useParentFrame = function(
   return [status === "CONNECTED", parentFrameConnection];
 };
 
-interface UseLegacyChildrenFrameProps {
-  dispatch?: undefined;
+interface UseChildrenFrameProps {
+  dispatch: FrameActionsHandler;
   methods: LegacyFrameActions;
   iframe: RefObject<HTMLIFrameElement>;
 }
-interface UseChildrenFrameProps {
-  dispatch: FrameActionsHandler;
-  methods?: undefined;
-  iframe: RefObject<HTMLIFrameElement>;
-}
 export const useChildFrame = function(
-  props: UseChildrenFrameProps | UseLegacyChildrenFrameProps
+  props: UseChildrenFrameProps
 ): [boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
   const [parentFrameConnection, setParentFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
@@ -58,7 +53,7 @@ export const useChildFrame = function(
       setParentFrameConnection(
         await connectToChild({
           methods: {
-            ...(props.dispatch ? { dispatch: props.dispatch } : {}),
+            dispatch: props.dispatch,
             ...props.methods
           },
           iframe: props.iframe.current

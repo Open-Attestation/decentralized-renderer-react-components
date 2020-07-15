@@ -19,13 +19,6 @@ export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({
         border: "0px solid #324353"
       }}
     >
-      {/*<div className="my-5 m-lg-5 text-center">*/}
-      {/*  <img*/}
-      {/*    src={require("./common/opencertslogo.svg")}*/}
-      {/*    alt="OpenCerts Logo"*/}
-      {/*    style={{ width: "60%", height: "auto", maxWidth: "1000px" }}*/}
-      {/*  />*/}
-      {/*</div>*/}
       <div className="mb-4 mb-lg-5 d-flex justify-content-center cert-body" style={{ textAlign: "center" }}>
         <i>This is to certify that</i>
       </div>
@@ -43,14 +36,6 @@ export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({
       </div>
       <div className="row">
         <div className="col" />
-        {/*<div className="col">*/}
-        {/*  <img*/}
-        {/*    className="w-100"*/}
-        {/*    style={{ width: "100%", height: "auto", minWidth: "100px" }}*/}
-        {/*    src={require("./common/GOVTECH_logo.png")}*/}
-        {/*    alt="Govtech Logo"*/}
-        {/*  />*/}
-        {/*</div>*/}
         <div className="col" />
       </div>
 

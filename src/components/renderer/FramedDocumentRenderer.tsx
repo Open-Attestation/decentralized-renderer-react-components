@@ -1,9 +1,8 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Attachment, Document, TemplateRegistry } from "../../types";
 import { documentTemplates, noop } from "../../utils";
-import { isActionOf } from "typesafe-actions";
 import { getLogger } from "../../logger";
-import { getTemplates, HostActions, renderDocument, selectTemplate, print } from "../frame/host.actions";
+import { HostActions } from "../frame/host.actions";
 import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
@@ -41,7 +40,7 @@ export function FramedDocumentRenderer<D extends Document>({
   const dispatch = useCallback(
     (action: HostActions): any => {
       trace("in frame, received action", action.type);
-      if (isActionOf(renderDocument, action)) {
+      if (action.type === "RENDER_DOCUMENT") {
         setDocument(action.payload.document as D);
         documentForLegacyUsage.current = action.payload.document as D;
         if (action.payload.rawDocument) {
@@ -61,7 +60,7 @@ export function FramedDocumentRenderer<D extends Document>({
           toHost.current(updateTemplates(templates));
         };
         run();
-      } else if (isActionOf(selectTemplate, action)) {
+      } else if (action.type === "SELECT_TEMPLATE") {
         if (typeof action.payload === "number") {
           const templates = documentTemplates(
             documentForLegacyUsage.current as Document,
@@ -72,7 +71,7 @@ export function FramedDocumentRenderer<D extends Document>({
         } else {
           setTemplateName(action.payload);
         }
-      } else if (isActionOf(getTemplates, action)) {
+      } else if (action.type === "GET_TEMPLATES") {
         const templates = documentTemplates(action.payload, templateRegistry, attachmentToComponent).map(template => ({
           id: template.id,
           label: template.label,
@@ -80,7 +79,7 @@ export function FramedDocumentRenderer<D extends Document>({
         }));
         toHost.current(updateTemplates(templates)); // send the result to the iframe
         return templates; // react-native expect to get the result directly
-      } else if (isActionOf(print, action)) {
+      } else if (action.type === "PRINT") {
         window.print();
       } else {
         throw new Error(`Action ${JSON.stringify(action)} is not handled`);
