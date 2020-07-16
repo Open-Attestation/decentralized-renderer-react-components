@@ -1,9 +1,7 @@
 import { FrameActionsHandler } from "./frame.actions";
 import React, { FunctionComponent, useEffect } from "react";
 import { useParentFrame } from "./useFrame";
-import { Document } from "../../types";
-import { HostActions, renderDocument, selectTemplate, print } from "./host.actions";
-import { WrappedDocument } from "@govtechsg/open-attestation";
+import { HostActions } from "./host.actions";
 
 interface HostConnectorProps {
   /**
@@ -23,30 +21,13 @@ interface HostConnectorProps {
  */
 export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch, children, onConnected }) => {
   const [connected, toHost] = useParentFrame({
-    dispatch,
-    methods: {
-      renderDocument: (document: Document, rawDocument?: WrappedDocument<Document>) => {
-        dispatch(renderDocument({ document, rawDocument }));
-      },
-      selectTemplateTab: (tabIndex: number) => {
-        dispatch(selectTemplate(tabIndex));
-      },
-      print: () => {
-        dispatch(print());
-      }
-    }
+    dispatch
   });
   useEffect(() => {
     if (connected) {
       onConnected(action => {
         if (toHost.dispatch) {
           toHost.dispatch(action);
-        } else if (action.type === "UPDATE_HEIGHT" && toHost.updateHeight) {
-          toHost.updateHeight(action.payload);
-        } else if (action.type === "OBFUSCATE" && toHost.handleObfuscation) {
-          toHost.handleObfuscation(action.payload);
-        } else if (action.type === "UPDATE_TEMPLATES" && toHost.updateTemplates) {
-          toHost.updateTemplates(action.payload);
         }
       });
     }

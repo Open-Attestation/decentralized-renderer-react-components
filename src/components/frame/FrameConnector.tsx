@@ -86,13 +86,9 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
             if (action.type === "RENDER_DOCUMENT" && toFrame.renderDocument) {
               toFrame.renderDocument(action.payload.document, action.payload.rawDocument);
             } else if (action.type === "SELECT_TEMPLATE" && toFrame.selectTemplateTab) {
-              if (typeof action.payload === "number") {
-                toFrame.selectTemplateTab(action.payload);
-              } else {
-                const index = templates.current.findIndex(template => template.id === action.payload);
-                if (index === -1) console.error(`Unable to find the index associated with the label ${action.payload}`);
-                toFrame.selectTemplateTab(index);
-              }
+              const index = templates.current.findIndex(template => template.id === action.payload);
+              if (index === -1) console.error(`Unable to find the index associated with the label ${action.payload}`);
+              toFrame.selectTemplateTab(index);
             } else if (action.type === "PRINT" && toFrame.print) {
               toFrame.print();
             }

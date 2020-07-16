@@ -8,7 +8,7 @@ export const renderDocument = createStandardAction("RENDER_DOCUMENT")<{
   rawDocument?: WrappedDocument<Document>;
 }>();
 
-export const selectTemplate = createStandardAction("SELECT_TEMPLATE")<string | number>();
+export const selectTemplate = createStandardAction("SELECT_TEMPLATE")<string>();
 export const getTemplates = createStandardAction("GET_TEMPLATES")<Document>();
 export const print = createStandardAction("PRINT")();
 export type HostActions = ActionType<

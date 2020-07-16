@@ -23,7 +23,7 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = prop
           padding: ".75rem 1.25rem"
         }}
       >
-        You see this template because the certificate issuer miconfigured the template configuration of your document.
+        You see this template because the certificate issuer misconfigured the template configuration of your document.
         Please check with the certificate issuer. More information is available in{" "}
         <a href="https://openattestation.com/docs/advanced/custom-renderer" target="_blank" rel="noopener noreferrer">
           the documentation

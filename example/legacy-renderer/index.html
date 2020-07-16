@@ -7,13 +7,6 @@
 
   <body>
     <div id="template"></div>
-
-    <iframe
-      title="Rendered Certificate"
-      id="frameless-iframe"
-      src="http://localhost:9000/"
-      style="width: 100%; border: 0px; overflow: hidden;"
-    ></iframe>
   </body>
 
   <script type="text/javascript">
@@ -38,7 +31,7 @@
         render: certificate => {
           const templateSelector = document.getElementById("template");
           templateSelector.innerHTML = "";
-          templateSelector.append(`This is the transcript template`);
+          templateSelector.append(`This is the transcript template ${certificate.id}`);
         }
       },
       {
@@ -53,12 +46,10 @@
     ];
 
     renderDocument = function() {
-      console.log(selectedTab);
       templates[selectedTab].render(certificate);
       host.updateHeight(200);
     };
     selectTemplateTab = function(index) {
-      console.log("yeah");
       selectedTab = index;
       renderDocument();
     };
@@ -77,7 +68,6 @@
 
     window.connection.promise.then(h => {
       host = h;
-      console.log({ h });
       host.updateTemplates(templates.map(({ id, label }) => ({ id, label })));
     });
   </script>

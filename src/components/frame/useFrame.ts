@@ -9,11 +9,10 @@ type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
 interface UseParentFrameProps {
   dispatch: HostActionsHandler;
-  methods?: LegacyHostActions;
 }
-export const useParentFrame = function(
-  props: UseParentFrameProps
-): [boolean, Partial<LegacyFrameActions> & { dispatch: FrameActionsHandler }] {
+export const useParentFrame = function({
+  dispatch
+}: UseParentFrameProps): [boolean, { dispatch: FrameActionsHandler }] {
   const [parentFrameConnection, setParentFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
 
@@ -22,8 +21,7 @@ export const useParentFrame = function(
       setParentFrameConnection(
         await connectToParent({
           methods: {
-            dispatch: props.dispatch,
-            ...props.methods
+            dispatch: dispatch
           }
         }).promise
       );
@@ -33,7 +31,7 @@ export const useParentFrame = function(
       setStatus("CONNECTING");
       run();
     }
-  }, [status, props]);
+  }, [status, dispatch]);
   return [status === "CONNECTED", parentFrameConnection];
 };
 
