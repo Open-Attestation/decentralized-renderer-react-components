@@ -61,16 +61,7 @@ export function FramedDocumentRenderer<D extends Document>({
         };
         run();
       } else if (action.type === "SELECT_TEMPLATE") {
-        if (typeof action.payload === "number") {
-          const templates = documentTemplates(
-            documentForLegacyUsage.current as Document,
-            templateRegistry,
-            attachmentToComponent
-          );
-          setTemplateName(templates[action.payload].id);
-        } else {
-          setTemplateName(action.payload);
-        }
+        setTemplateName(action.payload);
       } else if (action.type === "GET_TEMPLATES") {
         const templates = documentTemplates(action.payload, templateRegistry, attachmentToComponent).map(template => ({
           id: template.id,

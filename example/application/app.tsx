@@ -1,11 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { FrameConnector } from "../../src/components/frame/FrameConnector";
 import { OpencertsDocuments } from "../types";
-import { FrameActions } from "../../src";
+import { FrameConnector, FrameActions, HostActions, print, renderDocument, selectTemplate } from "../../src";
 import { css } from "@emotion/core";
-import { HostActionsHandler } from "../../src/components/frame/host.actions";
-import { v2 } from "@govtechsg/open-attestation";
+import { v2, obfuscateDocument, WrappedDocument, getData } from "@govtechsg/open-attestation";
 
 const certificate: OpencertsDocuments = {
   id: "53b75bbe",
@@ -87,45 +85,52 @@ const certificate: OpencertsDocuments = {
     ]
   }
 };
+const wrappedCertificate: WrappedDocument<OpencertsDocuments> = {
+  data: certificate,
+  version: "",
+  signature: {
+    targetHash: "abcd",
+    proof: [],
+    merkleRoot: "abcd",
+    type: "SHA3MerkleProof"
+  }
+};
 
+type Dispatch = (action: HostActions) => void;
 const App = (): React.ReactElement => {
-  const [toFrame, setToFrame] = useState<HostActionsHandler>();
-  const [height, setHeight] = useState(50);
+  // let's use a ref because we need the reference of the frame from the dispatch function (fromFrame) which is provided to the frame and the function can't be update (it's provided at connection only)
+  const toFrame = useRef<Dispatch>();
+  //same reason as toFrame
+  const documentRef = useRef(wrappedCertificate);
+  const [height, setHeight] = useState(100);
   const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const fn = useCallback((toFrame: HostActionsHandler) => {
-    // wrap into a function otherwise toFrame function will be executed
-    setToFrame(() => toFrame);
+  const onConnected = useCallback(frame => {
+    toFrame.current = frame;
+    if (toFrame.current) {
+      toFrame.current(renderDocument({ document: certificate }));
+    }
   }, []);
 
   const fromFrame = (action: FrameActions): void => {
     if (action.type === "UPDATE_HEIGHT") {
       setHeight(action.payload);
-    }
-    if (action.type === "UPDATE_TEMPLATES") {
+    } else if (action.type === "UPDATE_TEMPLATES") {
       setTemplates(action.payload);
       setSelectedTemplate(action.payload[0].id);
+    } else if (action.type === "OBFUSCATE") {
+      const field = action.payload;
+      const updatedDocument = obfuscateDocument(documentRef.current, field);
+      const newDocument = getData(updatedDocument);
+
+      if (toFrame.current) {
+        toFrame.current(renderDocument({ document: newDocument }));
+      }
     }
   };
   useEffect(() => {
-    if (toFrame) {
-      toFrame({
-        type: "RENDER_DOCUMENT",
-        payload: {
-          document: certificate
-        }
-      });
-    }
-  }, [toFrame]);
-  useEffect(() => {
-    if (toFrame && selectedTemplate) {
-      toFrame({
-        type: "SELECT_TEMPLATE",
-        payload: selectedTemplate,
-        meta: {
-          templates // this is only needed for backward compatibility with legacy renderer
-        }
-      });
+    if (toFrame.current && selectedTemplate) {
+      toFrame.current(selectTemplate(selectedTemplate));
     }
   }, [selectedTemplate, templates, toFrame]);
 
@@ -164,10 +169,8 @@ const App = (): React.ReactElement => {
       >
         <button
           onClick={() => {
-            if (toFrame) {
-              toFrame({
-                type: "PRINT"
-              });
+            if (toFrame.current) {
+              toFrame.current(print());
             }
           }}
         >
@@ -203,9 +206,9 @@ const App = (): React.ReactElement => {
       </div>
       <div>
         <FrameConnector
-          source="http://localhost:8080"
+          source="http://localhost:9000"
           dispatch={fromFrame}
-          onConnected={fn}
+          onConnected={onConnected}
           css={css`
             display: block;
             margin: auto;
