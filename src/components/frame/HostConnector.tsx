@@ -29,7 +29,7 @@ export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch,
         dispatch(renderDocument({ document, rawDocument }));
       },
       selectTemplateTab: (tabIndex: number) => {
-        dispatch(selectTemplate(tabIndex, {}));
+        dispatch(selectTemplate(tabIndex));
       },
       print: () => {
         dispatch(print());

@@ -2,6 +2,7 @@ import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useRef } f
 import { useChildFrame } from "./useFrame";
 import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
 import { FrameActions, LegacyFrameActions, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
+import { Template } from "../../types";
 
 interface BaseFrameConnectorProps {
   /**
@@ -43,34 +44,58 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   className = ""
 }) => {
   const iframe = useRef<HTMLIFrameElement>(null);
-
-  const methods = useMemo<LegacyFrameActions>(() => {
-    return {
-      updateHeight: (height: number) => dispatch(updateHeight(height)),
-      updateTemplates: templates => dispatch(updateTemplates(templates)),
-      handleObfuscation: field => dispatch(obfuscateField(field))
+  // this is used to store internally the latest templates shared in order to automatically transform
+  // the selected template tab from the label to th index in the event we communicate with a legacy renderer
+  // - templates is used to store the latest templates received and we use a ref in order to avoid triggering effect change when templates. Triggering the effect would mean that the consumer would be called again with the `onConnected` callback, which could be weird
+  // - dispatchProxy is used to listen for action and react accordingly (update templates)
+  const templates = useRef<Template[]>([]);
+  const dispatchProxy = useMemo(() => {
+    return (action: FrameActions) => {
+      if (action.type === "UPDATE_TEMPLATES") {
+        templates.current = action.payload;
+      }
+      return dispatch(action);
     };
   }, [dispatch]);
-  const [connected, toFrame] = useChildFrame({ methods, dispatch, iframe });
+
+  // map automatically legacy method to the dispatch object so that the consumer doesn't need to provide this
+  // that way we handle automatically legacy renderer
+  const methods = useMemo<LegacyFrameActions>(() => {
+    return {
+      updateHeight: (height: number) => dispatchProxy(updateHeight(height)),
+      updateTemplates: templates => dispatchProxy(updateTemplates(templates)),
+      handleObfuscation: field => dispatchProxy(obfuscateField(field))
+    };
+  }, [dispatchProxy]);
+
+  const [connected, toFrame] = useChildFrame({ methods, dispatch: dispatchProxy, iframe });
   useEffect(() => {
     if (connected) {
       onConnected(
         Object.assign((action: HostActions) => {
+          // if toFrame.dispatch is set that means we are on the main track with modern renderer
+          // there is nothing to do but to call dispatch with the action provided.
           if (toFrame.dispatch) {
             toFrame.dispatch(action);
-          } else if (action.type === "RENDER_DOCUMENT" && toFrame.renderDocument) {
-            toFrame.renderDocument(action.payload.document, action.payload.rawDocument);
-          } else if (action.type === "SELECT_TEMPLATE" && toFrame.selectTemplateTab) {
-            if (typeof action.payload === "number") {
-              toFrame.selectTemplateTab(action.payload);
-            } else if (action.meta.templates) {
-              const index = action.meta.templates.findIndex(template => template.id === action.payload);
-              toFrame.selectTemplateTab(index);
-            } else {
-              throw new Error(`Unable to handle ${action.type} when payload is a string`);
+          } else {
+            // otherwise if toFrame.dispatch is NOT set that means that we are dealing with a legacy renderer
+            // in that event we will map each action to it's legacy renderer function
+            // - "RENDER_DOCUMENT" must call toFrame.renderDocument
+            // - "SELECT_TEMPLATE" must call toFrame.selectTemplateTab
+            // - "PRINT" must call toFrame.print
+            if (action.type === "RENDER_DOCUMENT" && toFrame.renderDocument) {
+              toFrame.renderDocument(action.payload.document, action.payload.rawDocument);
+            } else if (action.type === "SELECT_TEMPLATE" && toFrame.selectTemplateTab) {
+              if (typeof action.payload === "number") {
+                toFrame.selectTemplateTab(action.payload);
+              } else {
+                const index = templates.current.findIndex(template => template.id === action.payload);
+                if (index === -1) console.error(`Unable to find the index associated with the label ${action.payload}`);
+                toFrame.selectTemplateTab(index);
+              }
+            } else if (action.type === "PRINT" && toFrame.print) {
+              toFrame.print();
             }
-          } else if (action.type === "PRINT" && toFrame.print) {
-            toFrame.print();
           }
         })
       );
