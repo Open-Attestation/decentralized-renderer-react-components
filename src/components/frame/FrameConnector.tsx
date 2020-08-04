@@ -1,4 +1,4 @@
-import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useRef } from "react";
+import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 import { useChildFrame } from "./useFrame";
 import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
 import { FrameActions, LegacyFrameActions, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
@@ -43,6 +43,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   style,
   className = ""
 }) => {
+  const [onConnectedCalled, setOnConnectedCalled] = useState(false); // ensure on connected is called once only
   const iframe = useRef<HTMLIFrameElement>(null);
   // this is used to store internally the latest templates shared in order to automatically transform
   // the selected template tab from the label to th index in the event we communicate with a legacy renderer
@@ -70,7 +71,8 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
 
   const [connected, toFrame] = useChildFrame({ methods, dispatch: dispatchProxy, iframe });
   useEffect(() => {
-    if (connected) {
+    if (connected && !onConnectedCalled) {
+      setOnConnectedCalled(true);
       onConnected(
         Object.assign((action: HostActions) => {
           // if toFrame.dispatch is set that means we are on the main track with modern renderer
@@ -96,7 +98,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
         })
       );
     }
-  }, [connected, toFrame, onConnected]);
+  }, [connected, toFrame, onConnected, onConnectedCalled]);
   return (
     <iframe
       title="Decentralised Rendered Certificate"
