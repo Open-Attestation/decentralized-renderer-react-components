@@ -1,7 +1,7 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 
-export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = props => {
+export const DefaultTemplate: React.FunctionComponent<TemplateProps> = props => {
   return (
     <div id="default-template">
       <h3
@@ -35,7 +35,7 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps<any>> = prop
   );
 };
 
-export const defaultTemplate: TemplateWithComponent<any> = {
+export const defaultTemplate: TemplateWithComponent = {
   id: "default-template",
   label: "Default",
   template: DefaultTemplate

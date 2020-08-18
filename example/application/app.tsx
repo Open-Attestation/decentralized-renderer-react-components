@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { OpencertsDocuments } from "../types";
-import { FrameConnector, FrameActions, HostActions, print, renderDocument, selectTemplate } from "../../src";
+import { FrameActions, FrameConnector, HostActions, print, renderDocument, selectTemplate } from "../../src";
 import { css } from "@emotion/core";
-import { v2, obfuscateDocument, WrappedDocument, getData } from "@govtechsg/open-attestation";
+import { getData, obfuscateDocument, SchemaId, v2, WrappedDocument } from "@govtechsg/open-attestation";
 
 const certificate: OpencertsDocuments = {
   id: "53b75bbe",
@@ -87,7 +87,7 @@ const certificate: OpencertsDocuments = {
 };
 const wrappedCertificate: WrappedDocument<OpencertsDocuments> = {
   data: certificate,
-  version: "",
+  version: SchemaId.v2,
   signature: {
     targetHash: "abcd",
     proof: [],

@@ -1,7 +1,7 @@
-import { Document } from "../src";
+import { v2 } from "@govtechsg/open-attestation";
 
 // sample example should ideally be extracted from opencerts schema
-export interface OpencertsDocuments extends Document {
+export interface OpencertsDocuments extends v2.OpenAttestationDocument {
   additionalData: any;
   description: string;
   issuers: { name: string; certificateStore: string; url: string }[];

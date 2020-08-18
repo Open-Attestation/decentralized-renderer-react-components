@@ -1,6 +1,7 @@
-import { Attachment, Document, TemplateRegistry, TemplateWithTypes, TemplateWithComponent } from "./types";
+import { Attachment, TemplateRegistry, TemplateWithComponent, TemplateWithTypes } from "./types";
 import React from "react";
 import { defaultTemplate } from "./DefaultTemplate";
+import { OpenAttestationDocument, v2 } from "@govtechsg/open-attestation";
 
 export const repeat = (times: number) => (callback: (index: number) => any) =>
   Array(times)
@@ -18,21 +19,25 @@ export const inIframe = (): boolean => {
   }
 };
 
+const isV2Document = (document: any): document is v2.OpenAttestationDocument => {
+  return !!document.$template;
+};
+
 // TODO this function is weird, returns current template + templates for attachments
-export function documentTemplates<D extends Document>(
-  document: Document,
-  templateRegistry: TemplateRegistry<D>,
-  attachmentToComponent: (attachment: Attachment, document: Document) => React.FunctionComponent
-): TemplateWithTypes<D>[] {
-  if (!document) return [];
+export function documentTemplates(
+  document: OpenAttestationDocument,
+  templateRegistry: TemplateRegistry,
+  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent
+): TemplateWithTypes[] {
+  if (!document || !isV2Document(document)) return [];
   // Find the template in the template registry or use a default template
-  const templateName = document && document.$template && document.$template.name;
-  const selectedTemplate: TemplateWithComponent<D>[] = (templateName && templateRegistry[templateName]) || [
+  const templateName = typeof document.$template === "object" ? document.$template.name : "";
+  const selectedTemplate: TemplateWithComponent[] = (templateName && templateRegistry[templateName]) || [
     defaultTemplate
   ];
 
   // Add type property to differentiate between custom template tabs VS attachments tab
-  const templatesFromCustom: TemplateWithTypes<D>[] = selectedTemplate.map(template => {
+  const templatesFromCustom: TemplateWithTypes[] = selectedTemplate.map(template => {
     return { ...template, type: "custom-template" };
   });
 
