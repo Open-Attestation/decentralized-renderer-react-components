@@ -27,3 +27,4 @@ export interface TemplateRegistry<D extends OpenAttestationDocument = OpenAttest
 export interface TemplateWithTypes extends TemplateWithComponent {
   type: string;
 }
+export { v2, OpenAttestationDocument } from "@govtechsg/open-attestation";
