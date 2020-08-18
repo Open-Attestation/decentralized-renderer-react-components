@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Attachment, Document, TemplateRegistry } from "../../types";
+import { Attachment, TemplateRegistry } from "../../types";
 import { documentTemplates, noop } from "../../utils";
 import { getLogger } from "../../logger";
 import { HostActions } from "../frame/host.actions";
@@ -7,28 +7,30 @@ import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
 import { noAttachmentRenderer } from "./NoAttachmentRenderer";
-import { WrappedDocument } from "@govtechsg/open-attestation";
+import { OpenAttestationDocument, WrappedDocument } from "@govtechsg/open-attestation";
 
 const { trace } = getLogger("FramedDocumentRenderer");
 
-interface FramedDocumentRendererProps<D extends Document> {
+interface FramedDocumentRendererProps<D extends OpenAttestationDocument = OpenAttestationDocument> {
   templateRegistry: TemplateRegistry<D>;
-  attachmentToComponent?: (attachment: Attachment, document: Document) => React.FunctionComponent;
+  attachmentToComponent?: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent;
 }
-export function FramedDocumentRenderer<D extends Document>({
+export function FramedDocumentRenderer<D extends OpenAttestationDocument = OpenAttestationDocument>({
   templateRegistry,
   attachmentToComponent = noAttachmentRenderer
 }: FramedDocumentRendererProps<D>): JSX.Element {
-  const [document, setDocument] = useState<D>();
+  const [document, setDocument] = useState<OpenAttestationDocument>();
   // used only to handle legacy setSelectTemplate function
   // dispatch function (below) is connected once through the frame and the reference to this function never change is
   // host and iframe. We need to use a reference to allow object mutation
-  const documentForLegacyUsage = useRef<D>();
-  const [rawDocument, setRawDocument] = useState<WrappedDocument<D>>();
+  const documentForLegacyUsage = useRef<OpenAttestationDocument>();
+  const [rawDocument, setRawDocument] = useState<WrappedDocument<OpenAttestationDocument>>();
   const [templateName, setTemplateName] = useState<string>();
   const toHost = useRef<(actions: FrameActions) => void>(noop);
 
-  const templates = document ? documentTemplates(document, templateRegistry, attachmentToComponent) : [];
+  const templates = document
+    ? documentTemplates(document, templateRegistry as TemplateRegistry<OpenAttestationDocument>, attachmentToComponent)
+    : [];
   const templateConfiguration = templates.find(template => template.id === templateName) || templates[0] || {};
   const Template = templateConfiguration.template;
 
@@ -41,16 +43,16 @@ export function FramedDocumentRenderer<D extends Document>({
     (action: HostActions): any => {
       trace("in frame, received action", action.type);
       if (action.type === "RENDER_DOCUMENT") {
-        setDocument(action.payload.document as D);
-        documentForLegacyUsage.current = action.payload.document as D;
+        setDocument(action.payload.document);
+        documentForLegacyUsage.current = action.payload.document;
         if (action.payload.rawDocument) {
-          setRawDocument(action.payload.rawDocument as WrappedDocument<D>);
+          setRawDocument(action.payload.rawDocument);
         }
 
         const run = async (): Promise<void> => {
           const templates = await documentTemplates(
             action.payload.document,
-            templateRegistry,
+            templateRegistry as TemplateRegistry<OpenAttestationDocument>,
             attachmentToComponent
           ).map(template => ({
             id: template.id,
@@ -63,7 +65,11 @@ export function FramedDocumentRenderer<D extends Document>({
       } else if (action.type === "SELECT_TEMPLATE") {
         setTemplateName(action.payload);
       } else if (action.type === "GET_TEMPLATES") {
-        const templates = documentTemplates(action.payload, templateRegistry, attachmentToComponent).map(template => ({
+        const templates = documentTemplates(
+          action.payload,
+          templateRegistry as TemplateRegistry<OpenAttestationDocument>,
+          attachmentToComponent
+        ).map(template => ({
           id: template.id,
           label: template.label,
           type: template.type
