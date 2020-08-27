@@ -5,7 +5,8 @@ module.exports = {
     path: __dirname + "/build",
     filename: "index.js",
     libraryTarget: "umd",
-    library: "decentralizedRenderer"
+    library: "decentralizedRenderer",
+    globalObject: "this"
   },
   externals: {
     react: "react",
