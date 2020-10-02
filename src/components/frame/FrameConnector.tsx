@@ -21,6 +21,10 @@ interface BaseFrameConnectorProps {
    * style to apply to the frame
    */
   style?: CSSProperties;
+  /**
+   * custom iframe sandbox properties to apply, will override default
+   */
+  sandbox?: string;
 }
 interface FrameConnectorProps extends BaseFrameConnectorProps {
   /**
@@ -41,7 +45,8 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   source,
   onConnected,
   style,
-  className = ""
+  className = "",
+  sandbox = "allow-scripts allow-same-origin allow-modals allow-popups"
 }) => {
   const [onConnectedCalled, setOnConnectedCalled] = useState(false); // ensure on connected is called once only
   const iframe = useRef<HTMLIFrameElement>(null);
@@ -107,7 +112,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
       src={source}
       style={style}
       className={className}
-      sandbox="allow-scripts allow-same-origin allow-modals allow-popups"
+      sandbox={sandbox}
     />
   );
 };
