@@ -23,6 +23,8 @@ const isV2Document = (document: any): document is v2.OpenAttestationDocument => 
   return !!document.$template;
 };
 
+const truePredicate = (): boolean => true;
+
 // TODO this function is weird, returns current template + templates for attachments
 export function documentTemplates(
   document: OpenAttestationDocument,
@@ -37,9 +39,11 @@ export function documentTemplates(
   ];
 
   // Add type property to differentiate between custom template tabs VS attachments tab
-  const templatesFromCustom: TemplateWithTypes[] = selectedTemplate.map(template => {
-    return { ...template, type: "custom-template" };
-  });
+  const templatesFromCustom: TemplateWithTypes[] = selectedTemplate
+    .map(template => {
+      return { ...template, type: "custom-template" };
+    })
+    .filter(template => (template.predicate ? template.predicate({ document }) : truePredicate()));
 
   // Create additional tabs from attachments
   const templatesFromAttachments = (document.attachments || []).map((attachment: Attachment, index: number) => ({
