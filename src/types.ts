@@ -18,6 +18,7 @@ export interface Template {
 }
 export interface TemplateWithComponent<D extends OpenAttestationDocument = OpenAttestationDocument> extends Template {
   template: ComponentType<TemplateProps<D>>;
+  predicate?: ({ document }: { document: D }) => boolean;
 }
 
 export interface TemplateRegistry<D extends OpenAttestationDocument = OpenAttestationDocument> {
