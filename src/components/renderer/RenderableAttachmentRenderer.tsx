@@ -5,9 +5,9 @@ import { Attachment } from "../../types";
 /**
  * Function returning the correct attachment renderer depending on the attachment type. Currently supports:
  * - application/pdf
- * @default use UnsupportedRenderer when no suitable renderer is found
+ * returns null when not attachment cannot be rendered
  */
-export function fullAttachmentRenderer(attachment: Attachment): React.FunctionComponent {
+export function renderableAttachmentRenderer(attachment: Attachment): React.FunctionComponent | null {
   if (attachment.type === "application/pdf") {
     // eslint-disable-next-line react/display-name
     return () => <PdfRenderer attachment={attachment} />;
