@@ -6,7 +6,7 @@ import { HostActions } from "../frame/host.actions";
 import { FrameActions, obfuscateField, updateHeight, updateTemplates } from "../frame/frame.actions";
 import { HostConnector } from "../frame/HostConnector";
 import { DomListener } from "../common/DomListener";
-import { noAttachmentRenderer } from "./NoAttachmentRenderer";
+import { fullAttachmentRenderer } from "./FullAttachmentRenderer";
 import { OpenAttestationDocument, WrappedDocument } from "@govtechsg/open-attestation";
 
 const { trace } = getLogger("FramedDocumentRenderer");
@@ -17,7 +17,7 @@ interface FramedDocumentRendererProps<D extends OpenAttestationDocument = OpenAt
 }
 export function FramedDocumentRenderer<D extends OpenAttestationDocument = OpenAttestationDocument>({
   templateRegistry,
-  attachmentToComponent = noAttachmentRenderer
+  attachmentToComponent = fullAttachmentRenderer
 }: FramedDocumentRendererProps<D>): JSX.Element {
   const [document, setDocument] = useState<OpenAttestationDocument>();
   // used only to handle legacy setSelectTemplate function
