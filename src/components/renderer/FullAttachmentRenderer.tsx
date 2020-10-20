@@ -1,4 +1,5 @@
 import { PdfRenderer } from "./PdfRenderer";
+import { UnsupportedRenderer } from "./UnsupportedRenderer";
 import React from "react";
 import { Attachment } from "../../types";
 
@@ -12,5 +13,6 @@ export function fullAttachmentRenderer(attachment: Attachment): React.FunctionCo
     // eslint-disable-next-line react/display-name
     return () => <PdfRenderer attachment={attachment} />;
   }
-  return null;
+  // eslint-disable-next-line react/display-name
+  return () => <UnsupportedRenderer attachment={attachment} />;
 }
