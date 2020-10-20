@@ -1,5 +1,5 @@
 import { Attachment, TemplateRegistry, TemplateWithComponent, TemplateWithTypes } from "./types";
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { defaultTemplate } from "./DefaultTemplate";
 import { OpenAttestationDocument, v2 } from "@govtechsg/open-attestation";
 
@@ -29,7 +29,7 @@ const truePredicate = (): boolean => true;
 export function documentTemplates(
   document: OpenAttestationDocument,
   templateRegistry: TemplateRegistry,
-  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent
+  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent | null
 ): TemplateWithTypes[] {
   if (!document || !isV2Document(document)) return [];
   // Find the template in the template registry or use a default template
@@ -46,12 +46,14 @@ export function documentTemplates(
     .filter(template => (template.predicate ? template.predicate({ document }) : truePredicate()));
 
   // Create additional tabs from attachments
-  const templatesFromAttachments = (document.attachments || []).map((attachment: Attachment, index: number) => ({
-    id: `attachment-${index}`,
-    label: attachment.filename || "Unknown filename",
-    type: attachment.type || "Unknown filetype",
-    template: attachmentToComponent(attachment, document)
-  }));
+  const templatesFromAttachments = (document.attachments || [])
+    .map((attachment: Attachment, index: number) => ({
+      id: `attachment-${index}`,
+      label: attachment.filename || "Unknown filename",
+      type: attachment.type || "Unknown filetype",
+      template: attachmentToComponent(attachment, document)! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    }))
+    .filter(template => template.template);
 
   return [...templatesFromCustom, ...templatesFromAttachments];
 }

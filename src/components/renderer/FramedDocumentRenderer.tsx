@@ -13,7 +13,7 @@ const { trace } = getLogger("FramedDocumentRenderer");
 
 interface FramedDocumentRendererProps<D extends OpenAttestationDocument = OpenAttestationDocument> {
   templateRegistry: TemplateRegistry<D>;
-  attachmentToComponent?: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent;
+  attachmentToComponent?: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent | null;
 }
 export function FramedDocumentRenderer<D extends OpenAttestationDocument = OpenAttestationDocument>({
   templateRegistry,
