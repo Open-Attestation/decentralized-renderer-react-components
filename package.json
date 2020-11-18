@@ -71,7 +71,7 @@
     "react-docgen-typescript-loader": "3.2.0",
     "react-dom": "16.9.0",
     "react-frame-component": "^4.1.1",
-    "semantic-release": "^15.13.24",
+    "semantic-release": "^17.2.3",
     "typescript": "3.9.7",
     "webpack": "4.39.3",
     "webpack-cli": "3.3.7",
