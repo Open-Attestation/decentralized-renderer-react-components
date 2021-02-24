@@ -27,7 +27,7 @@ const isV3Document = (document: any): document is v3.OpenAttestationDocument => 
   return !!document["@context"];
 };
 
-const getTemplateName = (document: OpenAttestationDocument) => {
+const getTemplateName = (document: OpenAttestationDocument): string => {
   if (isV2Document(document) && typeof document.$template === "object") {
     return document.$template.name;
   }
