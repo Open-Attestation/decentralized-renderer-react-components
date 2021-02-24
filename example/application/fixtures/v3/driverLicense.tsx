@@ -1,5 +1,17 @@
 import { v3 } from "@govtechsg/open-attestation";
 
+export interface DriverLicense extends v3.OpenAttestationDocument {
+  name: string;
+  validFrom: string;
+  credentialSubject: {
+    id: string;
+    class: {
+      type: string;
+      effectiveDate: string;
+    }[];
+  };
+}
+
 export const driverLicense = {
   version: "https://schema.openattestation.com/3.0/schema.json",
   "@context": [

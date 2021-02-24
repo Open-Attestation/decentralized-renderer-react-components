@@ -1,5 +1,5 @@
+import { FunctionComponent } from "react";
 import { Attachment, TemplateRegistry, TemplateWithComponent, TemplateWithTypes } from "./types";
-import React, { FunctionComponent } from "react";
 import { defaultTemplate } from "./DefaultTemplate";
 import { OpenAttestationDocument, v2, v3 } from "@govtechsg/open-attestation";
 
@@ -47,7 +47,7 @@ const truePredicate = (): boolean => true;
 export function documentTemplates(
   document: OpenAttestationDocument,
   templateRegistry: TemplateRegistry,
-  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent | null
+  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => FunctionComponent | null
 ): TemplateWithTypes[] {
   if (!document) return [];
   // Find the template in the template registry or use a default template
