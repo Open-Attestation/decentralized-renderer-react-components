@@ -2,7 +2,7 @@ import { PdfRenderer } from "./PdfRenderer";
 import { UnsupportedRenderer } from "./UnsupportedRenderer";
 import React from "react";
 import { Attachment } from "../../types";
-import { isV2Attachment } from "../../utils";
+import { getAttachmentMimeType } from "../../utils";
 
 /**
  * Function returning the correct attachment renderer depending on the attachment type. Currently supports:
@@ -10,7 +10,7 @@ import { isV2Attachment } from "../../utils";
  * @default use UnsupportedRenderer when no suitable renderer is found
  */
 export function fullAttachmentRenderer(attachment: Attachment): React.FunctionComponent {
-  if (isV2Attachment(attachment) ? attachment.type === "application/pdf" : attachment.mimeType === "application/pdf") {
+  if (getAttachmentMimeType(attachment) === "application/pdf") {
     // eslint-disable-next-line react/display-name
     return () => <PdfRenderer attachment={attachment} />;
   }

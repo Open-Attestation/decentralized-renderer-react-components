@@ -41,6 +41,10 @@ export const isV2Attachment = (attachment: any): attachment is v2.Attachment => 
   return !!attachment.type;
 };
 
+export const getAttachmentMimeType = (attachment: Attachment): string => {
+  return isV2Attachment(attachment) ? attachment.type : attachment.mimeType;
+};
+
 const truePredicate = (): boolean => true;
 
 // TODO this function is weird, returns current template + templates for attachments

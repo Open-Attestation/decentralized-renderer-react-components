@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { Renderer } from "../../types";
-import { isV2Attachment } from "../../utils";
+import { getAttachmentMimeType } from "../../utils";
 
 /**
  * Component rendering unsupported attachments
@@ -8,6 +8,6 @@ import { isV2Attachment } from "../../utils";
 export const UnsupportedRenderer: FunctionComponent<Renderer> = ({ attachment }) => (
   <div>
     <h2>Rendering of this type of attachment is not supported.</h2>
-    <p>Please check your mime-type: {isV2Attachment(attachment) ? attachment.type : attachment.mimeType}</p>
+    <p>Please check your mime-type: {getAttachmentMimeType(attachment)}</p>
   </div>
 );
