@@ -19,11 +19,11 @@ export const inIframe = (): boolean => {
   }
 };
 
-const isV2Document = (document: any): document is v2.OpenAttestationDocument => {
+export const isV2Document = (document: any): document is v2.OpenAttestationDocument => {
   return !!document.$template;
 };
 
-const isV3Document = (document: any): document is v3.OpenAttestationDocument => {
+export const isV3Document = (document: any): document is v3.OpenAttestationDocument => {
   return !!document["@context"];
 };
 
@@ -37,7 +37,7 @@ const getTemplateName = (document: OpenAttestationDocument): string => {
   return "";
 };
 
-const isV2Attachment = (attachment: any): attachment is v2.Attachment => {
+export const isV2Attachment = (attachment: any): attachment is v2.Attachment => {
   return !!attachment.type;
 };
 
