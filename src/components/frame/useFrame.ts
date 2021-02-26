@@ -29,16 +29,9 @@ export const useParentFrame = function({
         timeout: 5000 // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
-      const parentV4 = connectToParentV4({
-        methods: {
-          dispatch: dispatch
-        },
-        timeout: 5000 // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
-      }).promise;
-
       setStatus("CONNECTING");
 
-      Promise.any([parentV5, parentV4])
+      parentV5
         .then(parentConnection => {
           trace("connectToParent success: ", parentConnection);
           setParentFrameConnection(parentConnection);
