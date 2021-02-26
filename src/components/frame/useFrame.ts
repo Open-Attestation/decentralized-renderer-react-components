@@ -1,10 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 import { connectToParent, connectToChild } from "penpal";
-// eslint-disable-next-line
-// @ts-ignore
 import connectToParentV4 from "penpal-v4/lib/connectToParent";
-// eslint-disable-next-line
-// @ts-ignore
 import connectToChildV4 from "penpal-v4/lib/connectToChild";
 import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
 import { HostActionsHandler, LegacyHostActions } from "./host.actions";

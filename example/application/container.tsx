@@ -3,11 +3,16 @@ import { FrameActions, FrameConnector, HostActionsHandler } from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
+type Document = {
+  name: string;
+  document: any;
+  frameSource: string;
+};
 interface AppProps {
-  documents: {
-    name: string;
-    document: any;
-  }[];
+  documents: Document[];
+}
+interface ViewerProps {
+  document: Document;
 }
 
 const TemplatesContainer = styled.div``;
@@ -29,18 +34,13 @@ const ActionsContainer = styled.div`
     cursor: pointer;
     border: 0;
   }
-  button: hover {
+  button:hover {
     background-color: #2b6cb0;
   }
 `;
 
-const FrameContainer = styled.div`
-  display: flex;
-`;
 const DocumentsContainer = styled.div`
   width: 300px;
-  min-width: 300px;
-  max-width: 300px;
   padding: 0.5rem;
 
   .document {
@@ -57,11 +57,10 @@ const DocumentsContainer = styled.div`
   }
 `;
 
-export const AppContainer: React.FunctionComponent<AppProps> = ({ documents }): React.ReactElement => {
+const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
   const [toFrame, setToFrame] = useState<HostActionsHandler>();
   const [height, setHeight] = useState(50);
   const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
-  const [document, setDocument] = useState<{ name: string; document: any }>();
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const fn = useCallback((toFrame: HostActionsHandler) => {
     // wrap into a function otherwise toFrame function will be executed
@@ -110,7 +109,11 @@ export const AppContainer: React.FunctionComponent<AppProps> = ({ documents }): 
   }, [selectedTemplate, toFrame]);
 
   return (
-    <div>
+    <div
+      css={css`
+        flex: 1 0 auto;
+      `}
+    >
       <ActionsContainer>
         <button
           onClick={() => {
@@ -124,25 +127,7 @@ export const AppContainer: React.FunctionComponent<AppProps> = ({ documents }): 
           Print
         </button>
       </ActionsContainer>
-      <FrameContainer>
-        <DocumentsContainer>
-          <div
-            css={css`
-              text-align: center;
-              font-weight: bold;
-            `}
-          >
-            Documents
-          </div>
-          {documents.length === 0 && <div>Please configure the application and provide at least one document</div>}
-          {documents.map((d, index) => {
-            return (
-              <div key={index} className={`document ${document === d ? "active" : ""}`} onClick={() => setDocument(d)}>
-                {d.name}
-              </div>
-            );
-          })}
-        </DocumentsContainer>
+      <div>
         {!document && (
           <div
             css={css`
@@ -223,7 +208,7 @@ export const AppContainer: React.FunctionComponent<AppProps> = ({ documents }): 
             `}
           >
             <FrameConnector
-              source="http://localhost:9000"
+              source={document.frameSource}
               dispatch={fromFrame}
               onConnected={fn}
               css={css`
@@ -236,7 +221,32 @@ export const AppContainer: React.FunctionComponent<AppProps> = ({ documents }): 
             />
           </div>
         </div>
-      </FrameContainer>
+      </div>
+    </div>
+  );
+};
+
+export const AppContainer: React.FunctionComponent<AppProps> = ({ documents }): React.ReactElement => {
+  const [document, setDocument] = useState<Document>();
+
+  return (
+    <div
+      css={css`
+        display: flex;
+      `}
+    >
+      <DocumentsContainer>
+        <h4>Documents</h4>
+        {documents.length === 0 && <div>Please configure the application and provide at least one document</div>}
+        {documents.map((d, index) => {
+          return (
+            <div key={index} className={`document ${document === d ? "active" : ""}`} onClick={() => setDocument(d)}>
+              {d.name}
+            </div>
+          );
+        })}
+      </DocumentsContainer>
+      {document && <Viewer key={document.frameSource} document={document} />}
     </div>
   );
 };
