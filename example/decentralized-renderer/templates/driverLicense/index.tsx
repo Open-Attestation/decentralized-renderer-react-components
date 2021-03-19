@@ -4,8 +4,8 @@ const templates = [
   {
     id: "license",
     label: "Driver License",
-    template: Template
-  }
+    template: Template,
+  },
 ];
 
 export default templates;

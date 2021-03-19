@@ -10,13 +10,13 @@ export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({
       backgroundImage: `url('${certificateBg}')`,
       backgroundPosition: "center",
       backgroundSize: "cover",
-      border: "10px solid #324353"
+      border: "10px solid #324353",
     }}
   >
     <div
       className="p-2"
       style={{
-        border: "0px solid #324353"
+        border: "0px solid #324353",
       }}
     >
       <div className="mb-4 mb-lg-5 d-flex justify-content-center cert-body" style={{ textAlign: "center" }}>
@@ -43,7 +43,7 @@ export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({
         className="row"
         style={{
           paddingLeft: "8%",
-          paddingTop: "5%"
+          paddingTop: "5%",
         }}
       >
         <div className="col text-center transcript">
@@ -52,7 +52,7 @@ export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({
             style={{
               border: "none",
               height: "1px",
-              backgroundColor: "#333"
+              backgroundColor: "#333",
             }}
           />
           <div>
@@ -69,7 +69,7 @@ export const DemoCert: FunctionComponent<TemplateProps<OpencertsDocuments>> = ({
           className="d-flex flex-row-reverse col transcript"
           style={{
             paddingTop: "5%",
-            paddingRight: "5%"
+            paddingRight: "5%",
           }}
         >
           Dated {document.issuedOn}

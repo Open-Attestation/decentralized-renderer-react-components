@@ -1,3 +1,4 @@
+/* eslint-disable */
 // https://github.com/Aaronius/penpal/releases/tag/v4.0.0 check TypeScript Declarations
 declare module "penpal/lib/connectToParent" {
   interface ConnectToParentOptions {

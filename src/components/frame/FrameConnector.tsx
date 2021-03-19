@@ -46,7 +46,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   onConnected,
   style,
   className = "",
-  sandbox = "allow-scripts allow-same-origin allow-modals allow-popups"
+  sandbox = "allow-scripts allow-same-origin allow-modals allow-popups",
 }) => {
   const [onConnectedCalled, setOnConnectedCalled] = useState(false); // ensure on connected is called once only
   const iframe = useRef<HTMLIFrameElement>(null);
@@ -69,8 +69,8 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   const methods = useMemo<LegacyFrameActions>(() => {
     return {
       updateHeight: (height: number) => dispatchProxy(updateHeight(height)),
-      updateTemplates: templates => dispatchProxy(updateTemplates(templates)),
-      handleObfuscation: field => dispatchProxy(obfuscateField(field))
+      updateTemplates: (templates) => dispatchProxy(updateTemplates(templates)),
+      handleObfuscation: (field) => dispatchProxy(obfuscateField(field)),
     };
   }, [dispatchProxy]);
 
@@ -93,7 +93,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
             if (action.type === "RENDER_DOCUMENT" && toFrame.renderDocument) {
               toFrame.renderDocument(action.payload.document, action.payload.rawDocument);
             } else if (action.type === "SELECT_TEMPLATE" && toFrame.selectTemplateTab) {
-              const index = templates.current.findIndex(template => template.id === action.payload);
+              const index = templates.current.findIndex((template) => template.id === action.payload);
               if (index === -1) console.error(`Unable to find the index associated with the label ${action.payload}`);
               toFrame.selectTemplateTab(index);
             } else if (action.type === "PRINT" && toFrame.print) {

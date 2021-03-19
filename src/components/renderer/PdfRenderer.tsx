@@ -26,10 +26,10 @@ export const PdfRenderer: FunctionComponent<Renderer> = ({ attachment }) => {
       canvas {
         margin: auto;
       }
-    `
+    `,
         }}
       />
-      {repeat(numberOfPages)(index => (
+      {repeat(numberOfPages)((index) => (
         // TODO: Dynamically resize width to fit container
         // https://github.com/wojtekmaj/react-pdf/issues/129
         <Page key={`page_${index + 1}`} pageNumber={index + 1} />

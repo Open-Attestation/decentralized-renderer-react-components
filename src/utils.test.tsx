@@ -22,38 +22,38 @@ describe("documentTemplates", () => {
   it("should return foo templates", () => {
     const document: v2.OpenAttestationDocument = {
       issuers: [{ name: "name" }],
-      $template: { name: "foo", type: v2.TemplateType.EmbeddedRenderer, url: "url" }
+      $template: { name: "foo", type: v2.TemplateType.EmbeddedRenderer, url: "url" },
     };
     const templateRegistry: TemplateRegistry = {
-      foo: [{ id: "component-a", label: "Component A", template: Component }]
+      foo: [{ id: "component-a", label: "Component A", template: Component }],
     };
     expect(documentTemplates(document, templateRegistry, noAttachmentRenderer)).toStrictEqual([
       {
         id: "component-a",
         label: "Component A",
         template: Component,
-        type: "custom-template"
-      }
+        type: "custom-template",
+      },
     ]);
   });
   it("should return foo templates but filter out component-b", () => {
     const document: v2.OpenAttestationDocument = {
       issuers: [{ name: "name" }],
-      $template: { name: "foo", type: v2.TemplateType.EmbeddedRenderer, url: "url" }
+      $template: { name: "foo", type: v2.TemplateType.EmbeddedRenderer, url: "url" },
     };
     const templateRegistry: TemplateRegistry = {
       foo: [
         { id: "component-a", label: "Component A", template: Component },
-        { id: "component-b", label: "Component B", template: Component, predicate: () => false }
-      ]
+        { id: "component-b", label: "Component B", template: Component, predicate: () => false },
+      ],
     };
     expect(documentTemplates(document, templateRegistry, noAttachmentRenderer)).toStrictEqual([
       {
         id: "component-a",
         label: "Component A",
         template: Component,
-        type: "custom-template"
-      }
+        type: "custom-template",
+      },
     ]);
   });
 });

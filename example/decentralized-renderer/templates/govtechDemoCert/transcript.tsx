@@ -73,7 +73,7 @@ export class DemoTranscript extends Component<TemplateProps<any>, { editable: bo
           className="p-2 container"
           style={{
             backgroundImage: `url('${transcriptBg}')`,
-            backgroundRepeat: "repeat"
+            backgroundRepeat: "repeat",
           }}
         >
           <div className="row root cert-title" style={{ paddingLeft: "3%" }}>
@@ -84,7 +84,7 @@ export class DemoTranscript extends Component<TemplateProps<any>, { editable: bo
             className="row transcript"
             style={{
               paddingTop: "3%",
-              paddingLeft: "2%"
+              paddingLeft: "2%",
             }}
           >
             <div className="col">
@@ -190,7 +190,7 @@ export class DemoTranscript extends Component<TemplateProps<any>, { editable: bo
                 paddingTop: "5%",
                 paddingRight: "5%",
                 width: "100%",
-                height: "auto"
+                height: "auto",
               }}
             >
               <img className="w-100" src={document.additionalData.certSignatories[0].signature} />

@@ -9,7 +9,7 @@ const KeyValueComponent = ({ label, value }: { label: string; value: any }): Rea
       style={{
         borderWidth: "1px",
         borderStyle: "solid",
-        borderColor: "#d5effc"
+        borderColor: "#d5effc",
       }}
     >
       <div
@@ -21,7 +21,6 @@ const KeyValueComponent = ({ label, value }: { label: string; value: any }): Rea
         {label}
       </div>
       <div className={`p-4 text-truncate ${show ? "" : "d-none"}`} data-component-id="displayed-value">
-        {/* eslint-disable-next-line @typescript-eslint/no-use-before-define */}
         {NestedComponent({ children: value })}
       </div>
     </div>
@@ -32,7 +31,7 @@ export const NestedComponent: FunctionComponent = ({ children }) => {
   if (children && typeof children !== "object") {
     return <span>children.toString()</span>;
   } else if (children) {
-    const grandchildren = Object.keys(children).map(key =>
+    const grandchildren = Object.keys(children).map((key) =>
       KeyValueComponent({ label: key, value: (children as any)[key] })
     );
     return (
@@ -40,7 +39,7 @@ export const NestedComponent: FunctionComponent = ({ children }) => {
         style={{
           borderWidth: "1px",
           borderStyle: "solid",
-          borderColor: "#d5effc"
+          borderColor: "#d5effc",
         }}
       >
         {grandchildren}

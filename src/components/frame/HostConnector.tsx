@@ -21,11 +21,11 @@ interface HostConnectorProps {
  */
 export const HostConnector: FunctionComponent<HostConnectorProps> = ({ dispatch, children, onConnected }) => {
   const [connected, toHost] = useParentFrame({
-    dispatch
+    dispatch,
   });
   useEffect(() => {
     if (connected) {
-      onConnected(action => {
+      onConnected((action) => {
         if (toHost.dispatch) {
           toHost.dispatch(action);
         }

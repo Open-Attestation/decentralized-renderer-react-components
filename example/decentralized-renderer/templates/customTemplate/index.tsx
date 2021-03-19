@@ -4,8 +4,8 @@ const templates = [
   {
     id: "default",
     label: "Document",
-    template: Template
-  }
+    template: Template,
+  },
 ];
 
 export default templates;

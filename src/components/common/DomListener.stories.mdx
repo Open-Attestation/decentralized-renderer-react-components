@@ -24,9 +24,9 @@ When used as a root component, it will fire an action for any dom mutation and r
         {({ setState, state }) => (
           <div>
             <h3>Click on the buttons or resize the window and look at the actions triggered!</h3>
-            <button onClick={() => setState(state => ({ count: state.count - 1 }))}>-</button>
+            <button onClick={() => setState((state) => ({ count: state.count - 1 }))}>-</button>
             <span> {state.count} </span>
-            <button onClick={() => setState(state => ({ count: state.count + 1 }))}>+</button>
+            <button onClick={() => setState((state) => ({ count: state.count + 1 }))}>+</button>
           </div>
         )}
       </Component>
@@ -42,10 +42,10 @@ However be mindful that using it as a nested component will trigger DOM mutation
       {({ setState, state }) => (
         <div>
           <h3>Resize the window and look at the actions triggered! Nothing is happening when clicking on buttons</h3>
-          <button onClick={() => setState(state => ({ count: state.count - 1 }))}>-</button>
+          <button onClick={() => setState((state) => ({ count: state.count - 1 }))}>-</button>
           <span> {state.count} </span>
           <DomListener onUpdate={action("update")}>
-            <button onClick={() => setState(state => ({ count: state.count + 1 }))}>+</button>
+            <button onClick={() => setState((state) => ({ count: state.count + 1 }))}>+</button>
           </DomListener>
         </div>
       )}
