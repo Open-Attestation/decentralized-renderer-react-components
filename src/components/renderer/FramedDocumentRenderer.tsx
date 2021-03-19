@@ -13,21 +13,21 @@ const { trace } = getLogger("FramedDocumentRenderer");
 
 export function FramedDocumentRenderer<D extends v3.OpenAttestationDocument = v3.OpenAttestationDocument>({
   templateRegistry,
-  attachmentToComponent
+  attachmentToComponent,
 }: {
   templateRegistry: TemplateRegistry<D>;
   attachmentToComponent?: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent | null;
 }): JSX.Element;
 export function FramedDocumentRenderer<D extends v2.OpenAttestationDocument = v2.OpenAttestationDocument>({
   templateRegistry,
-  attachmentToComponent
+  attachmentToComponent,
 }: {
   templateRegistry: TemplateRegistry<D>;
   attachmentToComponent?: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent | null;
 }): JSX.Element;
 export function FramedDocumentRenderer({
   templateRegistry,
-  attachmentToComponent = noAttachmentRenderer
+  attachmentToComponent = noAttachmentRenderer,
 }: {
   templateRegistry: TemplateRegistry;
   attachmentToComponent?: (attachment: Attachment, document: OpenAttestationDocument) => React.FunctionComponent | null;
@@ -44,10 +44,10 @@ export function FramedDocumentRenderer({
   const templates = document
     ? documentTemplates(document, templateRegistry as TemplateRegistry<OpenAttestationDocument>, attachmentToComponent)
     : [];
-  const templateConfiguration = templates.find(template => template.id === templateName) || templates[0] || {};
+  const templateConfiguration = templates.find((template) => template.id === templateName) || templates[0] || {};
   const Template = templateConfiguration.template;
 
-  const onConnected = useCallback(postMessage => {
+  const onConnected = useCallback((postMessage) => {
     toHost.current = postMessage;
   }, []);
 
@@ -67,10 +67,10 @@ export function FramedDocumentRenderer({
             action.payload.document,
             templateRegistry as TemplateRegistry<OpenAttestationDocument>,
             attachmentToComponent
-          ).map(template => ({
+          ).map((template) => ({
             id: template.id,
             label: template.label,
-            type: template.type
+            type: template.type,
           }));
           toHost.current(updateTemplates(templates));
         };
@@ -82,10 +82,10 @@ export function FramedDocumentRenderer({
           action.payload,
           templateRegistry as TemplateRegistry<OpenAttestationDocument>,
           attachmentToComponent
-        ).map(template => ({
+        ).map((template) => ({
           id: template.id,
           label: template.label,
-          type: template.type
+          type: template.type,
         }));
         toHost.current(updateTemplates(templates)); // send the result to the iframe
         return templates; // react-native expect to get the result directly
@@ -100,14 +100,14 @@ export function FramedDocumentRenderer({
   window.openAttestation = dispatch; // expose different actions for direct injection
 
   return (
-    <DomListener onUpdate={height => toHost.current(updateHeight(height))}>
+    <DomListener onUpdate={(height) => toHost.current(updateHeight(height))}>
       <HostConnector dispatch={dispatch} onConnected={onConnected}>
         {document && Template && (
           <div className="frameless-tabs" id="rendered-certificate">
             <Template
               document={document}
               wrappedDocument={rawDocument}
-              handleObfuscation={field => toHost.current(obfuscateField(field))}
+              handleObfuscation={(field) => toHost.current(obfuscateField(field))}
             />
           </div>
         )}

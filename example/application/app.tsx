@@ -8,7 +8,7 @@ ReactDOM.render(
   <AppContainer
     documents={[
       { name: "OpenCerts (v2)", document: rawOpencerts },
-      { name: "Driver License (V3)", document: driverLicense }
+      { name: "Driver License (V3)", document: driverLicense },
     ]}
   />,
   document.getElementById("root")

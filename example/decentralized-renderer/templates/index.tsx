@@ -11,5 +11,5 @@ export const registry = {
   CUSTOM_TEMPLATE: CustomTemplate,
   GOVTECH_DEMO: GovTechDemoCert,
   DRIVER_LICENSE: DriverLicense,
-  NULL: []
+  NULL: [],
 };

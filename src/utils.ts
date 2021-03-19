@@ -57,15 +57,15 @@ export function documentTemplates(
   // Find the template in the template registry or use a default template
   const templateName = getTemplateName(document);
   const selectedTemplate: TemplateWithComponent[] = (templateName && templateRegistry[templateName]) || [
-    defaultTemplate
+    defaultTemplate,
   ];
 
   // Add type property to differentiate between custom template tabs VS attachments tab
   const tabsRenderedFromCustomTemplates: TemplateWithTypes[] = selectedTemplate
-    .map(template => {
+    .map((template) => {
       return { ...template, type: "custom-template" };
     })
-    .filter(template => (template.predicate ? template.predicate({ document }) : truePredicate()));
+    .filter((template) => (template.predicate ? template.predicate({ document }) : truePredicate()));
 
   const tabsRenderedFromAttachments = (document.attachments || ([] as Attachment[]))
     .map((attachment, index) =>
@@ -74,16 +74,16 @@ export function documentTemplates(
             id: `attachment-${index}`,
             label: attachment.filename || "Unknown filename",
             type: attachment.type || "Unknown filetype",
-            template: attachmentToComponent(attachment, document)! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            template: attachmentToComponent(attachment, document)!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           }
         : {
             id: `attachment-${index}`,
             label: attachment.fileName || "Unknown filename",
             type: attachment.mimeType || "Unknown filetype",
-            template: attachmentToComponent(attachment, document)! // eslint-disable-line @typescript-eslint/no-non-null-assertion
+            template: attachmentToComponent(attachment, document)!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           }
     )
-    .filter(template => template.template);
+    .filter((template) => template.template);
 
   return [...tabsRenderedFromCustomTemplates, ...tabsRenderedFromAttachments];
 }

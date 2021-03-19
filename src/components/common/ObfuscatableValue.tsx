@@ -25,7 +25,7 @@ interface ObfuscatableValueProps {
 export const ObfuscatableValue: FunctionComponent<ObfuscatableValueProps> = ({
   value,
   onObfuscationRequested = noop,
-  editable = false
+  editable = false,
 }) =>
   value ? (
     <div

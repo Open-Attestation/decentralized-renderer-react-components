@@ -11,5 +11,5 @@ interface Logger {
 export const getLogger = (namespace: string): Logger => ({
   trace: logger.extend(`trace:${namespace}`),
   info: logger.extend(`info:${namespace}`),
-  error: logger.extend(`error:${namespace}`)
+  error: logger.extend(`error:${namespace}`),
 });

@@ -6,18 +6,18 @@ const templates = [
   {
     id: "certificate",
     label: "Certificate",
-    template: DemoCert
+    template: DemoCert,
   },
   {
     id: "transcript",
     label: "Transcript",
-    template: DemoTranscript
+    template: DemoTranscript,
   },
   {
     id: "media",
     label: "Media",
-    template: DemoMedia
-  }
+    template: DemoMedia,
+  },
 ];
 
 export default templates;

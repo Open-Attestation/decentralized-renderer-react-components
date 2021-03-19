@@ -1,12 +1,12 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 
-export const DefaultTemplate: React.FunctionComponent<TemplateProps> = props => {
+export const DefaultTemplate: React.FunctionComponent<TemplateProps> = (props) => {
   return (
     <div id="default-template">
       <h3
         style={{
-          textAlign: "center"
+          textAlign: "center",
         }}
       >
         This is the OpenAttestation default renderer
@@ -20,7 +20,7 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps> = props => 
           color: "#856404",
           backgroundColor: "#fff3cd",
           border: "1px solid #ffeeba",
-          padding: ".75rem 1.25rem"
+          padding: ".75rem 1.25rem",
         }}
       >
         You see this template because the certificate issuer misconfigured the template configuration of your document.
@@ -38,5 +38,5 @@ export const DefaultTemplate: React.FunctionComponent<TemplateProps> = props => 
 export const defaultTemplate: TemplateWithComponent = {
   id: "default-template",
   label: "Default",
-  template: DefaultTemplate
+  template: DefaultTemplate,
 };
