@@ -17,6 +17,7 @@
     "debug": "^4.3.1",
     "penpal": "^4.1.1",
     "react-pdf": "^5.2.0",
+    "request": "^2.88.2",
     "typesafe-actions": "^4.4.2"
   },
   "scripts": {
