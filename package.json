@@ -40,7 +40,7 @@
     "@babel/preset-env": "^7.13.15",
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "7.13.0",
-    "@emotion/babel-preset-css-prop": "10.0.17",
+    "@emotion/babel-preset-css-prop": "^11.2.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^11.3.0",
     "@storybook/addon-actions": "5.2.1",
