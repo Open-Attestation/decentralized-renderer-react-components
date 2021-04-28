@@ -51,7 +51,7 @@
     "@types/debug": "4.1.5",
     "@types/jest": "24.0.18",
     "@types/react": "16.9.46",
-    "@types/react-pdf": "^4.0.3",
+    "@types/react-pdf": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "babel-jest": "24.9.0",
