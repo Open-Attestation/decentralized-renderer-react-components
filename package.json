@@ -42,7 +42,7 @@
     "@babel/preset-typescript": "7.13.0",
     "@emotion/babel-preset-css-prop": "10.0.17",
     "@emotion/core": "^10.0.17",
-    "@emotion/styled": "^10.0.17",
+    "@emotion/styled": "^11.3.0",
     "@storybook/addon-actions": "5.2.1",
     "@storybook/addon-docs": "5.2.1",
     "@storybook/addons": "5.2.1",
@@ -73,7 +73,7 @@
     "semantic-release": "^17.4.2",
     "typescript": "^4.2.4",
     "webpack": "4.39.3",
-    "webpack-cli": "3.3.7",
+    "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.11.2"
   },
   "license": "Apache-2.0",
