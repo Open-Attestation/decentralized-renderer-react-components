@@ -3,6 +3,7 @@ const path = require("path");
 
 module.exports = {
   // ...webpackConfig,
+  mode: process.env.NODE_ENV ?? "development",
   entry: path.join(__dirname, "./app.tsx"),
   externals: {},
   output: {

@@ -1,4 +1,5 @@
 module.exports = {
+  mode: process.env.NODE_ENV ?? "development",
   entry: "./src/index.tsx",
   devtool: "source-map",
   output: {

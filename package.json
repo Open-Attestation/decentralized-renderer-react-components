@@ -14,6 +14,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@govtechsg/open-attestation": "^5.2.2",
+    "cross-env": "^7.0.3",
     "debug": "^4.3.1",
     "penpal": "^4.1.1",
     "react-pdf": "^5.2.0",
@@ -21,9 +22,9 @@
     "typesafe-actions": "^5.1.0"
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack --mode production && tsc --module es6 --declaration --outDir build/esm",
-    "example:application": "webpack-dev-server --config ./example/application/webpack.config.js",
-    "example:renderer": "webpack-dev-server --config ./example/decentralized-renderer/webpack.config.js",
+    "build": "cross-env NODE_ENV=production webpack --mode production && tsc --module es6 --declaration --outDir build/esm",
+    "example:application": "webpack serve --config ./example/application/webpack.config.js",
+    "example:renderer": "webpack serve --config ./example/decentralized-renderer/webpack.config.js",
     "example:legacy-renderer": "npx http-server ./example/legacy-renderer",
     "lint": "eslint . --ext .ts,.tsx,.mdx --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
