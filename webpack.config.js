@@ -1,5 +1,6 @@
 module.exports = {
   mode: process.env.NODE_ENV ?? "development",
+
   entry: "./src/index.tsx",
   devtool: "source-map",
   output: {
@@ -14,7 +15,10 @@ module.exports = {
     "react-dom": "react-dom"
   },
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx"]
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    fallback: {
+      crypto: require.resolve("crypto-browserify") 
+    }
   },
   module: {
     rules: [
