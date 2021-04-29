@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FrameActions, FrameConnector, HostActionsHandler } from "../../src";
-import { css, jsx } from "@emotion/react";
+import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
 interface AppProps {
