@@ -115,7 +115,7 @@ export const rawOpencerts: OpencertsDocuments = {
 };
 
 export const wrappedOpencerts: WrappedDocument<OpencertsDocuments> = {
-  data: document,
+  data: document as any,
   version: SchemaId.v2,
   signature: {
     targetHash: "abcd",
