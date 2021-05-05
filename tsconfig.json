@@ -15,5 +15,5 @@
     "sourceMap": true,
     "types": ["jest",  "@emotion/react"]
   },
-  "include": ["src", "example"]
+  "include": ["src"]
 }
