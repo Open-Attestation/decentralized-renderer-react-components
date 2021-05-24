@@ -10,7 +10,7 @@ export const App: React.FunctionComponent = (): React.ReactElement => {
       documents={[
         { name: "OpenCerts (v2)", document: rawOpencerts, frameSource: "http://localhost:9000" },
         { name: "Driver License (V3)", document: driverLicense, frameSource: "http://localhost:9000" },
-        { name: "Legacy (Penpal V4)", document: { id: "legacy" }, frameSource: "http://localhost:8080" }
+        { name: "Legacy (Penpal V4)", document: { id: "legacy" }, frameSource: "http://localhost:8080" },
       ]}
     />
   );

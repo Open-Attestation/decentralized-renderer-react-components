@@ -13,8 +13,8 @@ type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 interface UseParentFrameProps {
   dispatch: HostActionsHandler;
 }
-export const useParentFrame = function({
-  dispatch
+export const useParentFrame = function ({
+  dispatch,
 }: UseParentFrameProps): [boolean, { dispatch: FrameActionsHandler }] {
   const [parentFrameConnection, setParentFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
@@ -23,20 +23,20 @@ export const useParentFrame = function({
     if (inIframe() && status === "DISCONNECTED") {
       const parentV5 = connectToParent({
         methods: {
-          dispatch: dispatch
+          dispatch: dispatch,
         },
-        timeout: 5000 // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+        timeout: 5000, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
       setStatus("CONNECTING");
 
       parentV5
-        .then(parentConnection => {
+        .then((parentConnection) => {
           trace("connectToParent success: ", parentConnection);
           setParentFrameConnection(parentConnection);
           setStatus("CONNECTED");
         })
-        .catch(err => {
+        .catch((err) => {
           trace("connectToParent failed: ", err);
           setStatus("DISCONNECTED");
         });
@@ -50,7 +50,7 @@ interface UseChildrenFrameProps {
   methods: LegacyFrameActions;
   iframe: RefObject<HTMLIFrameElement>;
 }
-export const useChildFrame = function(
+export const useChildFrame = function (
   props: UseChildrenFrameProps
 ): [boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
   const [childFrameConnection, setChildFrameConnection] = useState<any>();
@@ -61,30 +61,30 @@ export const useChildFrame = function(
       const childV5 = connectToChild({
         methods: {
           dispatch: props.dispatch,
-          ...props.methods
+          ...props.methods,
         },
         iframe: props.iframe.current,
-        timeout: 5000 // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+        timeout: 5000, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
       const childV4 = connectToChildV4({
         methods: {
           dispatch: props.dispatch,
-          ...props.methods
+          ...props.methods,
         },
         iframe: props.iframe.current,
-        timeout: 5000 // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+        timeout: 5000, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
       setStatus("CONNECTING");
 
       Promise.any([childV5, childV4])
-        .then(childConnection => {
+        .then((childConnection) => {
           trace("connectToChild success: ", childConnection);
           setChildFrameConnection(childConnection);
           setStatus("CONNECTED");
         })
-        .catch(err => {
+        .catch((err) => {
           trace("connectToChild failed: ", err);
           setStatus("DISCONNECTED");
         });
