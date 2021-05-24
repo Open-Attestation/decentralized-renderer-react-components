@@ -7,6 +7,7 @@ import { inIframe } from "../../utils";
 import { getLogger } from "../../logger";
 
 const { trace } = getLogger("useFrame");
+const TIMEOUT = 9000;
 
 type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
@@ -25,7 +26,7 @@ export const useParentFrame = function ({
         methods: {
           dispatch: dispatch,
         },
-        timeout: 5000, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+        timeout: TIMEOUT, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
       setStatus("CONNECTING");
@@ -64,7 +65,7 @@ export const useChildFrame = function (
           ...props.methods,
         },
         iframe: props.iframe.current,
-        timeout: 5000, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+        timeout: TIMEOUT, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
       const childV4 = connectToChildV4({
@@ -73,7 +74,7 @@ export const useChildFrame = function (
           ...props.methods,
         },
         iframe: props.iframe.current,
-        timeout: 5000, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+        timeout: TIMEOUT, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
       }).promise;
 
       setStatus("CONNECTING");
