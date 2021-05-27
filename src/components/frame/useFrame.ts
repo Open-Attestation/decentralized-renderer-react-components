@@ -7,7 +7,7 @@ import { inIframe } from "../../utils";
 import { getLogger } from "../../logger";
 
 const { trace } = getLogger("useFrame");
-const TIMEOUT = 9000;
+const TIMEOUT = 30000;
 
 type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
