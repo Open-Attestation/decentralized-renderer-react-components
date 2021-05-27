@@ -1,9 +1,13 @@
 import { RefObject, useEffect, useState } from "react";
-import connectToParent from "penpal/lib/connectToParent";
-import connectToChild from "penpal/lib/connectToChild";
+import { connectToParent, connectToChild } from "penpal";
+import connectToChildV4 from "penpal-v4/lib/connectToChild";
 import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
 import { HostActionsHandler, LegacyHostActions } from "./host.actions";
 import { inIframe } from "../../utils";
+import { getLogger } from "../../logger";
+
+const { trace } = getLogger("useFrame");
+const TIMEOUT = 30000;
 
 type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
@@ -17,19 +21,26 @@ export const useParentFrame = function ({
   const [status, setStatus] = useState<Status>("DISCONNECTED");
 
   useEffect(() => {
-    const run = async (): Promise<void> => {
-      setParentFrameConnection(
-        await connectToParent({
-          methods: {
-            dispatch: dispatch,
-          },
-        }).promise
-      );
-      setStatus("CONNECTED");
-    };
     if (inIframe() && status === "DISCONNECTED") {
+      const parentV5 = connectToParent({
+        methods: {
+          dispatch: dispatch,
+        },
+        timeout: TIMEOUT, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+      }).promise;
+
       setStatus("CONNECTING");
-      run();
+
+      parentV5
+        .then((parentConnection) => {
+          trace("connectToParent success: ", parentConnection);
+          setParentFrameConnection(parentConnection);
+          setStatus("CONNECTED");
+        })
+        .catch((err) => {
+          trace("connectToParent failed: ", err);
+          setStatus("DISCONNECTED");
+        });
     }
   }, [status, dispatch]);
   return [status === "CONNECTED", parentFrameConnection];
@@ -43,26 +54,42 @@ interface UseChildrenFrameProps {
 export const useChildFrame = function (
   props: UseChildrenFrameProps
 ): [boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
-  const [parentFrameConnection, setParentFrameConnection] = useState<any>();
+  const [childFrameConnection, setChildFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
 
   useEffect(() => {
-    const run = async (): Promise<void> => {
-      setParentFrameConnection(
-        await connectToChild({
-          methods: {
-            dispatch: props.dispatch,
-            ...props.methods,
-          },
-          iframe: props.iframe.current,
-        }).promise
-      );
-      setStatus("CONNECTED");
-    };
     if (props.iframe.current && status === "DISCONNECTED") {
+      const childV5 = connectToChild({
+        methods: {
+          dispatch: props.dispatch,
+          ...props.methods,
+        },
+        iframe: props.iframe.current,
+        timeout: TIMEOUT, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+      }).promise;
+
+      const childV4 = connectToChildV4({
+        methods: {
+          dispatch: props.dispatch,
+          ...props.methods,
+        },
+        iframe: props.iframe.current,
+        timeout: TIMEOUT, // this will ensure connection to promise reject, when connection versions not match. otherwise it will be stucked in promise pending
+      }).promise;
+
       setStatus("CONNECTING");
-      run();
+
+      Promise.any([childV5, childV4])
+        .then((childConnection) => {
+          trace("connectToChild success: ", childConnection);
+          setChildFrameConnection(childConnection);
+          setStatus("CONNECTED");
+        })
+        .catch((err) => {
+          trace("connectToChild failed: ", err);
+          setStatus("DISCONNECTED");
+        });
     }
   }, [status, props]);
-  return [status === "CONNECTED", parentFrameConnection];
+  return [status === "CONNECTED", childFrameConnection];
 };

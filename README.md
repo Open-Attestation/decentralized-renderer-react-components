@@ -171,7 +171,7 @@ This component will establish a connection with a host embedding the application
 - `attachmentToComponent`: a function that map attachments to component depending on the attachment type. Currently the library exposes 2 functions:
   - `noAttachmentRenderer`: which uses `UnsupportedRenderer` (basically it's doing nothing)
   - `fullAttachmentRenderer`: which uses all the supported attachment type by the library (see the function).
-This property default to `noAttachmentRenderer`, to avoid bundles growing huge unnecessarily.
+    This property default to `noAttachmentRenderer`, to avoid bundles growing huge unnecessarily.
 
 `FramedDocumentRenderer` handle all the logic around the communication with the hosted application and the renderer:
 
@@ -190,8 +190,8 @@ Each configured `Template` will be provided the following properties, when rende
 - `rawDocument`: (optional) Open Attestation document
 - `handleObfuscation`: (mandatory) A function to call to handle obfuscation in the document. The value provided must follow path property as handlded by [lodash#get](https://lodash.com/docs/4.17.15#get)
 
-
 ## Development
+
 - `npm run storybook`: to start storybook, create stories and visualize the different component
 - `npm run test`: to run tests
 - `npm run lint`: to run lint
@@ -199,3 +199,7 @@ Each configured `Template` will be provided the following properties, when rende
 - `npm run example:renderer`: to run the example build with the library to develop a decentralized renderer. Don't forget to update the example if you update this library.
 
 We also provided a [github template](https://github.com/Open-Attestation/decentralized-renderer-react-template) to build your own decentralized-renderer based on this library
+
+## Penpal
+
+There is compatibility [issues](https://github.com/Aaronius/penpal/issues/52) between penpal version ^5 and ^4. In the event that penpal version ^4 must be used, use this version [4.1.1](https://github.com/Aaronius/penpal/releases/tag/v4.1.1)
