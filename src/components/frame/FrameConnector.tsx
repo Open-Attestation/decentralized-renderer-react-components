@@ -74,7 +74,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
     };
   }, [dispatchProxy]);
 
-  const [connected, toFrame] = useChildFrame({ methods, dispatch: dispatchProxy, iframe });
+  const [connected, timeout, toFrame] = useChildFrame({ methods, dispatch: dispatchProxy, iframe });
   useEffect(() => {
     if (connected && !onConnectedCalled) {
       setOnConnectedCalled(true);
@@ -105,14 +105,23 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
     }
   }, [connected, toFrame, onConnected, onConnectedCalled]);
   return (
-    <iframe
-      title="Decentralised Rendered Certificate"
-      id="iframe"
-      ref={iframe}
-      src={source}
-      style={style}
-      className={className}
-      sandbox={sandbox}
-    />
+    <>
+      {timeout ? (
+        <>
+          <h3>Penpal connection timeout</h3>
+          <p>You may want to contact the administrator for {source}.</p>
+        </>
+      ) : (
+        <iframe
+          title="Decentralised Rendered Certificate"
+          id="iframe"
+          ref={iframe}
+          src={source}
+          style={style}
+          className={className}
+          sandbox={sandbox}
+        />
+      )}
+    </>
   );
 };

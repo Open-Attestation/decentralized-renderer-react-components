@@ -7,9 +7,9 @@ import { inIframe } from "../../utils";
 import { getLogger } from "../../logger";
 
 const { trace } = getLogger("useFrame");
-const TIMEOUT = 30000;
+const TIMEOUT = 10000;
 
-type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
+type Status = "TIMEOUT" | "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
 interface UseParentFrameProps {
   dispatch: HostActionsHandler;
@@ -39,7 +39,7 @@ export const useParentFrame = function ({
         })
         .catch((err) => {
           trace("connectToParent failed: ", err);
-          setStatus("DISCONNECTED");
+          setStatus("TIMEOUT");
         });
     }
   }, [status, dispatch]);
@@ -53,7 +53,7 @@ interface UseChildrenFrameProps {
 }
 export const useChildFrame = function (
   props: UseChildrenFrameProps
-): [boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
+): [boolean, boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
   const [childFrameConnection, setChildFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
 
@@ -87,9 +87,9 @@ export const useChildFrame = function (
         })
         .catch((err) => {
           trace("connectToChild failed: ", err);
-          setStatus("DISCONNECTED");
+          setStatus("TIMEOUT");
         });
     }
   }, [status, props]);
-  return [status === "CONNECTED", childFrameConnection];
+  return [status === "CONNECTED", status === "TIMEOUT", childFrameConnection];
 };

@@ -59,7 +59,7 @@ const DocumentsContainer = styled.div`
 
 const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
   const [toFrame, setToFrame] = useState<HostActionsHandler>();
-  const [height, setHeight] = useState(50);
+  const [height, setHeight] = useState(250);
   const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const fn = useCallback((toFrame: HostActionsHandler) => {
