@@ -19,14 +19,6 @@ module.exports = {
       require.resolve("@babel/preset-react"),
       require.resolve("@emotion/babel-preset-css-prop"),
     ];
-
-    // adding react-docgen-typescript-loader in loader to allow for props parsing and integration in storybook
-    /* TEMPORARY COMMENT */
-    // config.module.rules.push({
-    //   test: /\.(ts|tsx)$/,
-    //   use: [require.resolve("babel-loader"), require.resolve("react-docgen-typescript-loader")],
-    // });
-    config.resolve.extensions.push(".ts", ".tsx");
     return config;
   },
 };
