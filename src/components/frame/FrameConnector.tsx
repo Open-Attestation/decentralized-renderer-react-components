@@ -10,7 +10,6 @@ import {
   timeout as timeoutAction,
 } from "./frame.actions";
 import { Template } from "../../types";
-import { action } from "typesafe-actions";
 
 interface BaseFrameConnectorProps {
   /**
@@ -117,7 +116,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
     if (timeout) {
       dispatch(timeoutAction());
     }
-  }, [timeout]);
+  }, [timeout, dispatch]);
 
   return (
     <>
