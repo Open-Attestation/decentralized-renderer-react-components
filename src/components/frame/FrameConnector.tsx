@@ -1,8 +1,16 @@
 import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 import { useChildFrame } from "./useFrame";
 import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
-import { FrameActions, LegacyFrameActions, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
+import {
+  FrameActions,
+  LegacyFrameActions,
+  obfuscateField,
+  updateHeight,
+  updateTemplates,
+  timeout as timeoutAction,
+} from "./frame.actions";
 import { Template } from "../../types";
+import { action } from "typesafe-actions";
 
 interface BaseFrameConnectorProps {
   /**
@@ -104,6 +112,13 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
       );
     }
   }, [connected, toFrame, onConnected, onConnectedCalled]);
+
+  useEffect(() => {
+    if (timeout) {
+      dispatch(timeoutAction());
+    }
+  }, [timeout]);
+
   return (
     <>
       {timeout ? (

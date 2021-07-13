@@ -75,6 +75,9 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
       setTemplates(action.payload);
       setSelectedTemplate(action.payload[0].id);
     }
+    if (action.type === "TIMEOUT") {
+      alert(`Connection timeout on renderer.\nPlease contact the administrator of ${document.frameSource}.`);
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
