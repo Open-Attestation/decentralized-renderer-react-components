@@ -39,7 +39,7 @@ export const useParentFrame = function ({
         })
         .catch((err) => {
           trace("connectToParent failed: ", err);
-          setStatus("TIMEOUT");
+          err.message.includes("timed out") ? setStatus("TIMEOUT") : setStatus("DISCONNECTED");
         });
     }
   }, [status, dispatch]);
@@ -87,7 +87,11 @@ export const useChildFrame = function (
         })
         .catch((err) => {
           trace("connectToChild failed: ", err);
-          setStatus("TIMEOUT");
+          if (err.errors.map((e: Error) => e.message).some((m: String) => m.includes("timed out"))) {
+            setStatus("TIMEOUT");
+          } else {
+            setStatus("DISCONNECTED");
+          }
         });
     }
   }, [status, props]);
