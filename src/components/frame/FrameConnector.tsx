@@ -123,8 +123,8 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
     <>
       {timeout ? (
         <>
-          <h3>Penpal connection timeout</h3>
-          <p>You may want to contact the administrator for {source}.</p>
+          <h3>Connection timeout on renderer</h3>
+          <p>Please contact the administrator of {source}.</p>
         </>
       ) : (
         <iframe
