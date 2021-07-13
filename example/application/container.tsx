@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { FrameActions, FrameConnector, HostActionsHandler } from "../../src";
+import { isActionOf } from "typesafe-actions";
+import { FrameActions, FrameConnector, HostActionsHandler, updateHeight, updateTemplates, timeout } from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
@@ -68,14 +69,14 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
   }, []);
 
   const fromFrame = (action: FrameActions): void => {
-    if (action.type === "UPDATE_HEIGHT") {
+    if (isActionOf(updateHeight, action)) {
       setHeight(action.payload);
     }
-    if (action.type === "UPDATE_TEMPLATES") {
+    if (isActionOf(updateTemplates, action)) {
       setTemplates(action.payload);
       setSelectedTemplate(action.payload[0].id);
     }
-    if (action.type === "TIMEOUT") {
+    if (isActionOf(timeout, action)) {
       alert(`Connection timeout on renderer.\nPlease contact the administrator of ${document.frameSource}.`);
     }
   };
