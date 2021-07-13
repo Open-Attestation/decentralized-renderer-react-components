@@ -1,7 +1,14 @@
 import React, { CSSProperties, FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
 import { useChildFrame } from "./useFrame";
 import { HostActions, HostActionsHandler, LegacyHostActions } from "./host.actions";
-import { FrameActions, LegacyFrameActions, obfuscateField, updateHeight, updateTemplates } from "./frame.actions";
+import {
+  FrameActions,
+  LegacyFrameActions,
+  obfuscateField,
+  updateHeight,
+  updateTemplates,
+  timeout as timeoutAction,
+} from "./frame.actions";
 import { Template } from "../../types";
 
 interface BaseFrameConnectorProps {
@@ -74,7 +81,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
     };
   }, [dispatchProxy]);
 
-  const [connected, toFrame] = useChildFrame({ methods, dispatch: dispatchProxy, iframe });
+  const [connected, timeout, toFrame] = useChildFrame({ methods, dispatch: dispatchProxy, iframe });
   useEffect(() => {
     if (connected && !onConnectedCalled) {
       setOnConnectedCalled(true);
@@ -104,15 +111,31 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
       );
     }
   }, [connected, toFrame, onConnected, onConnectedCalled]);
+
+  useEffect(() => {
+    if (timeout) {
+      dispatch(timeoutAction());
+    }
+  }, [timeout, dispatch]);
+
   return (
-    <iframe
-      title="Decentralised Rendered Certificate"
-      id="iframe"
-      ref={iframe}
-      src={source}
-      style={style}
-      className={className}
-      sandbox={sandbox}
-    />
+    <>
+      {timeout ? (
+        <>
+          <h3>Connection timeout on renderer</h3>
+          <p>Please contact the administrator of {source}.</p>
+        </>
+      ) : (
+        <iframe
+          title="Decentralised Rendered Certificate"
+          id="iframe"
+          ref={iframe}
+          src={source}
+          style={style}
+          className={className}
+          sandbox={sandbox}
+        />
+      )}
+    </>
   );
 };

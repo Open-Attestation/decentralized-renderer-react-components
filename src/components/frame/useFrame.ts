@@ -1,5 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
-import { connectToParent, connectToChild } from "penpal";
+import { connectToParent, connectToChild, ErrorCode } from "penpal";
+import { PenpalError } from "penpal/lib/types";
 import connectToChildV4 from "penpal-v4/lib/connectToChild";
 import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
 import { HostActionsHandler, LegacyHostActions } from "./host.actions";
@@ -9,7 +10,7 @@ import { getLogger } from "../../logger";
 const { trace } = getLogger("useFrame");
 const TIMEOUT = 30000;
 
-type Status = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
+type Status = "TIMEOUT" | "DISCONNECTED" | "CONNECTING" | "CONNECTED";
 
 interface UseParentFrameProps {
   dispatch: HostActionsHandler;
@@ -37,9 +38,13 @@ export const useParentFrame = function ({
           setParentFrameConnection(parentConnection);
           setStatus("CONNECTED");
         })
-        .catch((err) => {
+        .catch((err: PenpalError) => {
           trace("connectToParent failed: ", err);
-          setStatus("DISCONNECTED");
+          if (err.code === ErrorCode.ConnectionTimeout) {
+            setStatus("TIMEOUT");
+          } else {
+            setStatus("DISCONNECTED");
+          }
         });
     }
   }, [status, dispatch]);
@@ -53,7 +58,7 @@ interface UseChildrenFrameProps {
 }
 export const useChildFrame = function (
   props: UseChildrenFrameProps
-): [boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
+): [boolean, boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
   const [childFrameConnection, setChildFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");
 
@@ -85,11 +90,15 @@ export const useChildFrame = function (
           setChildFrameConnection(childConnection);
           setStatus("CONNECTED");
         })
-        .catch((err) => {
+        .catch((err: AggregateError) => {
           trace("connectToChild failed: ", err);
-          setStatus("DISCONNECTED");
+          if (err.errors.map((e: PenpalError) => e.code).some((c) => c === ErrorCode.ConnectionTimeout)) {
+            setStatus("TIMEOUT");
+          } else {
+            setStatus("DISCONNECTED");
+          }
         });
     }
   }, [status, props]);
-  return [status === "CONNECTED", childFrameConnection];
+  return [status === "CONNECTED", status === "TIMEOUT", childFrameConnection];
 };
