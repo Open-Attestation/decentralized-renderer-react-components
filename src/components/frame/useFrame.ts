@@ -1,5 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
-import { connectToParent, connectToChild } from "penpal";
+import { connectToParent, connectToChild, ErrorCode } from "penpal";
+import { PenpalError } from "penpal/lib/types";
 import connectToChildV4 from "penpal-v4/lib/connectToChild";
 import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
 import { HostActionsHandler, LegacyHostActions } from "./host.actions";
@@ -37,9 +38,9 @@ export const useParentFrame = function ({
           setParentFrameConnection(parentConnection);
           setStatus("CONNECTED");
         })
-        .catch((err) => {
+        .catch((err: PenpalError) => {
           trace("connectToParent failed: ", err);
-          if (err.message.includes("timed out")) {
+          if (err.code === ErrorCode.ConnectionTimeout) {
             setStatus("TIMEOUT");
           } else {
             setStatus("DISCONNECTED");
@@ -89,9 +90,9 @@ export const useChildFrame = function (
           setChildFrameConnection(childConnection);
           setStatus("CONNECTED");
         })
-        .catch((err) => {
+        .catch((err: AggregateError) => {
           trace("connectToChild failed: ", err);
-          if (err.errors.map((e: Error) => e.message).some((m: string) => m.includes("timed out"))) {
+          if (err.errors.map((e: PenpalError) => e.code).some((c) => c === ErrorCode.ConnectionTimeout)) {
             setStatus("TIMEOUT");
           } else {
             setStatus("DISCONNECTED");
