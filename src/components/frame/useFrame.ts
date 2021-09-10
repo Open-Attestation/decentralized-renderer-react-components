@@ -2,10 +2,15 @@ import { RefObject, useEffect, useState } from "react";
 import { connectToParent, connectToChild, ErrorCode } from "penpal";
 import { PenpalError } from "penpal/lib/types";
 import connectToChildV4 from "penpal-v4/lib/connectToChild";
+import any from "promise.any";
 import { FrameActionsHandler, LegacyFrameActions } from "./frame.actions";
 import { HostActionsHandler, LegacyHostActions } from "./host.actions";
 import { inIframe } from "../../utils";
 import { getLogger } from "../../logger";
+
+// shim for Promise.any on non-compliant browsers (eg: Safari < v14)
+// https://caniuse.com/?search=Promise.any
+any.shim();
 
 const { trace } = getLogger("useFrame");
 const TIMEOUT = 30000;

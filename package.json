@@ -18,6 +18,7 @@
     "debug": "^4.3.1",
     "penpal": "^5.3.0",
     "penpal-v4": "npm:penpal@^4.1.1",
+    "promise.any": "^2.0.2",
     "react-pdf": "^5.2.0",
     "stream-browserify": "^3.0.0",
     "typesafe-actions": "^5.1.0"
@@ -56,6 +57,7 @@
     "@testing-library/react": "^11.2.6",
     "@types/debug": "4.1.5",
     "@types/jest": "^26.0.23",
+    "@types/promise.any": "^2.0.0",
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
     "@types/react-pdf": "^5.0.2",
