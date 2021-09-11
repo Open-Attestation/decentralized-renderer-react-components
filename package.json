@@ -7,8 +7,9 @@
   "sideEffects": false,
   "main": "build/index.js",
   "module": "build/esm/index.js",
-  "types": "build//esm/index.d.ts",
+  "types": "build/types/index.d.ts",
   "dependencies": {
+    "@babel/runtime-corejs3": "^7.15.4",
     "@emotion/react": "^11.1.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
@@ -23,7 +24,11 @@
     "typesafe-actions": "^5.1.0"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --mode production && tsc --module es6 --declaration --outDir build/esm",
+    "build": "cross-env NODE_ENV=production BABEL_ENV=esm npm run clean:build && npm run build:types && npm run build:es && npm run build:umd -- --mode production",
+    "build:umd": "webpack",
+    "build:es": "babel src --no-babelrc --out-dir build/esm --extensions '.ts,.tsx' --source-maps --config-file ./.es.babelrc",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir build/types",
+    "clean:build": "rm -rf ./build",
     "example:application": "webpack serve --config ./example/application/webpack.config.js",
     "example:renderer": "webpack serve --config ./example/decentralized-renderer/webpack.config.js",
     "example:legacy-renderer": "npx http-server ./example/legacy-renderer",
@@ -40,10 +45,11 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.16",
-    "@babel/preset-env": "^7.13.15",
-    "@babel/preset-react": "^7.13.13",
-    "@babel/preset-typescript": "7.13.0",
+    "@babel/cli": "^7.15.4",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/preset-typescript": "^7.15.0",
     "@emotion/babel-preset-css-prop": "^11.2.0",
     "@emotion/core": "^11.0.0",
     "@emotion/styled": "^11.3.0",
@@ -84,29 +90,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "license": "Apache-2.0",
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ],
-      "@babel/preset-typescript",
-      "@babel/preset-react",
-      "@emotion/babel-preset-css-prop"
-    ]
-  },
-  "browserslist": [
-    "last 2 Chrome versions",
-    "last 2 Opera versions",
-    "last 2 Firefox versions",
-    "last 2 Edge versions",
-    "last 1 Safari version",
-    "IE >= 11"
-  ],
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "env": {
