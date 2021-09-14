@@ -24,7 +24,7 @@
     "typesafe-actions": "^5.1.0"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production BABEL_ENV=esm npm run clean:build && npm run build:types && npm run build:es && npm run build:umd -- --mode production",
+    "build": "cross-env NODE_ENV=production npm run clean:build && npm run build:types && npm run build:es && npm run build:umd -- --mode production",
     "build:umd": "webpack",
     "build:es": "babel src --no-babelrc --out-dir build/esm --extensions '.ts,.tsx' --source-maps --config-file ./.es.babelrc",
     "build:types": "tsc --emitDeclarationOnly --declarationDir build/types",
