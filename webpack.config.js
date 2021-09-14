@@ -1,6 +1,5 @@
 module.exports = {
   mode: process.env.NODE_ENV ?? "development",
-  target: "browserslist:browserslist config, not current node",
   entry: "./src/index.tsx",
   devtool: "source-map",
   output: {
