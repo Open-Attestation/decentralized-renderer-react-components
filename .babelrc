@@ -3,8 +3,7 @@
     "@babel/preset-env",
     "@babel/preset-typescript",
     "@babel/preset-react",
-    "@emotion/babel-preset-css-prop",
-    "minify"
+    "@emotion/babel-preset-css-prop"
   ],
   "plugins": [
     [
