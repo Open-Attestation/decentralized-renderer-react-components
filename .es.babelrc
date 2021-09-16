@@ -1,0 +1,16 @@
+{
+  "extends": "./.babelrc",
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.mdx"
+  ],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false
+      }
+    ]
+  ]
+}
