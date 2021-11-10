@@ -26,7 +26,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run clean:build && npm run build:types && npm run build:es && npm run build:umd -- --mode production",
     "build:umd": "webpack",
-    "build:es": "babel src --no-babelrc --out-dir build/esm --extensions '.ts,.tsx' --source-maps --config-file ./.es.babelrc",
+    "build:es": "cross-env babel src --no-babelrc --out-dir build/esm --extensions '.ts,.tsx' --source-maps --config-file ./.es.babelrc",
     "build:types": "tsc --emitDeclarationOnly --declarationDir build/types",
     "clean:build": "rm -rf ./build",
     "example:application": "webpack serve --config ./example/application/webpack.config.js",
