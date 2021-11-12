@@ -1,4 +1,4 @@
-# decentralized-renderer-react-components
+# React Components
 
 React components abstracting the communication with `Open Attestation` decentralized renderer. More information on this:
 
@@ -38,12 +38,12 @@ Example:
 const renderDocumentAction = {
   type: "RENDER_DOCUMENT",
   payload: {
-    document: documentToRender
-  }
+    document: documentToRender,
+  },
 };
 
 const printAction = {
-  type: "PRINT"
+  type: "PRINT",
 };
 ```
 
@@ -62,8 +62,8 @@ const action = {
   type: "RENDER_DOCUMENT",
   payload: {
     document: getData(document),
-    rawDocument: document
-  }
+    rawDocument: document,
+  },
 };
 ```
 
@@ -74,7 +74,7 @@ const action = {
 ```javascript
 const action = {
   type: "SELECT_TEMPLATE",
-  payload: "CUSTOM_TEMPLATE"
+  payload: "CUSTOM_TEMPLATE",
 };
 ```
 
@@ -83,7 +83,7 @@ const action = {
 
 ```javascript
 const action = {
-  type: "PRINT"
+  type: "PRINT",
 };
 ```
 
@@ -96,7 +96,7 @@ There is a 4th action that can be used in the context of react-native applicatio
 ```javascript
 const action = {
   type: "GET_TEMPLATES",
-  payload: getData(document)
+  payload: getData(document),
 };
 ```
 
@@ -111,7 +111,7 @@ The following list of actions are made for iframe to communicate to the host (an
 ```javascript
 const action = {
   type: "UPDATE_HEIGHT",
-  payload: 150
+  payload: 150,
 };
 ```
 
@@ -122,7 +122,7 @@ const action = {
 ```javascript
 const action = {
   type: "OBFUSCATE",
-  payload: "a[0].b.c"
+  payload: "a[0].b.c",
 };
 ```
 
@@ -136,13 +136,13 @@ const action = {
   payload: [
     {
       id: "certificate",
-      label: "Certificate"
+      label: "Certificate",
     },
     {
       id: "transcript",
-      label: "Transcript"
-    }
-  ]
+      label: "Transcript",
+    },
+  ],
 };
 ```
 
