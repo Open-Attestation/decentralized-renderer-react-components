@@ -12,3 +12,5 @@
 npm-debug.log*
 .idea
 *.iml
+
+/docs
