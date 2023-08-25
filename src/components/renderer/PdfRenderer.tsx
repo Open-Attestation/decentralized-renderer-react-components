@@ -20,6 +20,8 @@ export const PdfRenderer: FunctionComponent<Renderer> = ({ attachment }) => {
       }}
     >
       <style
+        // TODO: The scoped attribute is deprecated and not supported by HTML5. May only be supported by Firefox.
+        // eslint-disable-next-line react/no-unknown-property
         scoped
         dangerouslySetInnerHTML={{
           __html: `
