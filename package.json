@@ -65,12 +65,12 @@
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
     "@types/react-pdf": "^5.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
-    "eslint": "^7.32.0",
+    "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-mdx": "^1.12.0",
@@ -93,11 +93,13 @@
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "env": {
-      "browser": true
+      "browser": true,
+      "jest": true
     },
     "extends": [
       "plugin:@typescript-eslint/recommended",
       "plugin:react/recommended",
+      "plugin:jest/all",
       "plugin:mdx/recommended",
       "plugin:prettier/recommended"
     ],
@@ -121,17 +123,11 @@
       "@typescript-eslint/no-explicit-any": "off",
       "react/prop-types": "off",
       "react/self-closing-comp": "error",
+      "jest/prefer-expect-assertions": "off",
       "array-callback-return": "error",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
-      "react/no-unknown-property": [
-        "error",
-        {
-          "ignore": [
-            "css"
-          ]
-        }
-      ]
+      "react/no-unknown-property": ["error", { "ignore": ["css"] }]
     },
     "overrides": [
       {
@@ -154,25 +150,6 @@
         "extends": [
           "plugin:mdx/overrides"
         ]
-      },
-      {
-        "files": [
-          "*.test.js",
-          "*.test.ts",
-          "*.test.tsx",
-          "*.spec.js",
-          "*.spec.ts",
-          "*.spec.tsx"
-        ],
-        "extends": [
-          "plugin:jest/all"
-        ],
-        "env": {
-          "jest": true
-        },
-        "rules": {
-          "jest/prefer-expect-assertions": "off"
-        }
       }
     ]
   },
