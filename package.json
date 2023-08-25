@@ -93,13 +93,11 @@
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "env": {
-      "browser": true,
-      "jest": true
+      "browser": true
     },
     "extends": [
       "plugin:@typescript-eslint/recommended",
       "plugin:react/recommended",
-      "plugin:jest/all",
       "plugin:mdx/recommended",
       "plugin:prettier/recommended"
     ],
@@ -123,7 +121,6 @@
       "@typescript-eslint/no-explicit-any": "off",
       "react/prop-types": "off",
       "react/self-closing-comp": "error",
-      "jest/prefer-expect-assertions": "off",
       "array-callback-return": "error",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
@@ -150,6 +147,16 @@
         "extends": [
           "plugin:mdx/overrides"
         ]
+      },
+      {
+        "files": ["*.test.js", "*.test.ts", "*.test.tsx", "*.spec.js", "*.spec.ts", "*.spec.tsx"],
+        "extends": ["plugin:jest/all"],
+        "env": {
+          "jest": true
+        },
+        "rules": {
+          "jest/prefer-expect-assertions": "off"
+        }
       }
     ]
   },
