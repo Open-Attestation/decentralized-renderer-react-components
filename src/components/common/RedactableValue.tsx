@@ -41,14 +41,24 @@ export const RedactableValue: FunctionComponent<RedactValueProps> = ({
   editable = false,
   iconRedact = <IconRedact />,
   redactedMessage,
-  noValueMessage
+  noValueMessage,
 }) => {
   const [isRedacted, setRedacted] = useState(false);
-  const DEFAULT_REDACTED_MSG = "**Redacted**"
-  const DEFAULT_NO_VALUE_MSG = "**Field value does not exist**"
+  const DEFAULT_REDACTED_MSG = "**Redacted**";
+  const DEFAULT_NO_VALUE_MSG = "**Field value does not exist**";
 
-  if (isRedacted) return <span style={{ display: "inline-block", color: "#454B50" }}>{ redactedMessage? redactedMessage : DEFAULT_REDACTED_MSG }</span>;
-  if (!value) return <span style={{ display: "inline-block", color: "#454B50" }}>{ noValueMessage? noValueMessage : DEFAULT_NO_VALUE_MSG }</span>;
+  if (isRedacted)
+    return (
+      <span style={{ display: "inline-block", color: "#454B50" }}>
+        {redactedMessage ? redactedMessage : DEFAULT_REDACTED_MSG}
+      </span>
+    );
+  if (!value)
+    return (
+      <span style={{ display: "inline-block", color: "#454B50" }}>
+        {noValueMessage ? noValueMessage : DEFAULT_NO_VALUE_MSG}
+      </span>
+    );
 
   return (
     <>
