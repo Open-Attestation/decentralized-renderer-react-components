@@ -1,5 +1,5 @@
 import React from "react";
-import { RedactableValue } from "./RedactableValue";
+import { DEFAULT_NO_VALUE_MSG, DEFAULT_REDACTED_MSG, RedactableValue } from "./RedactableValue";
 import { screen, render, fireEvent } from "@testing-library/react";
 
 describe("redactablevalue component", () => {
@@ -42,5 +42,55 @@ describe("redactablevalue component", () => {
     expect(screen.getByText("foobar")).toBeInTheDocument();
     fireEvent.click(screen.getByText("foobar"));
     expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it("should display default redacted message when no redacted message is specified", () => {
+    const callback = jest.fn();
+    render(
+      <RedactableValue value="Text to display" onRedactionRequested={callback} editable iconRedact={<>foobar</>} />
+    );
+
+    fireEvent.click(screen.getByText("foobar"));
+    expect(screen.getByText(DEFAULT_REDACTED_MSG)).toBeInTheDocument();
+  });
+
+  it("should display custom redacted message when redacted message is provided", () => {
+    const callback = jest.fn();
+    const CUSTOM_REDACTED_MSG = "custom redacted message";
+    render(
+      <RedactableValue
+        value="Text to display"
+        onRedactionRequested={callback}
+        editable
+        iconRedact={<>foobar</>}
+        redactedMessage={CUSTOM_REDACTED_MSG}
+      />
+    );
+
+    fireEvent.click(screen.getByText("foobar"));
+    expect(screen.getByText(CUSTOM_REDACTED_MSG)).toBeInTheDocument();
+  });
+
+  it("should display default no value message when no custom message is specified", () => {
+    const callback = jest.fn();
+    render(<RedactableValue value={undefined} onRedactionRequested={callback} editable iconRedact={<>foobar</>} />);
+
+    expect(screen.getByText(DEFAULT_NO_VALUE_MSG)).toBeInTheDocument();
+  });
+
+  it("should display custom no value message when provided", () => {
+    const callback = jest.fn();
+    const CUSTOM_NO_VALUE_MSG = "custom no value message";
+    render(
+      <RedactableValue
+        value={undefined}
+        onRedactionRequested={callback}
+        editable
+        iconRedact={<>foobar</>}
+        noValueMessage={CUSTOM_NO_VALUE_MSG}
+      />
+    );
+
+    expect(screen.getByText(CUSTOM_NO_VALUE_MSG)).toBeInTheDocument();
   });
 });

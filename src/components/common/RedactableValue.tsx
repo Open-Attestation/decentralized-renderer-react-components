@@ -30,6 +30,9 @@ export interface RedactValueProps {
   noValueMessage?: string;
 }
 
+export const DEFAULT_REDACTED_MSG = "**Redacted**";
+export const DEFAULT_NO_VALUE_MSG = "**Field value does not exist**";
+
 /**
  * RedactableValue component is almost a duplicate of ObfuscatableValue component
  * ObfuscatableValue component started from OpenCerts, and may be in use on existing certificates, hence we do not want to meddle with the existing functionality
@@ -44,8 +47,6 @@ export const RedactableValue: FunctionComponent<RedactValueProps> = ({
   noValueMessage,
 }) => {
   const [isRedacted, setRedacted] = useState(false);
-  const DEFAULT_REDACTED_MSG = "**Redacted**";
-  const DEFAULT_NO_VALUE_MSG = "**Field value does not exist**";
 
   if (isRedacted)
     return (
