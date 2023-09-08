@@ -1,7 +1,7 @@
 import { ComponentType } from "react";
 import { v2, WrappedDocument, OpenAttestationDocument, v3 } from "@govtechsg/open-attestation";
 
-export type Attachment = v2.Attachment | v3.Attachment;
+export type Attachment = v2.Attachment | v3.Attachment; // TODO: OA v4 schema does not support attachments yet
 export interface Renderer {
   attachment: Attachment;
 }
