@@ -26,7 +26,7 @@ export const isV2Document = (document: any): document is v2.OpenAttestationDocum
 
 // FIXME: Not sure why custom type guards are used to detect v2 and v3 documents
 export const isV3Document = (document: any): document is v3.OpenAttestationDocument => {
-  return !!document["@context"];
+  return !!document["@context"] && !!document["openAttestationMetadata"];
 };
 
 export const isV4Document = (document: unknown): document is v4.OpenAttestationDocument =>
@@ -36,7 +36,7 @@ const getTemplateName = (document: OpenAttestationDocument): string => {
   if (isV2Document(document) && typeof document.$template === "object") {
     return document.$template.name;
   }
-  if (isV3Document(document) && document.openAttestationMetadata.template) {
+  if (isV3Document(document) && document.openAttestationMetadata?.template) {
     return document.openAttestationMetadata.template.name;
   }
   if (isV4Document(document) && document.renderMethod) {
