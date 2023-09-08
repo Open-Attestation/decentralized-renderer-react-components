@@ -30,7 +30,7 @@ export const isV3Document = (document: any): document is v3.OpenAttestationDocum
 };
 
 export const isV4Document = (document: unknown): document is v4.OpenAttestationDocument =>
-  utils.isWrappedV4Document(document) || utils.isSignedWrappedV4Document(document);
+  utils.isRawV4Document(document);
 
 const getTemplateName = (document: OpenAttestationDocument): string => {
   if (isV2Document(document) && typeof document.$template === "object") {
