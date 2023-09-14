@@ -7,7 +7,7 @@ export default {
 };
 
 export const RedactableValueDefault = (): ReactElement => {
-  return <RedactableValue value="Some value" />;
+  return <RedactableValue value="Some value" editable={false} onRedactionRequested={() => {}} />;
 };
 
 export const RedactableValueIconDefault = (): ReactElement => {
