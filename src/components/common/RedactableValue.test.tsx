@@ -3,14 +3,6 @@ import { DEFAULT_NO_VALUE_MSG, DEFAULT_REDACTED_MSG, RedactableValue } from "./R
 import { screen, render, fireEvent } from "@testing-library/react";
 
 describe("redactablevalue component", () => {
-  it("should display value only when editable is not set", () => {
-    const callback = jest.fn();
-    render(<RedactableValue value="Text to display" onRedactionRequested={callback} />);
-
-    expect(screen.getByText("Text to display")).toBeInTheDocument();
-    expect(screen.queryByTitle("Redact handler")).not.toBeInTheDocument();
-  });
-
   it("should display value only when editable is set to false", () => {
     const callback = jest.fn();
     render(<RedactableValue value="Text to display" onRedactionRequested={callback} editable={false} />);
@@ -92,5 +84,11 @@ describe("redactablevalue component", () => {
     );
 
     expect(screen.getByText(CUSTOM_NO_VALUE_MSG)).toBeInTheDocument();
+  });
+
+  it("should hide value when isValueHidden", () => {
+    const callback = jest.fn();
+    render(<RedactableValue value={`foo`} isValueHidden onRedactionRequested={callback} editable />);
+    expect(screen.queryByTestId("redactable-value")).not.toBeInTheDocument();
   });
 });

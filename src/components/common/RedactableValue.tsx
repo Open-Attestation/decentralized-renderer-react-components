@@ -22,12 +22,14 @@ const IconRedact: FunctionComponent = () => {
 };
 
 export interface RedactValueProps {
-  value?: string | number;
-  onRedactionRequested?: () => void;
-  editable?: boolean;
+  value?: string | number | Record<string, unknown> | Record<string, unknown>[];
+  isValueHidden?: boolean;
+  onRedactionRequested: () => void;
+  editable: boolean;
   iconRedact?: React.ReactElement;
   redactedMessage?: string;
   noValueMessage?: string;
+  className?: string;
 }
 
 export const DEFAULT_REDACTED_MSG = "**Redacted**";
@@ -36,38 +38,41 @@ export const DEFAULT_NO_VALUE_MSG = "**Field value does not exist**";
 /**
  * RedactableValue component is almost a duplicate of ObfuscatableValue component
  * ObfuscatableValue component started from OpenCerts, and may be in use on existing certificates, hence we do not want to meddle with the existing functionality
- * RedactableValue component displays a value and a cross when editable props is set to true, allows custom redact icon, hints at redacted values
  */
 export const RedactableValue: FunctionComponent<RedactValueProps> = ({
   value,
+  isValueHidden = false,
   onRedactionRequested = noop,
   editable = false,
   iconRedact = <IconRedact />,
   redactedMessage,
   noValueMessage,
+  className = "",
 }) => {
   const [isRedacted, setRedacted] = useState(false);
 
-  if (isRedacted)
-    return (
-      <span style={{ display: "inline-block", color: "#454B50" }}>
-        {redactedMessage ? redactedMessage : DEFAULT_REDACTED_MSG}
-      </span>
-    );
-  if (!value)
-    return (
-      <span style={{ display: "inline-block", color: "#454B50" }}>
-        {noValueMessage ? noValueMessage : DEFAULT_NO_VALUE_MSG}
-      </span>
-    );
+  const getMessage = () => {
+    switch (true) {
+      case isRedacted:
+        return redactedMessage ? redactedMessage : DEFAULT_REDACTED_MSG;
+      case !value:
+        return noValueMessage ? noValueMessage : DEFAULT_NO_VALUE_MSG;
+      default:
+        return value;
+    }
+  };
 
   return (
     <>
-      <span style={{ display: "inline-block", marginRight: "8px" }}>{value}</span>
+      {!isValueHidden && (
+        <span className={`inline-block text-[#454B50]`} data-testid="redactable-value">
+          {getMessage()}
+        </span>
+      )}
       {editable && (
         <span
           title="Redact handler"
-          style={{ display: "inline-block", cursor: "pointer" }}
+          className={`inline-block cursor-pointer ${className}`}
           onClick={() => {
             if (editable) {
               onRedactionRequested();
