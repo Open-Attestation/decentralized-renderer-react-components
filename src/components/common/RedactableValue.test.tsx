@@ -91,4 +91,10 @@ describe("redactablevalue component", () => {
     render(<RedactableValue value={`foo`} isValueHidden onRedactionRequested={callback} editable />);
     expect(screen.queryByTestId("redactable-value")).not.toBeInTheDocument();
   });
+
+  it("should not show redact handler when value does not exists (obfuscated)", () => {
+    const callback = jest.fn();
+    render(<RedactableValue onRedactionRequested={callback} editable />);
+    expect(screen.queryByTitle("Redact handler")).not.toBeInTheDocument();
+  });
 });
