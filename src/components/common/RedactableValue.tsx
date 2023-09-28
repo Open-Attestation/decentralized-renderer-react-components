@@ -69,7 +69,7 @@ export const RedactableValue: FunctionComponent<RedactValueProps> = ({
           {getMessage()}
         </span>
       )}
-      {editable && (
+      {editable && value && (
         <span
           title="Redact handler"
           className={`inline-block cursor-pointer ${className}`}
