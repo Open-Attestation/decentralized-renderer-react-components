@@ -1,5 +1,5 @@
 {
-  "name": "@govtechsg/decentralized-renderer-react-components",
+  "name": "@tradetrust/decentralized-renderer-react-components",
   "version": "0.0.0-development",
   "publishConfig": {
     "access": "public"
@@ -181,6 +181,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Open-Attestation/decentralized-renderer-react-components.git"
+    "url": "https://github.com/TradeTrust/decentralized-renderer-react-components.git"
   }
 }
