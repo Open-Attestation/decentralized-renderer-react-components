@@ -1,5 +1,5 @@
 import { OpencertsDocuments } from "../../../types";
-import { SchemaId, v2, WrappedDocument } from "@govtechsg/open-attestation";
+import { SchemaId, v2, WrappedDocument } from "@tradetrust-tt/tradetrust";
 
 export const rawOpencerts: OpencertsDocuments = {
   id: "53b75bbe",

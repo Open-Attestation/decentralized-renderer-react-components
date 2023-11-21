@@ -1,6 +1,6 @@
 // actions sent by host to frame
 import { ActionType, createAction } from "typesafe-actions";
-import { OpenAttestationDocument, WrappedDocument } from "@govtechsg/open-attestation";
+import { OpenAttestationDocument, WrappedDocument } from "@tradetrust-tt/tradetrust";
 
 export const renderDocument = createAction("RENDER_DOCUMENT")<{
   document: OpenAttestationDocument;

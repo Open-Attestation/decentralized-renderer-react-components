@@ -54,7 +54,7 @@ The following list of actions are made for host to communicate to the iframe (an
 - render a document:
   - type: `RENDER_DOCUMENT`
   - payload: object with 2 properties
-    - document: (mandatory) document data as returned by `getData` method from [@govtechsg/open-attestation](https://github.com/Open-Attestation/open-attestation)
+    - document: (mandatory) document data as returned by `getData` method from [@tradetrust-tt/tradetrust](https://github.com/TradeTrust/tradetrust)
     - rawDocument: (optional) Open Attestation document
 
 ```javascript
@@ -91,7 +91,7 @@ There is a 4th action that can be used in the context of react-native applicatio
 
 - request for the list of templates for a document. The action directly return the list of templates
   - type: `GET_TEMPLATES`
-  - payload: (mandatory) document data as returned by `getData` method from [@govtechsg/open-attestation](https://github.com/Open-Attestation/open-attestation)
+  - payload: (mandatory) document data as returned by `getData` method from [@tradetrust-tt/tradetrust](https://github.com/TradeTrust/tradetrust)
 
 ```javascript
 const action = {
@@ -186,7 +186,7 @@ Please check the code in `example/decentralized-renderer` to see how to use this
 
 Each configured `Template` will be provided the following properties, when rendering a document:
 
-- `document`: (mandatory) document data as returned by `getData` method from [@govtechsg/open-attestation](https://github.com/Open-Attestation/open-attestation)
+- `document`: (mandatory) document data as returned by `getData` method from [@tradetrust-tt/tradetrust](https://github.com/TradeTrust/tradetrust)
 - `rawDocument`: (optional) Open Attestation document
 - `handleObfuscation`: (mandatory) A function to call to handle obfuscation in the document. The value provided must follow path property as handlded by [lodash#get](https://lodash.com/docs/4.17.15#get)
 

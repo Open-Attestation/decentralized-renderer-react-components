@@ -1,6 +1,6 @@
 import React from "react";
 import { documentTemplates, repeat } from "./utils";
-import { v2 } from "@govtechsg/open-attestation";
+import { v2 } from "@tradetrust-tt/tradetrust";
 import { TemplateRegistry } from "./types";
 import { noAttachmentRenderer } from "./components/renderer/NoAttachmentRenderer";
 
