@@ -7,17 +7,18 @@
 
 ## Features
 
-- [**React**](http://reactjs.org/) - A JavaScript library for building user interfaces
-- [**Webpack**](https://webpack.js.org/) - A component bundler
-- [**React testing library**](https://testing-library.com/) - Simple and complete testing utilities that encourage good testing practices
-- [**Jest**](https://facebook.github.io/jest) - A JavaScript testing framework used by Facebook
-- [**ESLint**](http://eslint.org/) - It makes sure you are writing quality code.
-- [**Prettier**](https://prettier.io/) - It enforces a consistent style by parsing your code and re-printing it.
-- [**Typescript**](https://www.typescriptlang.org/) - A JavaScript superset that provides optional static typing
 - [**Circle CI**](https://circleci.com/) - It automates tests and linting for every push or pull request.
-- [**Storybook**](https://storybook.js.org/) - A tool for developing UI components in isolation with documentation
-- [**Semantic Release**](https://semantic-release.gitbook.io/semantic-release/) - A fully automated version management and package publishing tool
 - [**Debug**](https://github.com/visionmedia/debug) - A JS debugging utility that works in both node.js and browsers
+- [**ESLint**](http://eslint.org/) - With this tool, you write quality code.
+- [**Jest**](https://facebook.github.io/jest) - A JavaScript testing framework used by Facebook
+- [**Prettier**](https://prettier.io/) - It enforces a consistent style by parsing your code and re-printing it.
+- [**React**](http://reactjs.org/) - A JavaScript library for building user interfaces
+- [**React testing library**](https://testing-library.com/) - Simple and complete testing utilities that encourage good testing practices
+- [**TypeScript**](https://www.typescriptlang.org/) - A JavaScript superset that provides optional static typing
+- [**Semantic Release**](https://semantic-release.gitbook.io/semantic-release/) - A fully automated version management and package publishing tool
+- [**Storybook**](https://storybook.js.org/) - A tool for developing UI components in isolation with documentation
+- [**Webpack**](https://webpack.js.org/) - A component bundler
+
 
 ## Installation
 <!--Flag: The "Installation" section was added based on similar steps in the "react-template" readme.-->
