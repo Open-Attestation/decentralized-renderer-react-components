@@ -19,6 +19,26 @@
 - [**Semantic Release**](https://semantic-release.gitbook.io/semantic-release/) - A fully automated version management and package publishing tool
 - [**Debug**](https://github.com/visionmedia/debug) - A JS debugging utility that works in both node.js and browsers
 
+## Installation
+<!--Flag: The "Installation" section was added based on similar steps in the "react-template" readme.-->
+
+To install the React components for the decentralized renderer, download or `git clone` [this repository](https://github.com/Open-Attestation/decentralized-renderer-react-components):
+
+```sh
+$ git clone https://github.com/Open-Attestation/decentralized-renderer-react-components.git my-components
+$ cd my-components
+$ rm -rf .git
+$ npm install
+```
+
+Be sure to edit the following files according to your module information:
+
+- `package.json` (module name and version)
+- `README.md`
+- `LICENSE`
+- Add your own template (in the `src` folder) and configure the template registry (in the `src/index.tsx` file).
+<!--Flag: The folder and file names above need confirmation.-->
+
 ## How it works
 
 To begin with, be sure to read the initial introduction and explanation about the [decentralized renderer](https://docs.opencerts.io/docs/migrations/v1_to_v2).
