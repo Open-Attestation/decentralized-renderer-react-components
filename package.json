@@ -10,7 +10,7 @@
   "types": "build/types/index.d.ts",
   "dependencies": {
     "@babel/runtime-corejs3": "^7.15.4",
-    "@emotion/react": "^11.11.1",
+    "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
