@@ -215,6 +215,7 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
               source={document.frameSource}
               dispatch={fromFrame}
               onConnected={fn}
+              onConnectionFailure={(setDocumentToRender) => setDocumentToRender(document.document)}
               css={css`
                 display: block;
                 margin: auto;

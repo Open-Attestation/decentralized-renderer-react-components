@@ -11,6 +11,8 @@ import {
 } from "./frame.actions";
 import { Template } from "../../types";
 
+import { ConnectionFailureTemplate } from "../../DefaultTemplate";
+
 interface BaseFrameConnectorProps {
   /**
    * URL of the content of the frame to render (URL to a decentralized renderer)
@@ -20,6 +22,8 @@ interface BaseFrameConnectorProps {
    * Function called once the connection has been established with the frame. It provides another function to send actions to the frame.
    */
   onConnected: (toFrame: HostActionsHandler & LegacyHostActions) => void;
+
+  onConnectionFailure?: (setDocumentToRender: React.Dispatch<React.SetStateAction<undefined>>) => void;
   /**
    * style to apply to the frame
    */
@@ -51,10 +55,12 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   dispatch,
   source,
   onConnected,
+  onConnectionFailure,
   style,
   className = "",
   sandbox = "allow-scripts allow-same-origin allow-modals allow-popups",
 }) => {
+  const [documentToRenderOnConnectionFailure, setDocumentToRenderOnConnectionFailure] = useState(undefined);
   const [onConnectedCalled, setOnConnectedCalled] = useState(false); // ensure on connected is called once only
   const iframe = useRef<HTMLIFrameElement>(null);
   // this is used to store internally the latest templates shared in order to automatically transform
@@ -115,16 +121,15 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   useEffect(() => {
     if (timeout) {
       dispatch(timeoutAction());
+      if (onConnectionFailure) onConnectionFailure(setDocumentToRenderOnConnectionFailure);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeout, dispatch]);
 
   return (
     <>
       {timeout ? (
-        <>
-          <h3>Connection timeout on renderer</h3>
-          <p>Please contact the administrator of {source}.</p>
-        </>
+        <ConnectionFailureTemplate document={documentToRenderOnConnectionFailure} source={source} />
       ) : (
         <iframe
           title="Decentralised Rendered Certificate"
