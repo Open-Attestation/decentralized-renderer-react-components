@@ -123,8 +123,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
       dispatch(timeoutAction());
       if (onConnectionFailure) onConnectionFailure(setDocumentToRenderOnConnectionFailure);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeout, dispatch]);
+  }, [timeout, dispatch, onConnectionFailure]);
 
   return (
     <>
