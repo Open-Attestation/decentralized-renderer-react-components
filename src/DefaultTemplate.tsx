@@ -1,6 +1,7 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
+import { isRawV2Document, isRawV3Document } from "@govtechsg/open-attestation/dist/types/shared/utils";
 
 interface DefaultTemplateProps {
   title: string;
@@ -30,7 +31,7 @@ function extractTemplateInfo(document: TemplateProps["document"]) {
   let type = "";
   let url = "";
 
-  if ("$template" in document) {
+  if (isRawV2Document(document)) {
     // v2 document
     const template = document.$template;
 
@@ -41,7 +42,7 @@ function extractTemplateInfo(document: TemplateProps["document"]) {
       type = template.type;
       url = template.url ?? "";
     }
-  } else if ("openAttestationMetadata" in document) {
+  } else if (isRawV3Document(document)) {
     // v3 document
     const template = document.openAttestationMetadata.template;
     if (template !== undefined) {
