@@ -1,7 +1,7 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
-import { isRawV2Document, isRawV3Document } from "@govtechsg/open-attestation/dist/types/shared/utils";
+import { utils } from "@govtechsg/open-attestation";
 
 interface DefaultTemplateProps {
   title: string;
@@ -24,14 +24,12 @@ const container = {
   paddingLeft: "1rem",
 };
 
-const paddingBox = `.75rem 1.25rem`;
-
 function extractTemplateInfo(document: TemplateProps["document"]) {
   let name = "";
   let type = "";
   let url = "";
 
-  if (isRawV2Document(document)) {
+  if (utils.isRawV2Document(document)) {
     // v2 document
     const template = document.$template;
 
@@ -42,7 +40,7 @@ function extractTemplateInfo(document: TemplateProps["document"]) {
       type = template.type;
       url = template.url ?? "";
     }
-  } else if (isRawV3Document(document)) {
+  } else if (utils.isRawV3Document(document)) {
     // v3 document
     const template = document.openAttestationMetadata.template;
     if (template !== undefined) {
@@ -94,7 +92,7 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
           <pre
             style={{
               backgroundColor: "#f7f8fc",
-              padding: paddingBox,
+              padding: `.75rem 1.25rem`,
               whiteSpace: "pre-wrap",
               wordWrap: "break-word",
             }}

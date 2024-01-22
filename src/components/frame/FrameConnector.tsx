@@ -23,7 +23,7 @@ interface BaseFrameConnectorProps {
    */
   onConnected: (toFrame: HostActionsHandler & LegacyHostActions) => void;
 
-  onConnectionFailure?: (setDocumentToRender: React.Dispatch<React.SetStateAction<undefined>>) => void;
+  onConnectionFailure?: (renderDocumentWithJSONRenderer: (document: any) => void) => void;
   /**
    * style to apply to the frame
    */
@@ -121,7 +121,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   useEffect(() => {
     if (timeout) {
       dispatch(timeoutAction());
-      if (onConnectionFailure) onConnectionFailure(setDocumentToRenderOnConnectionFailure);
+      if (onConnectionFailure) onConnectionFailure((document) => setDocumentToRenderOnConnectionFailure(document));
     }
   }, [timeout, dispatch, onConnectionFailure]);
 
