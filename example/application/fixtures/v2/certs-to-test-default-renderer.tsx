@@ -1,6 +1,6 @@
 import { v2 } from "@govtechsg/open-attestation";
 
-export const misconfiguredCert = {
+export const certWithBadTemplateName = {
   message: "Sample OA document",
   recipient: {
     name: "Tan Chen Chen",
@@ -18,7 +18,7 @@ export const misconfiguredCert = {
         type: "NONE",
       },
       identityProof: {
-        type: ":DNS-DID",
+        type: "DNS-DID",
         location: "staging.notarise.io",
         key: "did:ethr:0x3A655e6EdeBcDf1e7d69195dFf2AeA5fE126bC6E#controller",
       },
@@ -26,7 +26,7 @@ export const misconfiguredCert = {
   ],
 };
 
-export const missingTemplate = {
+export const certWithNoTemplate = {
   message: "Sample OA document",
   recipient: {
     name: "Tan Chen Chen",
@@ -39,7 +39,7 @@ export const missingTemplate = {
         type: "NONE",
       },
       identityProof: {
-        type: ":DNS-DID",
+        type: "DNS-DID",
         location: "staging.notarise.io",
         key: "did:ethr:0x3A655e6EdeBcDf1e7d69195dFf2AeA5fE126bC6E#controller",
       },
