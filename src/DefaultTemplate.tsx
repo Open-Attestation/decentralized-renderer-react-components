@@ -2,6 +2,7 @@ import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { utils } from "@govtechsg/open-attestation";
+import JsonView from "@microlink/react-json-view";
 
 interface DefaultTemplateProps {
   title: string;
@@ -89,16 +90,31 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
 
         {/* plain text preview */}
         {props.document && (
-          <pre
-            style={{
-              backgroundColor: "#f7f8fc",
-              padding: `.75rem 1.25rem`,
-              whiteSpace: "pre-wrap",
-              wordWrap: "break-word",
+          <JsonView
+            style={{ marginTop: "32px" }}
+            theme={{
+              base00: "white",
+              base01: "#ddd",
+              base02: "#ddd",
+              base03: "#444",
+              base04: "purple",
+              base05: "#444",
+              base06: "#444",
+              base07: "#000",
+              base08: "#444",
+              base09: "#057A55",
+              base0A: "#057A55",
+              base0B: "#057A55",
+              base0C: "#000",
+              base0D: "#057A55",
+              base0E: "#057A55",
+              base0F: "#057A55",
             }}
-          >
-            {JSON.stringify(props.document, null, 2)}
-          </pre>
+            src={props.document}
+            displayObjectSize={false}
+            displayDataTypes={false}
+            collapseStringsAfterLength={200}
+          />
         )}
       </div>
     </div>
