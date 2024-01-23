@@ -9,8 +9,8 @@ export const App: React.FunctionComponent = (): React.ReactElement => {
   return (
     <AppContainer
       documents={[
-        { name: "OpenCerts (v2)", document: rawOpencerts, frameSource: "http://localhost:9000" },
-        { name: "Test Default Renderer (v2)", document: certWithNoTemplate, frameSource: "http://localhost:9000" },
+        { name: "OpenCerts (V2)", document: rawOpencerts, frameSource: "http://localhost:9000" },
+        { name: "Test Default Renderer (V2)", document: certWithNoTemplate, frameSource: "http://localhost:9000" },
         { name: "Driver License (V3)", document: driverLicense, frameSource: "http://localhost:9000" },
         { name: "Legacy (Penpal V4)", document: { id: "legacy" }, frameSource: "http://localhost:8080" },
       ]}
