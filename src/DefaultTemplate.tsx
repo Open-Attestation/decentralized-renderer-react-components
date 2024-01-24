@@ -121,6 +121,7 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
             displayObjectSize={false}
             displayDataTypes={false}
             collapseStringsAfterLength={200}
+            quotesOnKeys={false}
             enableClipboard={false}
           />
         )}
