@@ -25,33 +25,40 @@ const container = {
   paddingLeft: "1rem",
 };
 
-function extractTemplateInfo(document: TemplateProps["document"]) {
-  let name = "";
-  let type = "";
-  let url = "";
+interface TemplateInfo {
+  name: string;
+  type: string;
+  url: string;
+}
 
+function extractTemplateInfo(document: TemplateProps["document"]): TemplateInfo | undefined {
   if (utils.isRawV2Document(document)) {
     // v2 document
     const template = document.$template;
 
     if (typeof template === "string") {
       // legacy open certs. uses centralised repository.
+      return undefined;
     } else if (template !== undefined) {
-      name = template.name;
-      type = template.type;
-      url = template.url ?? "";
+      return {
+        name: template.name,
+        type: template.type,
+        url: template.url ?? "",
+      };
     }
   } else if (utils.isRawV3Document(document)) {
     // v3 document
     const template = document.openAttestationMetadata.template;
     if (template !== undefined) {
-      name = template.name;
-      type = template.type;
-      url = template.url;
+      return {
+        name: template.name,
+        type: template.type,
+        url: template.url,
+      };
     }
   }
 
-  return { name, type, url };
+  return undefined;
 }
 
 interface ExampleProps {
@@ -133,15 +140,20 @@ export const NoTemplate: React.FunctionComponent<TemplateProps> = (props) => {
 };
 
 export const WrongTemplate: React.FunctionComponent<TemplateProps> = (props) => {
+  const templateInfo = extractTemplateInfo(props.document);
   return (
     <DefaultTemplate
       title="This document has display issues"
       description={
         <>
           An incorrect template has been used for this document. Please contact the issuer with the information below:
-          <br />
-          <br />
-          <Example template={extractTemplateInfo(props.document)} />
+          {templateInfo && (
+            <>
+              <br />
+              <br />
+              <Example template={templateInfo} />
+            </>
+          )}
         </>
       }
       document={props.document}
@@ -150,6 +162,7 @@ export const WrongTemplate: React.FunctionComponent<TemplateProps> = (props) => 
 };
 
 export const ConnectionFailureTemplate: React.FunctionComponent<ConnectionFailureProps> = (props) => {
+  const templateInfo = props.document ? extractTemplateInfo(props.document) : undefined;
   return (
     <DefaultTemplate
       title="This document might be having loading issues"
@@ -159,8 +172,8 @@ export const ConnectionFailureTemplate: React.FunctionComponent<ConnectionFailur
           with the information below:
           <br />
           <br />
-          {props.document ? (
-            <Example template={extractTemplateInfo(props.document)} />
+          {props.document && templateInfo ? (
+            <Example template={templateInfo} />
           ) : (
             <span style={{ fontFamily: "Courier" }}>Template URL: “{props.source}”</span>
           )}

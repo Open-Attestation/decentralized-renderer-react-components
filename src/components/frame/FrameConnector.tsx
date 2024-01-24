@@ -128,7 +128,9 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   return (
     <>
       {timeout ? (
-        <ConnectionFailureTemplate document={documentToRenderOnConnectionFailure} source={source} />
+        <div className="frameless-tabs">
+          <ConnectionFailureTemplate document={documentToRenderOnConnectionFailure} source={source} />
+        </div>
       ) : (
         <iframe
           title="Decentralised Rendered Certificate"
