@@ -137,7 +137,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
           id="iframe"
           ref={iframe}
           src={source}
-          style={style}
+          style={{ ...style, border: "none" }}
           className={className}
           sandbox={sandbox}
         />
