@@ -6,20 +6,20 @@ module.exports = {
   entry: path.join(__dirname, "./app.tsx"),
   externals: {},
   output: {
-    filename: "bundle.js"
+    filename: "bundle.js",
   },
   devServer: {
     contentBase: path.join(__dirname, "."),
     compress: true,
     port: 9001,
-    index: "index.html"
+    index: "index.html",
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     fallback: {
-      "crypto": require.resolve("crypto-browserify") ,
-      "stream": require.resolve("stream-browserify")
-    }
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify"),
+    },
   },
   module: {
     rules: [
@@ -27,9 +27,9 @@ module.exports = {
         test: /\.(ts|js)x?$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
-      }
-    ]
-  }
+          loader: "babel-loader",
+        },
+      },
+    ],
+  },
 };
