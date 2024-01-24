@@ -77,7 +77,7 @@ const Example: React.FunctionComponent<ExampleProps> = ({ template }) => {
 export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (props) => {
   return (
     <div id={DEFAULT_ID}>
-      <div style={{ ...container, fontFamily: "Arial" }}>
+      <div style={{ ...container, fontFamily: "Arial", wordBreak: "break-all" }}>
         {/* Banner */}
         <div style={{ backgroundColor: "#FDFDEA", borderLeft: "2px solid #8E4B10", padding: "16px 16px 16px 18px" }}>
           <p style={{ margin: "0px", lineHeight: "21px", fontSize: "16px", color: "#8E4B10", fontWeight: "700" }}>
@@ -114,6 +114,7 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
             displayObjectSize={false}
             displayDataTypes={false}
             collapseStringsAfterLength={200}
+            enableClipboard={false}
           />
         )}
       </div>
