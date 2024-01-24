@@ -31,9 +31,8 @@ interface TemplateInfo {
   url: string;
 }
 
-function extractTemplateInfo(document: TemplateProps["document"]): TemplateInfo | undefined {
+export function extractTemplateInfo(document: TemplateProps["document"]): TemplateInfo | undefined {
   if (utils.isRawV2Document(document)) {
-    // v2 document
     const template = document.$template;
 
     if (typeof template === "string") {
@@ -47,7 +46,6 @@ function extractTemplateInfo(document: TemplateProps["document"]): TemplateInfo 
       };
     }
   } else if (utils.isRawV3Document(document)) {
-    // v3 document
     const template = document.openAttestationMetadata.template;
     if (template !== undefined) {
       return {
