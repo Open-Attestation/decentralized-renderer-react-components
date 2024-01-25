@@ -11,6 +11,8 @@ import {
 } from "./frame.actions";
 import { Template } from "../../types";
 
+import { ConnectionFailureTemplate } from "../../DefaultTemplate";
+
 interface BaseFrameConnectorProps {
   /**
    * URL of the content of the frame to render (URL to a decentralized renderer)
@@ -20,6 +22,8 @@ interface BaseFrameConnectorProps {
    * Function called once the connection has been established with the frame. It provides another function to send actions to the frame.
    */
   onConnected: (toFrame: HostActionsHandler & LegacyHostActions) => void;
+
+  onConnectionFailure?: (renderDocumentWithJSONRenderer: (document: any) => void) => void;
   /**
    * style to apply to the frame
    */
@@ -51,10 +55,12 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   dispatch,
   source,
   onConnected,
+  onConnectionFailure,
   style,
   className = "",
   sandbox = "allow-scripts allow-same-origin allow-modals allow-popups",
 }) => {
+  const [documentToRenderOnConnectionFailure, setDocumentToRenderOnConnectionFailure] = useState(undefined);
   const [onConnectedCalled, setOnConnectedCalled] = useState(false); // ensure on connected is called once only
   const iframe = useRef<HTMLIFrameElement>(null);
   // this is used to store internally the latest templates shared in order to automatically transform
@@ -115,23 +121,23 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
   useEffect(() => {
     if (timeout) {
       dispatch(timeoutAction());
+      if (onConnectionFailure) onConnectionFailure((document) => setDocumentToRenderOnConnectionFailure(document));
     }
-  }, [timeout, dispatch]);
+  }, [timeout, dispatch, onConnectionFailure]);
 
   return (
     <>
       {timeout ? (
-        <>
-          <h3>Connection timeout on renderer</h3>
-          <p>Please contact the administrator of {source}.</p>
-        </>
+        <div className="frameless-tabs">
+          <ConnectionFailureTemplate document={documentToRenderOnConnectionFailure} source={source} />
+        </div>
       ) : (
         <iframe
           title="Decentralised Rendered Certificate"
           id="iframe"
           ref={iframe}
           src={source}
-          style={style}
+          style={{ ...style, border: "none" }}
           className={className}
           sandbox={sandbox}
         />
