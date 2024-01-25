@@ -59,7 +59,7 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
   return undefined;
 }
 
-interface ExampleProps {
+interface TemplateInfoComponentProps {
   template: {
     name: string;
     type: string;
@@ -67,9 +67,9 @@ interface ExampleProps {
   };
 }
 
-const Example: React.FunctionComponent<ExampleProps> = ({ template }) => {
+const TemplateInfoComponent: React.FunctionComponent<TemplateInfoComponentProps> = ({ template }) => {
   return (
-    <span style={{ fontFamily: "Courier" }}>
+    <span style={{ fontFamily: "Courier" }} data-testid={"template-info"}>
       Template Name : “{template.name}”
       <br />
       Type: “{template.type}”
@@ -95,33 +95,35 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
 
         {/* plain text preview */}
         {props.document && (
-          <JsonView
-            style={{ marginTop: "32px" }}
-            theme={{
-              base00: "white",
-              base01: "#ddd",
-              base02: "#ddd",
-              base03: "#444",
-              base04: "purple",
-              base05: "#444",
-              base06: "#444",
-              base07: "#000",
-              base08: "#444",
-              base09: "#057A55",
-              base0A: "#057A55",
-              base0B: "#057A55",
-              base0C: "#000",
-              base0D: "#057A55",
-              base0E: "#057A55",
-              base0F: "#057A55",
-            }}
-            src={props.document}
-            displayObjectSize={false}
-            displayDataTypes={false}
-            collapseStringsAfterLength={200}
-            quotesOnKeys={false}
-            enableClipboard={false}
-          />
+          <div data-testid={"json-view"}>
+            <JsonView
+              style={{ marginTop: "32px" }}
+              theme={{
+                base00: "white",
+                base01: "#ddd",
+                base02: "#ddd",
+                base03: "#444",
+                base04: "purple",
+                base05: "#444",
+                base06: "#444",
+                base07: "#000",
+                base08: "#444",
+                base09: "#057A55",
+                base0A: "#057A55",
+                base0B: "#057A55",
+                base0C: "#000",
+                base0D: "#057A55",
+                base0E: "#057A55",
+                base0F: "#057A55",
+              }}
+              src={props.document}
+              displayObjectSize={false}
+              displayDataTypes={false}
+              collapseStringsAfterLength={200}
+              quotesOnKeys={false}
+              enableClipboard={false}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -150,7 +152,7 @@ export const WrongTemplate: React.FunctionComponent<TemplateProps> = (props) => 
             <>
               <br />
               <br />
-              <Example template={templateInfo} />
+              <TemplateInfoComponent template={templateInfo} />
             </>
           )}
         </>
@@ -172,7 +174,7 @@ export const ConnectionFailureTemplate: React.FunctionComponent<ConnectionFailur
           <br />
           <br />
           {props.document && templateInfo ? (
-            <Example template={templateInfo} />
+            <TemplateInfoComponent template={templateInfo} />
           ) : (
             <span style={{ fontFamily: "Courier" }}>Template URL: “{props.source}”</span>
           )}
