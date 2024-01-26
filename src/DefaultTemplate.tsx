@@ -1,8 +1,8 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
-import { utils } from "@govtechsg/open-attestation";
 import JsonView from "@microlink/react-json-view";
+import { isV2Document, isV3Document } from "./utils";
 
 interface DefaultTemplateProps {
   title: string;
@@ -32,7 +32,7 @@ interface TemplateInfo {
 }
 
 export function extractTemplateInfo(document: TemplateProps["document"]): TemplateInfo | undefined {
-  if (utils.isRawV2Document(document)) {
+  if (isV2Document(document)) {
     const template = document.$template;
 
     if (typeof template === "string") {
@@ -45,7 +45,7 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
         url: template.url ?? "",
       };
     }
-  } else if (utils.isRawV3Document(document)) {
+  } else if (isV3Document(document)) {
     const template = document.openAttestationMetadata.template;
     if (template !== undefined) {
       return {
