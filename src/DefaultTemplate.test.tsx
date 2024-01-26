@@ -29,7 +29,7 @@ const v3Document: v3.OpenAttestationDocument = {
     id: "did:ethr:mockHashValue",
     name: "https://example.com",
   },
-  issuanceDate: "2010-01-01T19:23:24Z",
+  issuanceDate: "2001-01-01T19:23:24Z",
   openAttestationMetadata: {
     identityProof: {
       type: v3.IdentityProofType.DNSDid,
