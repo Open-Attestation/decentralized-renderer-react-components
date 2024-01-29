@@ -1,0 +1,396 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`jsonView component should display json view of a json object with nested elements 1`] = `
+<pre
+  data-testid="json-view"
+  style="background-color: white; font-size: 14px; line-height: 21px; white-space: pre-wrap; word-wrap: break-word;"
+>
+  <div
+    style="margin-left: 0px;"
+  >
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        string
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        test
+      </span>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        number
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        1
+      </span>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        boolean
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        false
+      </span>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        person
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        <div
+          style="margin-left: 40px;"
+        >
+          <div>
+            <span
+              style="color: black; font-weight: 700;"
+            >
+              name
+              : 
+            </span>
+            <span
+              style="color: rgb(5, 122, 85);"
+            >
+              john doe
+            </span>
+          </div>
+          <div>
+            <span
+              style="color: black; font-weight: 700;"
+            >
+              age
+              : 
+            </span>
+            <span
+              style="color: rgb(5, 122, 85);"
+            >
+              35
+            </span>
+          </div>
+          <div>
+            <span
+              style="color: black; font-weight: 700;"
+            >
+              isMarried
+              : 
+            </span>
+            <span
+              style="color: rgb(5, 122, 85);"
+            >
+              false
+            </span>
+          </div>
+        </div>
+      </span>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        nestedObj
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        <div
+          style="margin-left: 40px;"
+        >
+          <div>
+            <span
+              style="color: black; font-weight: 700;"
+            >
+              anotherLayerOfNesting
+              : 
+            </span>
+            <span
+              style="color: rgb(5, 122, 85);"
+            >
+              <div
+                style="margin-left: 40px;"
+              >
+                <div>
+                  <span
+                    style="color: black; font-weight: 700;"
+                  >
+                    person2
+                    : 
+                  </span>
+                  <span
+                    style="color: rgb(5, 122, 85);"
+                  >
+                    <div
+                      style="margin-left: 40px;"
+                    >
+                      <div>
+                        <span
+                          style="color: black; font-weight: 700;"
+                        >
+                          name
+                          : 
+                        </span>
+                        <span
+                          style="color: rgb(5, 122, 85);"
+                        >
+                          jane doe
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          style="color: black; font-weight: 700;"
+                        >
+                          age
+                          : 
+                        </span>
+                        <span
+                          style="color: rgb(5, 122, 85);"
+                        >
+                          20
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          style="color: black; font-weight: 700;"
+                        >
+                          isMarried
+                          : 
+                        </span>
+                        <span
+                          style="color: rgb(5, 122, 85);"
+                        >
+                          true
+                        </span>
+                      </div>
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </span>
+          </div>
+        </div>
+      </span>
+    </div>
+    <div
+      style="margin-left: 0px;"
+    >
+      <div>
+        <span
+          style="color: black; font-weight: 700;"
+        >
+          arrayOfObj[0]
+          : 
+        </span>
+        <span
+          style="color: rgb(5, 122, 85);"
+        >
+          <div
+            style="margin-left: 40px;"
+          >
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                three
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                three
+              </span>
+            </div>
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                four
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                four
+              </span>
+            </div>
+          </div>
+        </span>
+      </div>
+      <div>
+        <span
+          style="color: black; font-weight: 700;"
+        >
+          arrayOfObj[1]
+          : 
+        </span>
+        <span
+          style="color: rgb(5, 122, 85);"
+        >
+          <div
+            style="margin-left: 40px;"
+          >
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                five
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                five
+              </span>
+            </div>
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                six
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                six
+              </span>
+            </div>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div
+      style="margin-left: 0px;"
+    >
+      <div>
+        <span
+          style="color: black; font-weight: 700;"
+        >
+          arrayOfArr[0]
+          : 
+        </span>
+        <span
+          style="color: rgb(5, 122, 85);"
+        >
+          <div
+            style="margin-left: 40px;"
+          >
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                [0]
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                test3
+              </span>
+            </div>
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                [1]
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                test4
+              </span>
+            </div>
+          </div>
+        </span>
+      </div>
+      <div>
+        <span
+          style="color: black; font-weight: 700;"
+        >
+          arrayOfArr[1]
+          : 
+        </span>
+        <span
+          style="color: rgb(5, 122, 85);"
+        >
+          <div
+            style="margin-left: 40px;"
+          >
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                [0]
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                test5
+              </span>
+            </div>
+            <div>
+              <span
+                style="color: black; font-weight: 700;"
+              >
+                [1]
+                : 
+              </span>
+              <span
+                style="color: rgb(5, 122, 85);"
+              >
+                test6
+              </span>
+            </div>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        aVeryLongString
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore [...] ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </span>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        aVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongKeyName
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore [...] ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </span>
+    </div>
+  </div>
+</pre>
+`;

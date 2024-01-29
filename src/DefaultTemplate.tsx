@@ -1,8 +1,8 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
-import JsonView from "@microlink/react-json-view";
 import { isV2Document, isV3Document } from "./utils";
+import { JsonView } from "./JsonView";
 
 interface DefaultTemplateProps {
   title: string;
@@ -94,37 +94,7 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
         </div>
 
         {/* plain text preview */}
-        {props.document && (
-          <div data-testid={"json-view"}>
-            <JsonView
-              style={{ marginTop: "32px" }}
-              theme={{
-                base00: "white",
-                base01: "#ddd",
-                base02: "#ddd",
-                base03: "#444",
-                base04: "purple",
-                base05: "#444",
-                base06: "#444",
-                base07: "#000",
-                base08: "#444",
-                base09: "#057A55",
-                base0A: "#057A55",
-                base0B: "#057A55",
-                base0C: "#000",
-                base0D: "#057A55",
-                base0E: "#057A55",
-                base0F: "#057A55",
-              }}
-              src={props.document}
-              displayObjectSize={false}
-              displayDataTypes={false}
-              collapseStringsAfterLength={200}
-              quotesOnKeys={false}
-              enableClipboard={false}
-            />
-          </div>
-        )}
+        {props.document && <JsonView src={props.document} />}
       </div>
     </div>
   );
