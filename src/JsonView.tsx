@@ -2,7 +2,7 @@ import React from "react";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 
 const INDENT_PX = 40;
-const MAX_STACK_COUNT = 5;
+const MAX_STACK_COUNT = 10;
 const MAX_CHARACTERS = 200;
 const MAX_CHARACTERS_REVEAL_FIRST_N = 100;
 const MAX_CHARACTERS_REVEAL_LAST_N = 100;
