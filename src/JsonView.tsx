@@ -31,7 +31,7 @@ function formatJson(variable: any, stackCount = 0, indent = 0, key = ""): Emotio
         KEY_TO_ARRAY_ITEM[1]: ...
         SIBLING_ATTRIBUTE: ...
 
-        hence unindent once to be aligned with siblings, and do not use JsonLine.
+        indent = 0 to keep alignment with sibling attributes
         */
         jsonLines.push(formatJson(variable[key], stackCount + 1, 0, key));
       } else {
