@@ -391,6 +391,99 @@ exports[`jsonView component should display json view of a json object with neste
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore [...] ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
       </span>
     </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
+        aVeryNestedObj
+        : 
+      </span>
+      <span
+        style="color: rgb(5, 122, 85);"
+      >
+        <div
+          style="margin-left: 40px;"
+        >
+          <div>
+            <span
+              style="color: black; font-weight: 700;"
+            >
+              nest1
+              : 
+            </span>
+            <span
+              style="color: rgb(5, 122, 85);"
+            >
+              <div
+                style="margin-left: 40px;"
+              >
+                <div>
+                  <span
+                    style="color: black; font-weight: 700;"
+                  >
+                    nest2
+                    : 
+                  </span>
+                  <span
+                    style="color: rgb(5, 122, 85);"
+                  >
+                    <div
+                      style="margin-left: 40px;"
+                    >
+                      <div>
+                        <span
+                          style="color: black; font-weight: 700;"
+                        >
+                          nest3
+                          : 
+                        </span>
+                        <span
+                          style="color: rgb(5, 122, 85);"
+                        >
+                          <div
+                            style="margin-left: 40px;"
+                          >
+                            <div>
+                              <span
+                                style="color: black; font-weight: 700;"
+                              >
+                                nest4
+                                : 
+                              </span>
+                              <span
+                                style="color: rgb(5, 122, 85);"
+                              >
+                                <div
+                                  style="margin-left: 40px;"
+                                >
+                                  <div>
+                                    <span
+                                      style="color: black; font-weight: 700;"
+                                    >
+                                      nest5
+                                      : 
+                                    </span>
+                                    <span
+                                      style="color: rgb(5, 122, 85);"
+                                    >
+                                      ...
+                                    </span>
+                                  </div>
+                                </div>
+                              </span>
+                            </div>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </span>
+          </div>
+        </div>
+      </span>
+    </div>
   </div>
 </pre>
 `;

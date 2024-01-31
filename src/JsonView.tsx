@@ -2,7 +2,7 @@ import React from "react";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 
 const INDENT_PX = 40;
-const MAX_NESTING = 5;
+const MAX_STACK_COUNT = 5;
 const MAX_CHARACTERS = 200;
 const MAX_CHARACTERS_REVEAL_FIRST_N = 100;
 const MAX_CHARACTERS_REVEAL_LAST_N = 100;
@@ -16,8 +16,8 @@ function JsonLine(key: string, val: any) {
   );
 }
 
-function formatJson(variable: any, indent = 0, key = ""): EmotionJSX.Element | string {
-  if (indent >= INDENT_PX * MAX_NESTING) {
+function formatJson(variable: any, stackCount = 0, indent = 0, key = ""): EmotionJSX.Element | string {
+  if (stackCount > MAX_STACK_COUNT) {
     /* nested 5 levels. stop showing */
     return "...";
   }
@@ -33,7 +33,7 @@ function formatJson(variable: any, indent = 0, key = ""): EmotionJSX.Element | s
 
         hence unindent once to be aligned with siblings, and do not use JsonLine.
         */
-        jsonLines.push(formatJson(variable[key], 0, key));
+        jsonLines.push(formatJson(variable[key], stackCount + 1, 0, key));
       } else {
         /* if attribute is a nested object, display the key and indent.
         
@@ -41,7 +41,7 @@ function formatJson(variable: any, indent = 0, key = ""): EmotionJSX.Element | s
             ATTRIBUTE1: ...
             ATTRIBUTE2: ...
         */
-        jsonLines.push(JsonLine(key, formatJson(variable[key], INDENT_PX)));
+        jsonLines.push(JsonLine(key, formatJson(variable[key], stackCount + 1, INDENT_PX)));
       }
     }
     return <div style={{ marginLeft: `${indent}px` }}>{jsonLines}</div>; // wrapping in div basically starts a new line
@@ -51,7 +51,7 @@ function formatJson(variable: any, indent = 0, key = ""): EmotionJSX.Element | s
     return (
       <div style={{ marginLeft: `${indent}px` }}>
         {/* if an attribute is an array, display elements as <KEY_NAME>[0]: <ATTRIBUTE_VAL> */}
-        {variable.map((element, index) => JsonLine(`${key}[${index}]`, formatJson(element, INDENT_PX)))}
+        {variable.map((element, index) => JsonLine(`${key}[${index}]`, formatJson(element, stackCount + 1, INDENT_PX)))}
       </div> // wrapping in div basically starts a new line
     );
   }
