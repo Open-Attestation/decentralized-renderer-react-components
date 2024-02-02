@@ -369,6 +369,19 @@ exports[`jsonView component should display json view of a json object with neste
       <span
         style="color: black; font-weight: 700;"
       >
+        urlValue
+        : 
+      </span>
+      <span
+        style="color: rgb(26, 86, 219); text-decoration: underline;"
+      >
+        https://govtech-renderer.openattestation.com
+      </span>
+    </div>
+    <div>
+      <span
+        style="color: black; font-weight: 700;"
+      >
         aVeryLongString
         : 
       </span>
