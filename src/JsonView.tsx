@@ -15,8 +15,8 @@ function isUrlString(urlString: string) {
 const textStyle = { color: "#057A55" };
 const urlStyle = { color: "#1A56DB", textDecoration: "underline" };
 
-function JsonLine(key: string, val: any) {
-  const isUrl = isUrlString(val);
+function JsonLine(key: string, val: EmotionJSX.Element | string) {
+  const isUrl = typeof val === "string" ? isUrlString(val) : false;
   return (
     <div key={key}>
       <span style={{ color: "black", fontWeight: 700 }}>{key}: </span>
