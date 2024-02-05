@@ -7,20 +7,11 @@ const MAX_CHARACTERS = 200;
 const MAX_CHARACTERS_REVEAL_FIRST_N = 100;
 const MAX_CHARACTERS_REVEAL_LAST_N = 100;
 
-function isUrlString(urlString: string) {
-  const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-  return urlRegex.test(urlString);
-}
-
-const textStyle = { color: "#057A55" };
-const urlStyle = { color: "#1A56DB", textDecoration: "underline" };
-
 function JsonLine(key: string, val: EmotionJSX.Element | string) {
-  const isUrl = typeof val === "string" ? isUrlString(val) : false;
   return (
     <div key={key}>
       <span style={{ color: "black", fontWeight: 700 }}>{key}: </span>
-      <span style={isUrl ? urlStyle : textStyle}>{val}</span>
+      <span style={{ color: "#057A55" }}>{val}</span>
     </div>
   );
 }
