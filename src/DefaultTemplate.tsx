@@ -103,8 +103,10 @@ export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (p
 export const NoTemplate: React.FunctionComponent<TemplateProps> = (props) => {
   return (
     <DefaultTemplate
-      title="This document is displayed in plain text"
-      description={<>As this document does not have a template, the current display is intended.</>}
+      title="The contents of this document have not been formatted"
+      description={
+        <>As the issuer did not design a template to display its contents, this current display is intended.</>
+      }
       document={props.document}
     />
   );

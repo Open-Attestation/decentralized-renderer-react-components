@@ -139,9 +139,11 @@ describe(`test default renderers`, () => {
         }}
       />
     );
-    expect(screen.getByText("This document is displayed in plain text")).toBeDefined();
+    expect(screen.getByText("The contents of this document have not been formatted")).toBeDefined();
     expect(
-      screen.getByText("As this document does not have a template, the current display is intended.")
+      screen.getByText(
+        "As the issuer did not design a template to display its contents, this current display is intended."
+      )
     ).toBeDefined();
     expect(screen.queryByTestId("template-info")).toBeNull();
     expect(screen.getByTestId("json-view")).toBeDefined();

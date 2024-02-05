@@ -7,7 +7,7 @@ const MAX_CHARACTERS = 200;
 const MAX_CHARACTERS_REVEAL_FIRST_N = 100;
 const MAX_CHARACTERS_REVEAL_LAST_N = 100;
 
-function JsonLine(key: string, val: any) {
+function JsonLine(key: string, val: EmotionJSX.Element | string) {
   return (
     <div key={key}>
       <span style={{ color: "black", fontWeight: 700 }}>{key}: </span>
