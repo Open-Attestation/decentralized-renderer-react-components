@@ -9,7 +9,7 @@
   "module": "build/esm/index.js",
   "types": "build/types/index.d.ts",
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.15.4",
+    "@babel/runtime-corejs3": "^7.23.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
