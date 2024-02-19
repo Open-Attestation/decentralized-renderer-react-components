@@ -7,7 +7,6 @@
 
 ## Features
 
-- [**Circle CI**](https://circleci.com/) - It automates tests and linting for every push or pull request.
 - [**Debug**](https://github.com/visionmedia/debug) - A JS debugging utility that works in both node.js and browsers
 - [**ESLint**](http://eslint.org/) - With this tool, you write quality code.
 - [**Jest**](https://facebook.github.io/jest) - A JavaScript testing framework used by Facebook
@@ -203,8 +202,8 @@ This component will establish a connection with a host embedding the application
 - `templateRegistry`: The configuration of the templates handled by the decentralized renderer. `templateRegistry` is an object where each key holds an array of `Template Configuration`. 
 
   One `Template Configuration` consists of:
-  - `id`: A unique identifier withing the current array of the template
-  - `label`: A string to represent what the template is
+  - `id`: A unique identifier within the current array of the template
+  - `label`: A string to represent what the template is (used when verifiers display tabs)
   - `template`: A `Template`, i.e. a React component that will render a document
 - `attachmentToComponent`: A function that maps attachments to the component depending on the attachment type. 
 
@@ -235,13 +234,13 @@ When a document is being rendered, each configured `Template` will be provided w
 
 Run the following commands for different development tasks:
 
-- `npm run storybook`: to start a storybook, create stories, and visualize the different component
+- `npm run storybook`: to start a storybook, create stories, and visualize the different components
 - `npm run test`: to run tests
 - `npm run lint`: to run lint
-- `npm run example:application`: to run the example build with the library to develop an hosting application. 
+- `npm run example:application`: to run an example application built with this library
 
   Be sure to update the example if you update this library.
-- `npm run example:renderer`: to run the example build with the library to develop a decentralized renderer. 
+- `npm run example:renderer`: to run an example decentralized renderer built with this library
 
   Be sure to update the example if you update this library.
 
