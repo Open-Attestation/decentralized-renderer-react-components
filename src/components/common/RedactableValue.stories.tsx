@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { RedactableValue } from "./RedactableValue";
 
 export default {
-  title: "RedactableValue/RedactableValue",
+  title: "Values/Redactable Value",
   component: RedactableValue,
 };
 
