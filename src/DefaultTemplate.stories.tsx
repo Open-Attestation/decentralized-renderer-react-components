@@ -1,4 +1,3 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DefaultTemplate } from "./DefaultTemplate";
 
@@ -16,7 +15,7 @@ export const Default: Story = {
   name: "Non-editable value",
   args: {
     title: "Default Template",
-    description: <>This is the default template</>,
+    description: <>This is the default template</>, // eslint-disable-line react/react-in-jsx-scope
     document: {
       foo: {
         title: "Bar is awesome",

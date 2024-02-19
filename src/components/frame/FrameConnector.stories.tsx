@@ -9,8 +9,8 @@ const meta: Meta<typeof FrameConnector> = {
   component: FrameConnector,
   args: {
     source: "https://www.opencerts.io/",
-    onConnected: () => {},
-    dispatch: () => {},
+    onConnected: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+    dispatch: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
   },
 };
 

@@ -7,8 +7,22 @@ module.exports = {
 
   framework: {
     name: "@storybook/react-webpack5",
-    options: {},
+    options: {
+      builder: {
+        useSWC: true, // This flag is automatically set by Storybook for all new Webpack5 projects (except Angular) in Storybook 7.6
+      },
+    },
   },
+
+  swc: (config, options) => ({
+    jsc: {
+      transform: {
+        react: {
+          runtime: "automatic",
+        },
+      },
+    },
+  }),
 
   webpackFinal: (config) => {
     return {
