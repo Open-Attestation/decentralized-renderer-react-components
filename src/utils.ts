@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { Attachment, TemplateRegistry, TemplateWithComponent, TemplateWithTypes } from "./types";
-import { defaultTemplate } from "./DefaultTemplate";
+import { wrongTemplate, noTemplate } from "./DefaultTemplate";
 import { OpenAttestationDocument, v2, v3 } from "@govtechsg/open-attestation";
 
 export const repeat = (times: number) => (callback: (index: number) => any) =>
@@ -56,9 +56,9 @@ export function documentTemplates(
   if (!document) return [];
   // Find the template in the template registry or use a default template
   const templateName = getTemplateName(document);
-  const selectedTemplate: TemplateWithComponent[] = (templateName && templateRegistry[templateName]) || [
-    defaultTemplate,
-  ];
+
+  const selectedTemplate: TemplateWithComponent[] =
+    templateName === "" ? [noTemplate] : (templateName && templateRegistry[templateName]) || [wrongTemplate];
 
   // Add type property to differentiate between custom template tabs VS attachments tab
   const tabsRenderedFromCustomTemplates: TemplateWithTypes[] = selectedTemplate
