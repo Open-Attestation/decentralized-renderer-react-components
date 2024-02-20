@@ -3,11 +3,27 @@ const toPath = (_path) => path.join(process.cwd(), _path);
 
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: ["@storybook/addon-essentials"],
-  framework: "@storybook/react",
-  core: {
-    builder: "webpack5",
+  addons: ["@storybook/addon-essentials", "@storybook/addon-mdx-gfm"],
+
+  framework: {
+    name: "@storybook/react-webpack5",
+    options: {
+      builder: {
+        useSWC: true, // This flag is automatically set by Storybook for all new Webpack5 projects (except Angular) in Storybook 7.6
+      },
+    },
   },
+
+  swc: (config, options) => ({
+    jsc: {
+      transform: {
+        react: {
+          runtime: "automatic",
+        },
+      },
+    },
+  }),
+
   webpackFinal: (config) => {
     return {
       ...config,
@@ -22,5 +38,8 @@ module.exports = {
         },
       },
     };
+  },
+  docs: {
+    autodocs: true,
   },
 };
