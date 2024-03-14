@@ -1,9 +1,8 @@
-# React Components
+# TradeTrust (Decentralized Renderer React Components)
 
-React components abstracting the communication with `Open Attestation` decentralized renderer. More information on this:
+React components abstracting the communication with `TradeTrust` decentralized renderer. More information on this:
 
-- [Opencerts v2 announcement](https://docs.opencerts.io/announcements/schema2_update.html)
-- [Open Attestation](https://openattestation.com/)
+- [TradeTrust Decentralized Renderer](https://docs.tradetrust.io/docs/tutorial/decentralised-renderer)
 
 ## Features
 
@@ -188,7 +187,7 @@ Each configured `Template` will be provided the following properties, when rende
 
 - `document`: (mandatory) document data as returned by `getData` method from [@tradetrust-tt/tradetrust](https://github.com/TradeTrust/tradetrust)
 - `rawDocument`: (optional) Open Attestation document
-- `handleObfuscation`: (mandatory) A function to call to handle obfuscation in the document. The value provided must follow path property as handlded by [lodash#get](https://lodash.com/docs/4.17.15#get)
+- `handleObfuscation`: (mandatory) A function to call to handle obfuscation in the document. The value provided must follow path property as handled by [lodash#get](https://lodash.com/docs/4.17.15#get)
 
 ## Development
 
@@ -198,7 +197,7 @@ Each configured `Template` will be provided the following properties, when rende
 - `npm run example:application`: to run the example build with the library to develop an hosting application. Don't forget to update the example if you update this library.
 - `npm run example:renderer`: to run the example build with the library to develop a decentralized renderer. Don't forget to update the example if you update this library.
 
-We also provided a [github template](https://github.com/Open-Attestation/decentralized-renderer-react-template) to build your own decentralized-renderer based on this library
+We also provided a [github template](https://github.com/TradeTrust/tradetrust-decentralized-renderer) to build your own decentralized-renderer based on this library
 
 ## Penpal
 
