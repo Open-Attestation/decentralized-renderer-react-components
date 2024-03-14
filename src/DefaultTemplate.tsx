@@ -1,7 +1,7 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
-import { isV2Document, isV3Document } from "./utils";
+import { isV2Document, isV3Document, isV4Document } from "./utils";
 import { JsonView } from "./JsonView";
 
 interface DefaultTemplateProps {
@@ -52,6 +52,14 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
         name: template.name,
         type: template.type,
         url: template.url,
+      };
+    }
+  } else if (isV4Document(document)) {
+    if (document.renderMethod !== undefined) {
+      return {
+        name: document.renderMethod?.name,
+        type: document.renderMethod?.type as string, // TODO: Remove cast once v4 is updated
+        url: (document.renderMethod as any).id, // TODO: Remove cast once v4 is updated
       };
     }
   }
