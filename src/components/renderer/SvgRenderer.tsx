@@ -5,7 +5,7 @@ import { sha256 } from "multiformats/hashes/sha2";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ConnectionFailureTemplate } from "../../DefaultTemplate";
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
 interface SvgRendererProps {
@@ -55,6 +55,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
       setBuffer(svgArrayBuffer);
       setSource(docAsAny.renderMethod.id); // In the case where svg data is pre-fetched, manually set svg url as source
     }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [svgOrUrl]);
 
   // 2. Recompute and compare the digestMultibase if it is in the document, if not proceed to use the svg template
@@ -92,6 +93,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
         }
       }, 200);
     }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [buffer]);
 
   const renderTemplate = (template: string, document: any) => {
