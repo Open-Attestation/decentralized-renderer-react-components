@@ -5,6 +5,7 @@ import { sha256 } from "multiformats/hashes/sha2";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ConnectionFailureTemplate } from "../../DefaultTemplate";
+/* eslint-disable @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
 interface SvgRendererProps {
@@ -93,7 +94,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     }
   }, [buffer]);
 
-  const renderTemplate = (template: String, document: any) => {
+  const renderTemplate = (template: string, document: any) => {
     if (template.length === 0) return "";
     const v4doc = document as v4.OpenAttestationDocument;
     const compiledTemplate = handlebars.compile(template);
