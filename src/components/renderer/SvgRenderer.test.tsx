@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Valid / Invalid urls
 // v4 with Svg url with response and multibase
 // v4 with Svg data and multibase
