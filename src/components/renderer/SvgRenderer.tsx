@@ -1,7 +1,9 @@
 import { OpenAttestationDocument, v4 } from "@govtechsg/open-attestation";
-import { base58btc } from "multiformats/bases/base58";
-import { Digest } from "multiformats/dist/src/hashes/digest";
-import { sha256 } from "multiformats/hashes/sha2";
+import { bases, hashes, digest } from "multiformats/basics";
+// import { basics } from "multiformats"
+// import { Digest } from "multiformats/hashes/digest";
+// import { sha256 } from "multiformats/hashes/sha2";
+// import { base58btc } from "multiformats/bases/base58";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ConnectionFailureTemplate } from "../../DefaultTemplate";
@@ -16,6 +18,7 @@ interface SvgRendererProps {
   className?: string;
   sandbox?: string;
   onConnected?: () => void; // Optional call method to call once svg is loaded
+  useWithoutV4?: boolean;
 }
 export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   svgOrUrl,
@@ -25,12 +28,18 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   className,
   sandbox = "allow-same-origin",
   onConnected,
+  useWithoutV4 = false,
 }) => {
   const [buffer, setBuffer] = useState<ArrayBuffer>();
   const [svgData, setSvgData] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
   const [source, setSource] = useState<string>("");
-  const docAsAny = document as any; // TODO: update type to v4.OpenAttestationDocument
+  let docAsAny: any;
+  if (useWithoutV4) {
+    docAsAny = document as any;
+  } else {
+    docAsAny = document as any; // TODO: update type to v4.OpenAttestationDocument
+  }
 
   // 1. Fetch svg data from url if needed, if not directly proceed to checksum
   useEffect(() => {
@@ -67,9 +76,9 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     const text = new TextDecoder().decode(svgUint8Array);
 
     if (digestMultibaseInDoc) {
-      const shaDigest = sha256.digest(svgUint8Array) as Promise<Digest<18, number>>;
+      const shaDigest = hashes.sha256.digest(svgUint8Array) as Promise<digest.Digest<18, number>>;
       shaDigest.then((res: any) => {
-        const recomputedDigestMultibase = base58btc.encode(res.digest);
+        const recomputedDigestMultibase = bases.base58btc.encode(res.digest);
         console.log(`Original checksum is`, digestMultibaseInDoc);
         console.log(`Recomputed checksum is`, recomputedDigestMultibase);
         if (recomputedDigestMultibase === digestMultibaseInDoc) {
