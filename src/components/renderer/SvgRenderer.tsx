@@ -1,7 +1,7 @@
 import { OpenAttestationDocument, v4 } from "@govtechsg/open-attestation";
-import { bases, hashes, digest } from "multiformats/basics";
+// import { bases, hashes, digest } from "multiformats";
 // import { basics } from "multiformats"
-// import { Digest } from "multiformats/hashes/digest";
+import { Digest } from "multiformats/hashes/digest";
 // import { sha256 } from "multiformats/hashes/sha2";
 // import { base58btc } from "multiformats/bases/base58";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
@@ -76,23 +76,28 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     const text = new TextDecoder().decode(svgUint8Array);
 
     if (digestMultibaseInDoc) {
-      const shaDigest = hashes.sha256.digest(svgUint8Array) as Promise<digest.Digest<18, number>>;
-      shaDigest.then((res: any) => {
-        const recomputedDigestMultibase = bases.base58btc.encode(res.digest);
-        console.log(`Original checksum is`, digestMultibaseInDoc);
-        console.log(`Recomputed checksum is`, recomputedDigestMultibase);
-        if (recomputedDigestMultibase === digestMultibaseInDoc) {
-          setSvgData(text);
-          setTimeout(() => {
-            updateIframeHeight();
-            if (typeof onConnected === "function") {
-              onConnected();
-            }
-          }, 200);
-        } else {
-          setIsError(true);
-        }
+      let shaDigest;
+      import("multiformats/hashes/sha2").then(({ sha256 }) => {
+        shaDigest = sha256.digest(svgUint8Array) as Promise<Digest<18, number>>;
+        shaDigest.then((res: any) => {
+          console.log("sha result is ", res);
+          //   const recomputedDigestMultibase = base58btc.encode(res.digest);
+          //   console.log(`Original checksum is`, digestMultibaseInDoc);
+          //   console.log(`Recomputed checksum is`, recomputedDigestMultibase);
+          //   if (recomputedDigestMultibase === digestMultibaseInDoc) {
+          //     setSvgData(text);
+          //     setTimeout(() => {
+          //       updateIframeHeight();
+          //       if (typeof onConnected === "function") {
+          //         onConnected();
+          //       }
+          //     }, 200);
+          //   } else {
+          //     setIsError(true);
+          //   }
+        });
       });
+      //   const shaDigest = test;
     } else {
       setSvgData(text);
       setTimeout(() => {
