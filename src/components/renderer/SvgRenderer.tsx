@@ -51,7 +51,15 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
         try {
           const response = await fetch(svgOrUrl);
           const blob = await response.blob();
-          setBuffer(await blob.arrayBuffer());
+          let shaDigest;
+          const svgUint8Array = new Uint8Array(buffer ?? []);
+          import("multiformats/hashes/sha2").then(({ sha256 }) => {
+            shaDigest = sha256.digest(svgUint8Array) as Promise<Digest<18, number>>;
+            shaDigest.then((res: any) => {
+              console.log("sha result is ", res);
+            });
+          });
+          // setBuffer(await blob.arrayBuffer());
         } catch (error) {
           setIsError(true);
         }
