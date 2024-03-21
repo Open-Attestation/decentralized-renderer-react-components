@@ -9,7 +9,7 @@ import { ConnectionFailureTemplate, NoTemplate } from "../../DefaultTemplate";
 const handlebars = require("handlebars");
 
 interface SvgRendererProps {
-  document: v2.OpenAttestationDocument | v4.OpenAttestationDocument;
+  document: OpenAttestationDocument;
   svgRef: React.RefObject<HTMLIFrameElement>;
   svgData?: string;
   style?: CSSProperties;
@@ -39,12 +39,11 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   } else {
     docAsAny = document as any; // TODO: update type to v4.OpenAttestationDocument
   }
-  if (!("renderMethod" in docAsAny)) {
-    return <NoTemplate document={docAsAny} handleObfuscation={(value) => value} />;
-  }
 
   // Step 1: Fetch svg data if needed
   useEffect(() => {
+    if (!("renderMethod" in docAsAny)) return;
+
     const svgInDoc = docAsAny.renderMethod.id;
     const urlPattern = /^(http(s)?:\/\/)?(www\.)?[\w-]+\.[\w]{2,}(\/[\w-]+)*\.svg$/;
     const isSvgUrl = urlPattern.test(svgInDoc);
@@ -150,6 +149,10 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
           )}
           </body>
       </html>`;
+
+  if (!("renderMethod" in docAsAny)) {
+    return <NoTemplate document={docAsAny} handleObfuscation={() => null} />;
+  }
 
   return (
     <>
