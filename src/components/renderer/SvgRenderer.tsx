@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { TextEncoder, TextDecoder } from "util";
 import crypto from "crypto";
 import bs58 from "bs58";
-import { ConnectionFailureTemplate } from "../../DefaultTemplate";
+import { ConnectionFailureTemplate, NoTemplate } from "../../DefaultTemplate";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
@@ -28,9 +28,10 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   onConnected,
   forceV2 = false,
 }) => {
+  const EMBEDDED_DOCUMENT = "[Embedded SVG]";
   const [buffer, setBuffer] = useState<ArrayBuffer>();
   const [svgFetchedData, setFetchedSvgData] = useState<string>("");
-  const [isError, setIsError] = useState<boolean>(false);
+  const [isFetchError, setIsFetchError] = useState<boolean>(false);
   const [source, setSource] = useState<string>("");
   let docAsAny: any;
   if (forceV2 && utils.isRawV2Document(docAsAny)) {
@@ -38,61 +39,48 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   } else {
     docAsAny = document as any; // TODO: update type to v4.OpenAttestationDocument
   }
+  if (!("renderMethod" in docAsAny)) {
+    return <NoTemplate document={docAsAny} handleObfuscation={(value) => value} />;
+  }
 
-  // 1. Fetch svg data from url if needed, if not directly proceed to checksum
+  // Step 1: Fetch svg data if needed
   useEffect(() => {
     const svgInDoc = docAsAny.renderMethod.id;
     const urlPattern = /^(http(s)?:\/\/)?(www\.)?[\w-]+\.[\w]{2,}(\/[\w-]+)*\.svg$/;
     const isSvgUrl = urlPattern.test(svgInDoc);
 
     if (svgData) {
+      // Case 1: Svg data is pre-fetched and passed as a prop
       const textEncoder = new TextEncoder();
       const svgArrayBuffer = textEncoder.encode(svgData).buffer;
       setBuffer(svgArrayBuffer);
-      setSource(isSvgUrl ? svgInDoc : "[Embedded SVG]"); // In case svg data is passed over despite being embedded
+      setSource(isSvgUrl ? svgInDoc : EMBEDDED_DOCUMENT); // In case svg data is passed over despite being embedded
     } else if (isSvgUrl) {
+      // Case 2: Fetch svg data from url in document
       const fetchSvg = async () => {
         try {
           const response = await fetch(svgInDoc);
           console.log(response);
+          if (!response.ok) {
+            throw new Error("Failed to fetch remote SVG");
+          }
           const blob = await response.blob();
           console.log(blob);
           setBuffer(await blob.arrayBuffer());
         } catch (error) {
           console.log(error);
-          setIsError(true);
+          setIsFetchError(true);
         }
       };
       fetchSvg();
-      setSource(svgData);
+      setSource(svgInDoc);
     } else {
-      setSvgDataAndTriggerCallback(svgInDoc); // Can directly display if svg is embedded
-      setSource("[Embedded SVG]");
+      // Case 3: Display embedded svg data directly from document
+      setSvgDataAndTriggerCallback(svgInDoc);
+      setSource(EMBEDDED_DOCUMENT);
     }
-
-    // if (urlPattern.test(svgData)) {
-    //   const fetchSvg = async () => {
-    //     try {
-    //       const response = await fetch(svgData);
-    //       console.log(response);
-    //       const blob = await response.blob();
-    //       console.log(blob);
-    //       setBuffer(await blob.arrayBuffer());
-    //     } catch (error) {
-    //       console.log(error);
-    //       setIsError(true);
-    //     }
-    //   };
-    //   fetchSvg();
-    //   setSource(svgData);
-    // } else {
-    //   const textEncoder = new TextEncoder();
-    //   const svgArrayBuffer = textEncoder.encode(svgData).buffer;
-    //   setBuffer(svgArrayBuffer);
-    //   setSource("[Embedded SVG]");
-    // }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [svgData]);
+  }, [document]);
 
   const setSvgDataAndTriggerCallback = (svgToSet: string) => {
     setFetchedSvgData(svgToSet);
@@ -104,7 +92,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     }, 200); // wait for 200ms before manually updating the height
   };
 
-  // 2. Recompute and compare the digestMultibase if it is in the document, if not proceed to use the svg template
+  // Step 2: Recompute and compare the digestMultibase if present, if not proceed to use the svg template
   useEffect(() => {
     if (!buffer) return;
 
@@ -121,7 +109,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
       if (recomputedDigestMultibase === digestMultibaseInDoc) {
         setSvgDataAndTriggerCallback(text);
       } else {
-        setIsError(true);
+        setIsFetchError(true);
       }
     } else {
       setSvgDataAndTriggerCallback(text);
@@ -129,6 +117,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [buffer]);
 
+  // Step 3: Compile final svg
   const renderTemplate = (template: string, document: any, forceV2: boolean) => {
     if (template.length === 0) return "";
     if (forceV2 && utils.isRawV2Document(document)) {
@@ -164,7 +153,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
 
   return (
     <>
-      {isError ? (
+      {isFetchError ? (
         <ConnectionFailureTemplate document={document} source={source} />
       ) : (
         <iframe

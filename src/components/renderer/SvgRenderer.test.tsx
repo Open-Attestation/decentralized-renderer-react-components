@@ -25,6 +25,7 @@ import {
   v4WithTamperedEmbeddedSvgAndDigestMultibase,
   v2WithSvgUrlAndDigestMultibase,
   v4WithOnlyTamperedEmbeddedSvg,
+  v4WithNoRenderMethod,
 } from "./fixtures/svgRendererSamples";
 
 // const yes = mockResponse.blob().then((res) => {
@@ -37,7 +38,7 @@ import {
 describe("SvgRenderer component", () => {
   const mockSvg = fs.readFileSync("./src/components/renderer/fixtures/example_cert.svg");
   const mockSvgBlob = new Blob([mockSvg], { type: "image/svg+xml" });
-  const mockResponse = { blob: () => Promise.resolve(mockSvgBlob) };
+  const mockResponse = { ok: true, blob: () => Promise.resolve(mockSvgBlob) };
 
   it("should render v4 doc correctly with a valid SVG URL", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
@@ -56,11 +57,8 @@ describe("SvgRenderer component", () => {
   it("should render v4 doc correctly with a valid embedded SVG", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
-    const svgUrl = v4WithEmbeddedSvgAndDigestMultibase.renderMethod.id;
 
-    const { findByTitle } = render(
-      <SvgRenderer svgData={svgUrl} document={v4WithEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />
-    );
+    const { findByTitle } = render(<SvgRenderer document={v4WithEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />);
 
     const iFrame = await findByTitle("Svg Renderer Frame");
     const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
@@ -88,35 +86,23 @@ describe("SvgRenderer component", () => {
 
   const tamperedSvgBuffer = Buffer.concat([mockSvg, Buffer.from([0x12, 0x34])]); // Add some random bytes
   const tamperedSvgBlob = new Blob([tamperedSvgBuffer], { type: "image/svg+xml" });
-  const tamperedMockResponse = { blob: () => Promise.resolve(tamperedSvgBlob) };
+  const tamperedMockResponse = { ok: true, blob: () => Promise.resolve(tamperedSvgBlob) };
 
-  it("should render default template when SVG at URL has been tampered with", async () => {
+  it("should render v4 doc with embedded SVG with digestMultibase", async () => {
+    // If SVG is embedded, digestMultibase will be ignored
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
-    const svgUrl = v4WithSvgUrlAndDigestMultibase.renderMethod.id;
 
-    const { findByTestId } = render(
-      <SvgRenderer svgData={svgUrl} document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />
+    const { findByTitle } = render(
+      <SvgRenderer document={v4WithTamperedEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />
     );
 
-    const defaultTemplate = await findByTestId("default-template");
-    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
-    expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
-  });
+    const iFrame = await findByTitle("Svg Renderer Frame");
+    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
 
-  it("should render default template when embedded SVG has somehow also been tampered with", async () => {
-    // Leaving this in since users can pre-load and directly pass in the svg data, but we can technically add another check to remove
-    global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
-    const svgUrl = v4WithTamperedEmbeddedSvgAndDigestMultibase.renderMethod.id;
-
-    const { findByTestId } = render(
-      <SvgRenderer svgData={svgUrl} document={v4WithTamperedEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />
-    );
-
-    const defaultTemplate = await findByTestId("default-template");
-    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
-    // expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`); // TODO: Update default renderer to handle this case
+    expect(srcdocContent).toContain("SVG document image");
+    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
   it("should render v4 doc with modified SVG when no digestMultibase", async () => {
@@ -134,5 +120,39 @@ describe("SvgRenderer component", () => {
     expect(srcdocContent).toContain("SVG document image");
     expect(srcdocContent).toContain(encodeURIComponent("TAMPERED CERTIFICATE OF COMPLETION"));
     expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+  });
+
+  it("should render misconfiguration template when SVG at URL has been tampered with", async () => {
+    global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+
+    const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
+    expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
+  });
+
+  it("should render default template when document.RenderMethod is undefined", async () => {
+    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+
+    const { findByTestId } = render(<SvgRenderer document={v4WithNoRenderMethod} svgRef={svgRef} />);
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("The contents of this document have not been formatted");
+    expect(defaultTemplate.textContent).toContain("identifier: example.openattestation.com");
+  });
+
+  const badMockResponse = { ok: false };
+  it("should render connection error template when SVG cannot be fetched", async () => {
+    global.fetch = jest.fn().mockResolvedValue(badMockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+
+    const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
+    expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
   });
 });

@@ -175,3 +175,23 @@ export const v2WithSvgUrlAndDigestMultibase = {
     name: "TAN CHEN CHEN",
   },
 };
+
+export const v4WithNoRenderMethod = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+  ],
+  issuer: {
+    id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
+    type: "OpenAttestationIssuer",
+    name: "Government Technology Agency of Singapore (GovTech)",
+    identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+  },
+  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
+  credentialSubject: {
+    id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
+    type: ["SvgExample"],
+    course: { name: "SVG Basics Workshop", fromDate: "01/01/2024", endDate: "16/01/2024" },
+    recipient: { name: "TAN CHEN CHEN" },
+  },
+};
