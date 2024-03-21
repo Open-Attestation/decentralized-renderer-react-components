@@ -89,7 +89,7 @@ const TemplateInfoComponent: React.FunctionComponent<TemplateInfoComponentProps>
 
 export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (props) => {
   return (
-    <div id={DEFAULT_ID}>
+    <div id={DEFAULT_ID} data-testid={DEFAULT_ID}>
       <div style={{ ...container, fontFamily: "Arial", wordBreak: "break-all" }}>
         {/* Banner */}
         <div style={{ backgroundColor: "#FDFDEA", borderLeft: "2px solid #8E4B10", padding: "16px 16px 16px 18px" }}>

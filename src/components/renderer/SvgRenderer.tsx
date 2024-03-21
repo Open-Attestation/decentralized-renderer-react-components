@@ -1,79 +1,108 @@
-import { OpenAttestationDocument, v4 } from "@govtechsg/open-attestation";
-// import { bases, hashes, digest } from "multiformats";
-// import { basics } from "multiformats"
-import { Digest } from "multiformats/hashes/digest";
-// import { sha256 } from "multiformats/hashes/sha2";
-// import { base58btc } from "multiformats/bases/base58";
+import { OpenAttestationDocument, v2, v4, utils } from "@govtechsg/open-attestation";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { TextEncoder, TextDecoder } from "util";
+import crypto from "crypto";
+import bs58 from "bs58";
 import { ConnectionFailureTemplate } from "../../DefaultTemplate";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
 interface SvgRendererProps {
-  svgOrUrl: string;
-  document: OpenAttestationDocument;
+  document: v2.OpenAttestationDocument | v4.OpenAttestationDocument;
   svgRef: React.RefObject<HTMLIFrameElement>;
+  svgData?: string;
   style?: CSSProperties;
   className?: string;
   sandbox?: string;
   onConnected?: () => void; // Optional call method to call once svg is loaded
-  useWithoutV4?: boolean;
+  forceV2?: boolean;
 }
 export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
-  svgOrUrl,
   document,
   svgRef,
+  svgData,
   style,
   className,
   sandbox = "allow-same-origin",
   onConnected,
-  useWithoutV4 = false,
+  forceV2 = false,
 }) => {
   const [buffer, setBuffer] = useState<ArrayBuffer>();
-  const [svgData, setSvgData] = useState<string>("");
+  const [svgFetchedData, setFetchedSvgData] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
   const [source, setSource] = useState<string>("");
   let docAsAny: any;
-  if (useWithoutV4) {
-    docAsAny = document as any;
+  if (forceV2 && utils.isRawV2Document(docAsAny)) {
+    docAsAny = document as v2.OpenAttestationDocument;
   } else {
     docAsAny = document as any; // TODO: update type to v4.OpenAttestationDocument
   }
 
   // 1. Fetch svg data from url if needed, if not directly proceed to checksum
   useEffect(() => {
+    const svgInDoc = docAsAny.renderMethod.id;
     const urlPattern = /^(http(s)?:\/\/)?(www\.)?[\w-]+\.[\w]{2,}(\/[\w-]+)*\.svg$/;
-    console.log(svgOrUrl);
-    console.log(urlPattern.test(svgOrUrl));
-    if (urlPattern.test(svgOrUrl)) {
+    const isSvgUrl = urlPattern.test(svgInDoc);
+
+    if (svgData) {
+      const textEncoder = new TextEncoder();
+      const svgArrayBuffer = textEncoder.encode(svgData).buffer;
+      setBuffer(svgArrayBuffer);
+      setSource(isSvgUrl ? svgInDoc : "[Embedded SVG]"); // In case svg data is passed over despite being embedded
+    } else if (isSvgUrl) {
       const fetchSvg = async () => {
         try {
-          const response = await fetch(svgOrUrl);
+          const response = await fetch(svgInDoc);
+          console.log(response);
           const blob = await response.blob();
-          let shaDigest;
-          const svgUint8Array = new Uint8Array(buffer ?? []);
-          import("multiformats/hashes/sha2").then(({ sha256 }) => {
-            shaDigest = sha256.digest(svgUint8Array) as Promise<Digest<18, number>>;
-            shaDigest.then((res: any) => {
-              console.log("sha result is ", res);
-            });
-          });
-          // setBuffer(await blob.arrayBuffer());
+          console.log(blob);
+          setBuffer(await blob.arrayBuffer());
         } catch (error) {
+          console.log(error);
           setIsError(true);
         }
       };
       fetchSvg();
-      setSource(svgOrUrl);
+      setSource(svgData);
     } else {
-      const textEncoder = new TextEncoder();
-      const svgArrayBuffer = textEncoder.encode(svgOrUrl).buffer;
-      setBuffer(svgArrayBuffer);
-      setSource(docAsAny.renderMethod.id); // In the case where svg data is pre-fetched, manually set svg url as source
+      setSvgDataAndTriggerCallback(svgInDoc); // Can directly display if svg is embedded
+      setSource("[Embedded SVG]");
     }
+
+    // if (urlPattern.test(svgData)) {
+    //   const fetchSvg = async () => {
+    //     try {
+    //       const response = await fetch(svgData);
+    //       console.log(response);
+    //       const blob = await response.blob();
+    //       console.log(blob);
+    //       setBuffer(await blob.arrayBuffer());
+    //     } catch (error) {
+    //       console.log(error);
+    //       setIsError(true);
+    //     }
+    //   };
+    //   fetchSvg();
+    //   setSource(svgData);
+    // } else {
+    //   const textEncoder = new TextEncoder();
+    //   const svgArrayBuffer = textEncoder.encode(svgData).buffer;
+    //   setBuffer(svgArrayBuffer);
+    //   setSource("[Embedded SVG]");
+    // }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [svgOrUrl]);
+  }, [svgData]);
+
+  const setSvgDataAndTriggerCallback = (svgToSet: string) => {
+    setFetchedSvgData(svgToSet);
+    setTimeout(() => {
+      updateIframeHeight();
+      if (typeof onConnected === "function") {
+        onConnected();
+      }
+    }, 200); // wait for 200ms before manually updating the height
+  };
 
   // 2. Recompute and compare the digestMultibase if it is in the document, if not proceed to use the svg template
   useEffect(() => {
@@ -81,51 +110,39 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
 
     const digestMultibaseInDoc = docAsAny.renderMethod.digestMultibase;
     const svgUint8Array = new Uint8Array(buffer ?? []);
-    const text = new TextDecoder().decode(svgUint8Array);
+    const decoder = new TextDecoder();
+    const text = decoder.decode(svgUint8Array);
 
     if (digestMultibaseInDoc) {
-      let shaDigest;
-      import("multiformats/hashes/sha2").then(({ sha256 }) => {
-        shaDigest = sha256.digest(svgUint8Array) as Promise<Digest<18, number>>;
-        shaDigest.then((res: any) => {
-          console.log("sha result is ", res);
-          //   const recomputedDigestMultibase = base58btc.encode(res.digest);
-          //   console.log(`Original checksum is`, digestMultibaseInDoc);
-          //   console.log(`Recomputed checksum is`, recomputedDigestMultibase);
-          //   if (recomputedDigestMultibase === digestMultibaseInDoc) {
-          //     setSvgData(text);
-          //     setTimeout(() => {
-          //       updateIframeHeight();
-          //       if (typeof onConnected === "function") {
-          //         onConnected();
-          //       }
-          //     }, 200);
-          //   } else {
-          //     setIsError(true);
-          //   }
-        });
-      });
-      //   const shaDigest = test;
+      const shaDigest = crypto.createHash("sha256").update(svgUint8Array).digest();
+      const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
+      console.log(`Original checksum is`, digestMultibaseInDoc);
+      console.log(`Recomputed checksum is`, recomputedDigestMultibase);
+      if (recomputedDigestMultibase === digestMultibaseInDoc) {
+        setSvgDataAndTriggerCallback(text);
+      } else {
+        setIsError(true);
+      }
     } else {
-      setSvgData(text);
-      setTimeout(() => {
-        updateIframeHeight();
-        if (typeof onConnected === "function") {
-          onConnected();
-        }
-      }, 200);
+      setSvgDataAndTriggerCallback(text);
     }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [buffer]);
 
-  const renderTemplate = (template: string, document: any) => {
+  const renderTemplate = (template: string, document: any, forceV2: boolean) => {
     if (template.length === 0) return "";
-    const v4doc = document as v4.OpenAttestationDocument;
-    const compiledTemplate = handlebars.compile(template);
-    return compiledTemplate(v4doc.credentialSubject);
+    if (forceV2 && utils.isRawV2Document(document)) {
+      const v2doc = document as v2.OpenAttestationDocument;
+      const compiledTemplate = handlebars.compile(template);
+      return compiledTemplate(v2doc);
+    } else {
+      const v4doc = document as v4.OpenAttestationDocument;
+      const compiledTemplate = handlebars.compile(template);
+      return compiledTemplate(v4doc.credentialSubject);
+    }
   };
 
-  const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgData, document))}`;
+  const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document, forceV2))}`;
 
   const updateIframeHeight = () => {
     if (svgRef.current) {
@@ -139,7 +156,9 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
       <html>
           <head></head>
           <body style="margin: 0; display: flex; justify-content: center; align-items: center;">
-          ${renderToStaticMarkup(<>{svgData ? <img src={compiledSvgData} alt="SVG document image" /> : <></>}</>)}
+          ${renderToStaticMarkup(
+            <>{svgFetchedData ? <img src={compiledSvgData} alt="SVG document image" /> : <></>}</>
+          )}
           </body>
       </html>`;
 
@@ -151,7 +170,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
         <iframe
           className={className}
           style={style}
-          title="Embedded Svg"
+          title="Svg Renderer Frame"
           width="100%"
           srcDoc={iframeContent}
           ref={svgRef}

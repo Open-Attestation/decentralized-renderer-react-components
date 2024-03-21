@@ -1,74 +1,138 @@
 /* eslint-disable */
 
 // Valid / Invalid urls
-// v4 with Svg url with response and multibase
-// v4 with Svg data and multibase
-// v4 with Svg url with tampered response and no multibase
+// v4 with Svg url with response and multibase - DONE
+// v4 with Svg data and multibase - DONE
+// v2 with Svg url with response and multibase - DONE
+
+// v4 with Svg url with tampered response and multibase - DONE
+// v4 with tampered Svg data - DONE
+
+// v4 with Svg url with tampered response and no multibase - DONE
+
 // v4 with Svg url with bad response and multibase
-// v4 with Svg url with tampered response and multibase
-// v4 with tampered Svg data
-// v2 with Svg url with response and multibase
 
 // import React from "react";
 import { v4 } from "@govtechsg/open-attestation";
-import { render } from "@testing-library/react";
+import { act, findByTestId, render } from "@testing-library/react";
 import { SvgRenderer } from "./SvgRenderer";
 import fs from "fs";
-// import { UnsupportedRenderer } from "./UnsupportedRenderer";
+import { Blob } from "buffer";
+import React from "react";
+import {
+  v4WithSvgUrlAndDigestMultibase,
+  v4WithEmbeddedSvgAndDigestMultibase,
+  v4WithTamperedEmbeddedSvgAndDigestMultibase,
+  v2WithSvgUrlAndDigestMultibase,
+  v4WithOnlyTamperedEmbeddedSvg,
+} from "./fixtures/svgRendererSamples";
 
-const v4WithSvgUrlAndDigestMultibase = {
-  // TODO: Update type to v4.OpenAttestationDocument
-  "@context": [
-    "https://www.w3.org/2018/credentials/v1",
-    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
-  ],
-  issuer: {
-    id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
-    type: "OpenAttestationIssuer",
-    name: "Government Technology Agency of Singapore (GovTech)",
-    identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-  },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  renderMethod: {
-    id: "http://mockbucket.com/static/svg_test.svg",
-    type: "SvgRenderingTemplate2023",
-    name: "SVG Certificate",
-    digestMultibase: "z2Z98fDGXMKgjxZpWNFBE2c8fRPH5dQ9Zc2Y15vDHLHdm",
-    url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-    renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-  },
-  credentialSubject: {
-    id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
-    type: ["SvgExample"],
-    course: { name: "SVG Basics Workshop", fromDate: "01/01/2024", endDate: "16/01/2024" },
-    recipient: { name: "TAN CHEN CHEN" },
-  },
-};
+// const yes = mockResponse.blob().then((res) => {
+//   res.text().then((r2s) => {
+//     console.log(r2s);
+//     // console.log(v4WithSvgUrlAndDigestMultibase.renderMethod.idAlso);
+//   });
+// });
 
-describe("component SvgRenderer with 200 response", () => {
-  //   const mockBlob = jest.fn().mockResolvedValueOnce({
-  //     arrayBuffer: jest.fn().mockResolvedValueOnce("your array buffer data"),
-  //   });
-
+describe("SvgRenderer component", () => {
   const mockSvg = fs.readFileSync("./src/components/renderer/fixtures/example_cert.svg");
-  const mockBlob = jest.fn().mockResolvedValue(new Blob([mockSvg], { type: "image/svg+xml" }));
-  const mockResponse = { blob: mockBlob };
-  global.fetch = jest.fn().mockResolvedValueOnce(mockResponse);
+  const mockSvgBlob = new Blob([mockSvg], { type: "image/svg+xml" });
+  const mockResponse = { blob: () => Promise.resolve(mockSvgBlob) };
 
-  it("should render correctly", () => {
-    const svgRef = {
-      current: null,
-    };
+  it("should render v4 doc correctly with a valid SVG URL", async () => {
+    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
 
+    const { findByTitle } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
+
+    const iFrame = await findByTitle("Svg Renderer Frame");
+    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+
+    expect(srcdocContent).toContain("SVG document image");
+    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+  });
+
+  it("should render v4 doc correctly with a valid embedded SVG", async () => {
+    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgUrl = v4WithEmbeddedSvgAndDigestMultibase.renderMethod.id;
+
+    const { findByTitle } = render(
+      <SvgRenderer svgData={svgUrl} document={v4WithEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />
+    );
+
+    const iFrame = await findByTitle("Svg Renderer Frame");
+    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+
+    expect(srcdocContent).toContain("SVG document image");
+    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+  });
+
+  it("should render v2 doc correctly with a valid SVG URL", async () => {
+    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+
+    const { findByTitle } = render(
+      <SvgRenderer document={v2WithSvgUrlAndDigestMultibase} svgRef={svgRef} forceV2={true} />
+    );
+
+    const iFrame = await findByTitle("Svg Renderer Frame");
+    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+
+    expect(srcdocContent).toContain("SVG document image");
+    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+  });
+
+  const tamperedSvgBuffer = Buffer.concat([mockSvg, Buffer.from([0x12, 0x34])]); // Add some random bytes
+  const tamperedSvgBlob = new Blob([tamperedSvgBuffer], { type: "image/svg+xml" });
+  const tamperedMockResponse = { blob: () => Promise.resolve(tamperedSvgBlob) };
+
+  it("should render default template when SVG at URL has been tampered with", async () => {
+    global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
     const svgUrl = v4WithSvgUrlAndDigestMultibase.renderMethod.id;
 
-    const { getByText } = render(
-      <SvgRenderer svgOrUrl={svgUrl} document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />
+    const { findByTestId } = render(
+      <SvgRenderer svgData={svgUrl} document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />
     );
-    // const { getByText } = render(
-    //   <UnsupportedRenderer attachment={{ type: "application/epub+zip", data: "", filename: "" }} />
-    // );
-    // expect(getByText("Rendering of this type of attachment is not supported.")).toBeDefined();
-    // expect(getByText("Please check your mime-type: application/epub+zip")).toBeDefined();
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
+    expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
+  });
+
+  it("should render default template when embedded SVG has somehow also been tampered with", async () => {
+    // Leaving this in since users can pre-load and directly pass in the svg data, but we can technically add another check to remove
+    global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgUrl = v4WithTamperedEmbeddedSvgAndDigestMultibase.renderMethod.id;
+
+    const { findByTestId } = render(
+      <SvgRenderer svgData={svgUrl} document={v4WithTamperedEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />
+    );
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
+    // expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`); // TODO: Update default renderer to handle this case
+  });
+
+  it("should render v4 doc with modified SVG when no digestMultibase", async () => {
+    global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgUrl = v4WithOnlyTamperedEmbeddedSvg.renderMethod.id;
+
+    const { findByTitle } = render(
+      <SvgRenderer svgData={svgUrl} document={v4WithOnlyTamperedEmbeddedSvg} svgRef={svgRef} />
+    );
+
+    const iFrame = await findByTitle("Svg Renderer Frame");
+    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+
+    expect(srcdocContent).toContain("SVG document image");
+    expect(srcdocContent).toContain(encodeURIComponent("TAMPERED CERTIFICATE OF COMPLETION"));
+    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 });

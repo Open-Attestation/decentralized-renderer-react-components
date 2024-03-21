@@ -20,7 +20,6 @@
     "crypto-browserify": "^3.12.0",
     "debug": "^4.3.1",
     "handlebars": "^4.7.8",
-    "multiformats": "^13.1.0",
     "penpal": "^5.3.0",
     "penpal-v4": "npm:penpal@^4.1.1",
     "react-pdf": "^5.2.0",
