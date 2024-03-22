@@ -122,14 +122,14 @@ describe("SvgRenderer component", () => {
     expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
-  it("should render misconfiguration template when SVG at URL has been tampered with", async () => {
+  it("should render SvgModifiedTemplate when SVG at URL has been tampered with", async () => {
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
     const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
 
     const defaultTemplate = await findByTestId("default-template");
-    expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
+    expect(defaultTemplate.textContent).toContain("The remote content for this document has been modified");
     expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
   });
 

@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { TextEncoder, TextDecoder } from "util";
 import crypto from "crypto";
 import bs58 from "bs58";
-import { ConnectionFailureTemplate, NoTemplate } from "../../DefaultTemplate";
+import { ConnectionFailureTemplate, NoTemplate, SvgModifiedTemplate } from "../../DefaultTemplate";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
@@ -18,6 +18,16 @@ interface SvgRendererProps {
   onConnected?: () => void; // Optional call method to call once svg is loaded
   forceV2?: boolean;
 }
+
+const EMBEDDED_DOCUMENT = "[Embedded SVG]";
+
+enum DisplayResult {
+  OK = 0,
+  DEFAULT = 1,
+  CONNECTION_ERROR = 2,
+  DIGEST_ERROR = 3,
+}
+
 export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   document,
   svgRef,
@@ -28,11 +38,11 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   onConnected,
   forceV2 = false,
 }) => {
-  const EMBEDDED_DOCUMENT = "[Embedded SVG]";
   const [buffer, setBuffer] = useState<ArrayBuffer>();
   const [svgFetchedData, setFetchedSvgData] = useState<string>("");
-  const [isFetchError, setIsFetchError] = useState<boolean>(false);
   const [source, setSource] = useState<string>("");
+  const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
+
   let docAsAny: any;
   if (forceV2 && utils.isRawV2Document(docAsAny)) {
     docAsAny = document as v2.OpenAttestationDocument;
@@ -42,7 +52,10 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
 
   // Step 1: Fetch svg data if needed
   useEffect(() => {
-    if (!("renderMethod" in docAsAny)) return;
+    if (!("renderMethod" in docAsAny)) {
+      setToDisplay(DisplayResult.DEFAULT);
+      return;
+    }
 
     const svgInDoc = docAsAny.renderMethod.id;
     const urlPattern = /^(http(s)?:\/\/)?(www\.)?[\w-]+\.[\w]{2,}(\/[\w-]+)*\.svg$/;
@@ -68,7 +81,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
           setBuffer(await blob.arrayBuffer());
         } catch (error) {
           console.log(error);
-          setIsFetchError(true);
+          setToDisplay(DisplayResult.CONNECTION_ERROR);
         }
       };
       fetchSvg();
@@ -83,6 +96,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
 
   const setSvgDataAndTriggerCallback = (svgToSet: string) => {
     setFetchedSvgData(svgToSet);
+    setToDisplay(DisplayResult.OK);
     setTimeout(() => {
       updateIframeHeight();
       if (typeof onConnected === "function") {
@@ -108,7 +122,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
       if (recomputedDigestMultibase === digestMultibaseInDoc) {
         setSvgDataAndTriggerCallback(text);
       } else {
-        setIsFetchError(true);
+        setToDisplay(DisplayResult.DIGEST_ERROR);
       }
     } else {
       setSvgDataAndTriggerCallback(text);
@@ -117,7 +131,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   }, [buffer]);
 
   // Step 3: Compile final svg
-  const renderTemplate = (template: string, document: any, forceV2: boolean) => {
+  const renderTemplate = (template: string, document: any) => {
     if (template.length === 0) return "";
     if (forceV2 && utils.isRawV2Document(document)) {
       const v2doc = document as v2.OpenAttestationDocument;
@@ -130,7 +144,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     }
   };
 
-  const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document, forceV2))}`;
+  const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document))}`;
 
   const updateIframeHeight = () => {
     if (svgRef.current) {
@@ -150,15 +164,15 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
           </body>
       </html>`;
 
-  if (!("renderMethod" in docAsAny)) {
-    return <NoTemplate document={docAsAny} handleObfuscation={() => null} />;
-  }
-
-  return (
-    <>
-      {isFetchError ? (
-        <ConnectionFailureTemplate document={document} source={source} />
-      ) : (
+  switch (toDisplay) {
+    case DisplayResult.DEFAULT:
+      return <NoTemplate document={docAsAny} handleObfuscation={() => null} />;
+    case DisplayResult.CONNECTION_ERROR:
+      return <ConnectionFailureTemplate document={document} source={source} />;
+    case DisplayResult.DIGEST_ERROR:
+      return <SvgModifiedTemplate document={document} />;
+    case DisplayResult.OK:
+      return (
         <iframe
           className={className}
           style={style}
@@ -168,7 +182,8 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
           ref={svgRef}
           sandbox={sandbox}
         />
-      )}
-    </>
-  );
+      );
+    default:
+      return <></>;
+  }
 };

@@ -15,6 +15,10 @@ interface ConnectionFailureProps {
   document?: TemplateProps["document"];
 }
 
+interface SvgModifiedProps {
+  document: TemplateProps["document"];
+}
+
 const DEFAULT_ID = "default-template";
 
 const container = {
@@ -157,6 +161,29 @@ export const ConnectionFailureTemplate: React.FunctionComponent<ConnectionFailur
             <TemplateInfoComponent template={templateInfo} />
           ) : (
             <span style={{ fontFamily: "Courier" }}>Template URL: “{props.source}”</span>
+          )}
+        </>
+      }
+      document={props.document}
+    />
+  );
+};
+
+export const SvgModifiedTemplate: React.FunctionComponent<SvgModifiedProps> = (props) => {
+  const templateInfo = extractTemplateInfo(props.document);
+  return (
+    <DefaultTemplate
+      title="The remote content for this document has been modified"
+      description={
+        <>
+          The display for this document has been modified and no longer matches its original state. Please contact the
+          issuer with the information below:
+          {templateInfo && (
+            <>
+              <br />
+              <br />
+              <TemplateInfoComponent template={templateInfo} />
+            </>
           )}
         </>
       }
