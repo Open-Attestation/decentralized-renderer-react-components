@@ -169,7 +169,7 @@ export const ConnectionFailureTemplate: React.FunctionComponent<ConnectionFailur
   );
 };
 
-export const SvgModifiedTemplate: React.FunctionComponent<SvgModifiedProps> = (props) => {
+export const TamperedSvgTemplate: React.FunctionComponent<SvgModifiedProps> = (props) => {
   const templateInfo = extractTemplateInfo(props.document);
   return (
     <DefaultTemplate

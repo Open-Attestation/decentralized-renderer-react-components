@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { TextEncoder, TextDecoder } from "util";
 import crypto from "crypto";
 import bs58 from "bs58";
-import { ConnectionFailureTemplate, NoTemplate, SvgModifiedTemplate } from "../../DefaultTemplate";
+import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
@@ -170,7 +170,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     case DisplayResult.CONNECTION_ERROR:
       return <ConnectionFailureTemplate document={document} source={source} />;
     case DisplayResult.DIGEST_ERROR:
-      return <SvgModifiedTemplate document={document} />;
+      return <TamperedSvgTemplate document={document} />;
     case DisplayResult.OK:
       return (
         <iframe

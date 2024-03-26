@@ -39,7 +39,7 @@
     "lint:fix": "npm run lint -- --fix",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build -o docs",
-    "test": "jest --ci SvgRenderer",
+    "test": "jest --ci",
     "test:coverage": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch",
     "semantic-release": "semantic-release"

@@ -1,20 +1,7 @@
-/* eslint-disable */
-
-// Valid / Invalid urls
-// v4 with Svg url with response and multibase - DONE
-// v4 with Svg data and multibase - DONE
-// v2 with Svg url with response and multibase - DONE
-
-// v4 with Svg url with tampered response and multibase - DONE
-// v4 with tampered Svg data - DONE
-
-// v4 with Svg url with tampered response and no multibase - DONE
-
-// v4 with Svg url with bad response and multibase
-
-// import React from "react";
-import { v4 } from "@govtechsg/open-attestation";
-import { act, findByTestId, render } from "@testing-library/react";
+/* eslint-disable jest/prefer-spy-on */
+// Disable the spyOn check due to known issues with mocking fetch in jsDom env
+// https://stackoverflow.com/questions/74945569/cannot-access-built-in-node-js-fetch-function-from-jest-tests
+import { render } from "@testing-library/react";
 import { SvgRenderer } from "./SvgRenderer";
 import fs from "fs";
 import { Blob } from "buffer";
@@ -28,14 +15,7 @@ import {
   v4WithNoRenderMethod,
 } from "./fixtures/svgRendererSamples";
 
-// const yes = mockResponse.blob().then((res) => {
-//   res.text().then((r2s) => {
-//     console.log(r2s);
-//     // console.log(v4WithSvgUrlAndDigestMultibase.renderMethod.idAlso);
-//   });
-// });
-
-describe("SvgRenderer component", () => {
+describe("svgRenderer component", () => {
   const mockSvg = fs.readFileSync("./src/components/renderer/fixtures/example_cert.svg");
   const mockSvgBlob = new Blob([mockSvg], { type: "image/svg+xml" });
   const mockResponse = { ok: true, blob: () => Promise.resolve(mockSvgBlob) };
@@ -84,7 +64,7 @@ describe("SvgRenderer component", () => {
     expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
-  const tamperedSvgBuffer = Buffer.concat([mockSvg, Buffer.from([0x12, 0x34])]); // Add some random bytes
+  const tamperedSvgBuffer = Buffer.concat([mockSvg, Buffer.from([0x12, 0x34])]); // Add some random bytes to tamper svg
   const tamperedSvgBlob = new Blob([tamperedSvgBuffer], { type: "image/svg+xml" });
   const tamperedMockResponse = { ok: true, blob: () => Promise.resolve(tamperedSvgBlob) };
 
@@ -156,3 +136,4 @@ describe("SvgRenderer component", () => {
     expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
   });
 });
+/* eslint-enable jest/prefer-spy-on */
