@@ -59,11 +59,12 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
       };
     }
   } else if (isV4Document(document)) {
-    if (document.renderMethod !== undefined) {
+    const docAsAny = document as any;
+    if (docAsAny.renderMethod !== undefined) {
       return {
-        name: document.renderMethod?.name,
-        type: document.renderMethod?.type as string, // TODO: Remove cast once v4 is updated
-        url: (document.renderMethod as any).id, // TODO: Remove cast once v4 is updated
+        name: docAsAny.renderMethod?.name,
+        type: docAsAny.renderMethod?.type as string, // TODO: Remove cast once v4 is updated
+        url: (docAsAny.renderMethod as any).id, // TODO: Remove cast once v4 is updated
       };
     }
   }

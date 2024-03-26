@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { Attachment, TemplateRegistry, TemplateWithComponent, TemplateWithTypes } from "./types";
 import { wrongTemplate, noTemplate } from "./DefaultTemplate";
-import { OpenAttestationDocument, v2, v3, v4 } from "@govtechsg/open-attestation";
+import { OpenAttestationDocument, v2, v3 } from "@govtechsg/open-attestation";
 
 export const repeat = (times: number) => (callback: (index: number) => any) =>
   Array(times)
@@ -27,7 +27,7 @@ export const isV3Document = (document: any): document is v3.OpenAttestationDocum
   return !!document["@context"] && !!document.openAttestationMetadata;
 };
 
-export const isV4Document = (document: any): document is v4.OpenAttestationDocument => {
+export const isV4Document = (document: any): boolean => {
   return !!document["@context"] && !document.openAttestationMetadata;
 };
 
