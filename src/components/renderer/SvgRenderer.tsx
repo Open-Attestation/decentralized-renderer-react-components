@@ -1,4 +1,4 @@
-import { OpenAttestationDocument, v2, v4, utils } from "@govtechsg/open-attestation";
+import { v2, utils } from "@govtechsg/open-attestation";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TextEncoder, TextDecoder } from "util";
@@ -9,7 +9,7 @@ import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../.
 const handlebars = require("handlebars");
 
 interface SvgRendererProps {
-  document: OpenAttestationDocument;
+  document: any; // TODO: Update to OpenAttestationDocument
   svgRef: React.RefObject<HTMLIFrameElement>;
   svgData?: string;
   style?: CSSProperties;
@@ -138,7 +138,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
       const compiledTemplate = handlebars.compile(template);
       return compiledTemplate(v2doc);
     } else {
-      const v4doc = document as v4.OpenAttestationDocument;
+      const v4doc = document;
       const compiledTemplate = handlebars.compile(template);
       return compiledTemplate(v4doc.credentialSubject);
     }
