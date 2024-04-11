@@ -1,0 +1,25 @@
+import { Meta, Props, Description, Canvas, Controls, Title } from "@storybook/blocks";
+import * as DomListenerStories from "./DomListener.stories";
+import { DomListener } from "./DomListener";
+import { action } from "@storybook/addon-actions";
+import { Counter, NestedCounter } from "./Counter";
+
+<Meta of={DomListenerStories} />
+
+<Title />
+
+<Description of={DomListener} />
+
+# Props
+
+<Controls />
+
+# Usage
+
+When used as a root component, it will fire an action for any dom mutation and resize of the window. When clicking on the buttons below, the DOM is updated and `DomListener` fire an event, check in action panel.
+
+<Canvas of={DomListenerStories.AsRootComponent} />
+
+However be mindful that using it as a nested component will trigger DOM mutations only for children. In the following example clicking on buttons won't fire any event as the component is observing only the `+` button and no changes are made there. Resizing the window still works.
+
+<Canvas of={DomListenerStories.AsANestedComponent} />

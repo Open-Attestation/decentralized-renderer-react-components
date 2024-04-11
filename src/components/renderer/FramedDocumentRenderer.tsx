@@ -47,7 +47,7 @@ export function FramedDocumentRenderer({
   const templateConfiguration = templates.find((template) => template.id === templateName) || templates[0] || {};
   const Template = templateConfiguration.template;
 
-  const onConnected = useCallback((postMessage) => {
+  const onConnected = useCallback((postMessage: (actions: FrameActions) => void) => {
     toHost.current = postMessage;
   }, []);
 
@@ -66,7 +66,7 @@ export function FramedDocumentRenderer({
           const templates = await documentTemplates(
             action.payload.document,
             templateRegistry as TemplateRegistry<OpenAttestationDocument>,
-            attachmentToComponent
+            attachmentToComponent,
           ).map((template) => ({
             id: template.id,
             label: template.label,
@@ -81,7 +81,7 @@ export function FramedDocumentRenderer({
         const templates = documentTemplates(
           action.payload,
           templateRegistry as TemplateRegistry<OpenAttestationDocument>,
-          attachmentToComponent
+          attachmentToComponent,
         ).map((template) => ({
           id: template.id,
           label: template.label,
@@ -95,7 +95,7 @@ export function FramedDocumentRenderer({
         throw new Error(`Action ${JSON.stringify(action)} is not handled`);
       }
     },
-    [templateRegistry, attachmentToComponent]
+    [templateRegistry, attachmentToComponent],
   );
   window.openAttestation = dispatch; // expose different actions for direct injection
 

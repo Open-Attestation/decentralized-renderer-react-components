@@ -1,0 +1,18 @@
+import { Meta, Props, Description, Canvas, Controls, Title } from "@storybook/blocks";
+import { SAMPLE_PDF } from "./fixtures/pdf";
+import { PdfRenderer } from "./PdfRenderer";
+import * as PdfRendererStories from "./PdfRenderer.stories";
+
+<Meta of={PdfRendererStories} />
+
+<Title />
+
+<Description of={PdfRenderer} />
+
+# Props
+
+<Controls />
+
+# Usage
+
+<Canvas of={PdfRendererStories.BasicExample} />

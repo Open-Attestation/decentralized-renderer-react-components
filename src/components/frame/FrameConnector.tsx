@@ -107,7 +107,7 @@ export const FrameConnector: FunctionComponent<FrameConnectorProps> = ({
               toFrame.print();
             }
           }
-        })
+        }),
       );
     }
   }, [connected, toFrame, onConnected, onConnectedCalled]);

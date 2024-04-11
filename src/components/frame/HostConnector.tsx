@@ -12,6 +12,7 @@ interface HostConnectorProps {
    * Function called once the connection has been established with the host. It provides another function to send actions to the host.
    */
   onConnected: (toHost: FrameActionsHandler) => void;
+  children: React.ReactNode;
 }
 
 /**

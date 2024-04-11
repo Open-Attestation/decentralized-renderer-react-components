@@ -25,7 +25,7 @@ describe("redactablevalue component", () => {
   it("should display value, custom icon redact and call onRedactionRequested when editable is set to true", () => {
     const callback = jest.fn();
     render(
-      <RedactableValue value="Text to display" onRedactionRequested={callback} editable iconRedact={<>foobar</>} />
+      <RedactableValue value="Text to display" onRedactionRequested={callback} editable iconRedact={<>foobar</>} />,
     );
 
     expect(screen.getByText("Text to display")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("redactablevalue component", () => {
   it("should display default redacted message when no redacted message is specified", () => {
     const callback = jest.fn();
     render(
-      <RedactableValue value="Text to display" onRedactionRequested={callback} editable iconRedact={<>foobar</>} />
+      <RedactableValue value="Text to display" onRedactionRequested={callback} editable iconRedact={<>foobar</>} />,
     );
 
     fireEvent.click(screen.getByText("foobar"));
@@ -56,7 +56,7 @@ describe("redactablevalue component", () => {
         editable
         iconRedact={<>foobar</>}
         redactedMessage={CUSTOM_REDACTED_MSG}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText("foobar"));
@@ -80,7 +80,7 @@ describe("redactablevalue component", () => {
         editable
         iconRedact={<>foobar</>}
         noValueMessage={CUSTOM_NO_VALUE_MSG}
-      />
+      />,
     );
 
     expect(screen.getByText(CUSTOM_NO_VALUE_MSG)).toBeInTheDocument();

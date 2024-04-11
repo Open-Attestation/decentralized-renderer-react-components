@@ -1,16 +1,12 @@
 {
-  "extends": "./.babelrc",
-  "ignore": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.mdx"
-  ],
+  "extends": "./babel.config.cjs",
+  "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/*.mdx"],
   "presets": [
     [
       "@babel/preset-env",
       {
-        "modules": false
-      }
-    ]
-  ]
+        "modules": false,
+      },
+    ],
+  ],
 }

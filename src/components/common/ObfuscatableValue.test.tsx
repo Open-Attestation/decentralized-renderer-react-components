@@ -6,7 +6,7 @@ describe("obfuscatablevalue component", () => {
   it("should display value only and not call onObfuscationRequested when editable is not set", () => {
     const callback = jest.fn();
     const { getByText, queryByTitle } = render(
-      <ObfuscatableValue value="Text to display" onObfuscationRequested={callback} />
+      <ObfuscatableValue value="Text to display" onObfuscationRequested={callback} />,
     );
     expect(getByText("Text to display")).toBeDefined();
     expect(queryByTitle("Obfuscate value")).toBeNull();
@@ -16,7 +16,7 @@ describe("obfuscatablevalue component", () => {
   it("should display value only and not call onObfuscationRequested when editable is set to false", () => {
     const callback = jest.fn();
     const { getByText, queryByTitle } = render(
-      <ObfuscatableValue value="Text to display" onObfuscationRequested={callback} editable={false} />
+      <ObfuscatableValue value="Text to display" onObfuscationRequested={callback} editable={false} />,
     );
     expect(getByText("Text to display")).toBeDefined();
     expect(queryByTitle("Obfuscate value")).toBeNull();
@@ -26,7 +26,7 @@ describe("obfuscatablevalue component", () => {
   it("should display value/cross and call onObfuscationRequested when editable is set to true", () => {
     const callback = jest.fn();
     const { getByText, getByTitle } = render(
-      <ObfuscatableValue value="Text to display" onObfuscationRequested={callback} editable />
+      <ObfuscatableValue value="Text to display" onObfuscationRequested={callback} editable />,
     );
     expect(getByText("Text to display")).toBeDefined();
     expect(getByTitle("Obfuscate value")).toBeDefined();

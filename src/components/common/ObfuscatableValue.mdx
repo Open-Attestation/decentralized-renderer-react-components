@@ -1,0 +1,24 @@
+import { Meta, Props, Description, Canvas, Controls, Title } from "@storybook/blocks";
+import { ObfuscatableValue } from "./ObfuscatableValue";
+import { action } from "@storybook/addon-actions";
+import * as ObfuscatableValueStories from "./ObfuscatableValue.stories";
+
+<Meta of={ObfuscatableValueStories} />
+
+<Title />
+
+<Description of={ObfuscatableValue} />
+
+# Props
+
+<Controls />
+
+# Usage
+
+When the _editable_ property is set to false (or not set), the component will only display the value and no action will be possible
+
+<Canvas of={ObfuscatableValueStories.NonEditableValue} />
+
+When the _editable_ property is set to true, _onObfuscationRequested_ is called when clicking on the value or on the cross
+
+<Canvas of={ObfuscatableValueStories.EditableValue} />

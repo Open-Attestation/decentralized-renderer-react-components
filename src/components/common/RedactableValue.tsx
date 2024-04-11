@@ -57,6 +57,8 @@ export const RedactableValue: FunctionComponent<RedactValueProps> = ({
         return redactedMessage ? redactedMessage : DEFAULT_REDACTED_MSG;
       case !value:
         return noValueMessage ? noValueMessage : DEFAULT_NO_VALUE_MSG;
+      case typeof value === "object":
+        return <span>{JSON.stringify(value)}</span>;
       default:
         return value;
     }

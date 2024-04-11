@@ -1,0 +1,17 @@
+import { Meta, Props, Description, Canvas, Controls, Title } from "@storybook/blocks";
+import { DefaultTemplate } from "./DefaultTemplate";
+import * as DefaultTemplateStories from "./DefaultTemplate.stories";
+
+<Meta of={DefaultTemplateStories} />
+
+<Title />
+
+<Description of={DefaultTemplate} />
+
+# Props
+
+<Controls />
+
+# Usage
+
+<Canvas of={DefaultTemplateStories.NonEditableValue} />

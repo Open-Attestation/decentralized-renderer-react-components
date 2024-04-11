@@ -51,7 +51,7 @@ const truePredicate = (): boolean => true;
 export function documentTemplates(
   document: OpenAttestationDocument,
   templateRegistry: TemplateRegistry,
-  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => FunctionComponent | null
+  attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => FunctionComponent | null,
 ): TemplateWithTypes[] {
   if (!document) return [];
   // Find the template in the template registry or use a default template
@@ -81,7 +81,7 @@ export function documentTemplates(
             label: attachment.fileName || "Unknown filename",
             type: attachment.mimeType || "Unknown filetype",
             template: attachmentToComponent(attachment, document)!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-          }
+          },
     )
     .filter((template) => template.template);
 

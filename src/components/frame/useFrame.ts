@@ -57,7 +57,7 @@ interface UseChildrenFrameProps {
   iframe: RefObject<HTMLIFrameElement>;
 }
 export const useChildFrame = function (
-  props: UseChildrenFrameProps
+  props: UseChildrenFrameProps,
 ): [boolean, boolean, { dispatch?: HostActionsHandler } & Partial<LegacyHostActions>] {
   const [childFrameConnection, setChildFrameConnection] = useState<any>();
   const [status, setStatus] = useState<Status>("DISCONNECTED");

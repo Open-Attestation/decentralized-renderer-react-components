@@ -2,12 +2,14 @@ const path = require("path");
 const toPath = (_path) => path.join(process.cwd(), _path);
 
 module.exports = {
-  stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: ["@storybook/addon-essentials"],
-  framework: "@storybook/react",
-  core: {
-    builder: "webpack5",
+  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  addons: ["@storybook/addon-essentials", "@storybook/addon-mdx-gfm"],
+
+  framework: {
+    name: "@storybook/react-webpack5",
+    options: {}
   },
+
   webpackFinal: (config) => {
     return {
       ...config,
@@ -23,4 +25,8 @@ module.exports = {
       },
     };
   },
+
+  docs: {
+    autodocs: true
+  }
 };

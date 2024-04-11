@@ -10,6 +10,7 @@ interface DomListenerProps {
    * Function called on DOM modification or window resize with the new document height as first parameter and `resize`|`domChange` as second parameter depending on the origin of the update.
    */
   onUpdate: (height: number, event: Event) => void;
+  children: React.ReactNode;
 }
 
 /**

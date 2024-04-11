@@ -1,0 +1,28 @@
+import { Meta, Props, Description, Canvas, Controls, Title } from "@storybook/blocks";
+import { FrameConnector } from "./FrameConnector";
+import { css } from "@emotion/core";
+import * as FrameConnectorStories from "./FrameConnector.stories";
+
+<Meta of={FrameConnectorStories} />
+
+<Title />
+
+<Description of={FrameConnector} />
+
+# Props
+
+<Controls />
+
+# Usage
+
+iframe created can be styled using inline style or `emotion` css prop.
+
+### Using style
+
+<Canvas of={FrameConnectorStories.WithStyle} />
+
+### Using emotion
+
+<Canvas of={FrameConnectorStories.WithEmotion} />
+
+Note that the current example doesn't use a frame listening for connecting and can't show example on how to use `onConnected` and `dispatch` function.
