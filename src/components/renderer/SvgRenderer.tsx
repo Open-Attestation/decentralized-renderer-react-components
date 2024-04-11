@@ -1,7 +1,6 @@
 import { v2, utils } from "@govtechsg/open-attestation";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { TextEncoder, TextDecoder } from "util";
 import crypto from "crypto";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
@@ -72,15 +71,12 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
       const fetchSvg = async () => {
         try {
           const response = await fetch(svgInDoc);
-          console.log(response);
           if (!response.ok) {
             throw new Error("Failed to fetch remote SVG");
           }
           const blob = await response.blob();
-          console.log(blob);
           setBuffer(await blob.arrayBuffer());
         } catch (error) {
-          console.log(error);
           setToDisplay(DisplayResult.CONNECTION_ERROR);
         }
       };
@@ -117,8 +113,6 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     if (digestMultibaseInDoc) {
       const shaDigest = crypto.createHash("sha256").update(svgUint8Array).digest();
       const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
-      console.log(`Original checksum is`, digestMultibaseInDoc);
-      console.log(`Recomputed checksum is`, recomputedDigestMultibase);
       if (recomputedDigestMultibase === digestMultibaseInDoc) {
         setSvgDataAndTriggerCallback(text);
       } else {
@@ -149,7 +143,6 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
   const updateIframeHeight = () => {
     if (svgRef.current) {
       const contentHeight = svgRef.current?.contentDocument?.body?.offsetHeight;
-      console.log(`updating height to`, svgRef.current?.contentDocument?.body?.offsetHeight);
       svgRef.current.style.height = `${contentHeight}px`;
     }
   };

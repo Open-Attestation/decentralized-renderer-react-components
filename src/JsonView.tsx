@@ -7,9 +7,22 @@ const MAX_CHARACTERS = 200;
 const MAX_CHARACTERS_REVEAL_FIRST_N = 100;
 const MAX_CHARACTERS_REVEAL_LAST_N = 100;
 
+const existingKeys: string[] = [];
+
+function incrementTillNew(key: string, suffix: number): string {
+  let keyWithSuffix = `${key ? "default" : key}-${suffix.toString()}`;
+  if (!existingKeys.includes(keyWithSuffix)) {
+    existingKeys.push(keyWithSuffix);
+    return keyWithSuffix;
+  } else {
+    return incrementTillNew(key, suffix + 1);
+  }
+}
+
 function JsonLine(key: string, val: EmotionJSX.Element | string) {
+  const keyToUse = incrementTillNew(key, 1);
   return (
-    <div key={key}>
+    <div key={keyToUse}>
       <span style={{ color: "black", fontWeight: 700 }}>{key}: </span>
       <span style={{ color: "#057A55" }}>{val}</span>
     </div>
@@ -21,6 +34,7 @@ function formatJson(variable: any, stackCount = 0, indent = 0, key = ""): Emotio
     /* nested 5 levels. stop showing */
     return "...";
   }
+  const keyToUse = incrementTillNew(String(variable), 1);
 
   if (typeof variable === "object" && variable !== null && !Array.isArray(variable)) {
     const jsonLines = [];
@@ -44,12 +58,16 @@ function formatJson(variable: any, stackCount = 0, indent = 0, key = ""): Emotio
         jsonLines.push(JsonLine(key, formatJson(variable[key], stackCount + 1, INDENT_PX)));
       }
     }
-    return <div style={{ marginLeft: `${indent}px` }}>{jsonLines}</div>; // wrapping in div basically starts a new line
+    return (
+      <div key={keyToUse} style={{ marginLeft: `${indent}px` }}>
+        {jsonLines}
+      </div>
+    ); // wrapping in div basically starts a new line
   }
 
   if (Array.isArray(variable)) {
     return (
-      <div style={{ marginLeft: `${indent}px` }}>
+      <div key={keyToUse} style={{ marginLeft: `${indent}px` }}>
         {/* if an attribute is an array, display elements as <KEY_NAME>[0]: <ATTRIBUTE_VAL> */}
         {variable.map((element, index) => JsonLine(`${key}[${index}]`, formatJson(element, stackCount + 1, INDENT_PX)))}
       </div> // wrapping in div basically starts a new line
