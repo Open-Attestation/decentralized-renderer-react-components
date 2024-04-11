@@ -10,7 +10,7 @@ const MAX_CHARACTERS_REVEAL_LAST_N = 100;
 const existingKeys: string[] = [];
 
 function incrementTillNew(key: string, suffix: number): string {
-  let keyWithSuffix = `${key ? "default" : key}-${suffix.toString()}`;
+  const keyWithSuffix = `${key ? "default" : key}-${suffix.toString()}`;
   if (!existingKeys.includes(keyWithSuffix)) {
     existingKeys.push(keyWithSuffix);
     return keyWithSuffix;
