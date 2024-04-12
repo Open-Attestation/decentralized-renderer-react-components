@@ -1,6 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { isActionOf } from "typesafe-actions";
-import { FrameActions, FrameConnector, HostActionsHandler, updateHeight, updateTemplates, timeout } from "../../src";
+import {
+  FrameActions,
+  FrameConnector,
+  HostActionsHandler,
+  updateHeight,
+  updateTemplates,
+  timeout,
+  SvgRenderer,
+} from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
@@ -59,6 +67,9 @@ const DocumentsContainer = styled.div`
 `;
 
 const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
+  const isSvg = document.document.renderMethod?.type === "SvgRenderingTemplate2023";
+  const svgRef = useRef<HTMLIFrameElement>(null);
+
   const [toFrame, setToFrame] = useState<HostActionsHandler>();
   const [height, setHeight] = useState(250);
   const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
@@ -211,19 +222,23 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
               margin-right: 0.5rem;
             `}
           >
-            <FrameConnector
-              source={document.frameSource}
-              dispatch={fromFrame}
-              onConnected={fn}
-              onConnectionFailure={(setDocumentToRender) => setDocumentToRender(document.document)}
-              css={css`
-                display: block;
-                margin: auto;
-                max-width: 1120px;
-                width: 100%;
-                height: ${height}px;
-              `}
-            />
+            {isSvg ? (
+              <SvgRenderer document={document.document} svgRef={svgRef} forceV2={true} />
+            ) : (
+              <FrameConnector
+                source={document.frameSource}
+                dispatch={fromFrame}
+                onConnected={fn}
+                onConnectionFailure={(setDocumentToRender) => setDocumentToRender(document.document)}
+                css={css`
+                  display: block;
+                  margin: auto;
+                  max-width: 1120px;
+                  width: 100%;
+                  height: ${height}px;
+                `}
+              />
+            )}
           </div>
         </div>
       </div>
