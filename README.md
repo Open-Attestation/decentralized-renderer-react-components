@@ -4,6 +4,7 @@
 
 - [OpenCerts V2 announcement](https://docs.opencerts.io/docs/migrations/v1_to_v2#announcements)
 - [OpenAttestation](https://openattestation.com/)
+<!-- TODO: Add V4 / Svg support announcement -->
 
 ## Features
 
@@ -18,8 +19,8 @@
 - [**Storybook**](https://storybook.js.org/) - A tool for developing UI components in isolation with documentation
 - [**Webpack**](https://webpack.js.org/) - A component bundler
 
-
 ## Installation
+
 <!--Flag: The "Installation" section was added based on similar steps in the "react-template" readme.-->
 
 To install the React components for the decentralized renderer, download or `git clone` [this repository](https://github.com/Open-Attestation/decentralized-renderer-react-components):
@@ -40,6 +41,9 @@ Be sure to edit the following files according to your module information:
 <!--Flag: The folder and file names above need confirmation.-->
 
 ## How it works
+
+> [!TIP]  
+> OpenAttestation now supports SVG rendering. Click [here](#svg-rendering) for more info.
 
 To begin with, be sure to read the initial introduction and explanation about the [decentralized renderer](https://docs.opencerts.io/docs/migrations/v1_to_v2).
 
@@ -72,12 +76,13 @@ const printAction = {
 The following shows a list of actions made for the host to communicate to the iframe, and thus must be handled by the application embedded in the iframe:
 
 - Render a document:
+
   - type: `RENDER_DOCUMENT`
   - payload: An object with two properties
     - document: (mandatory) document data as returned by `getData` method from [@govtechsg/open-attestation](https://github.com/Open-Attestation/open-attestation)
     - rawDocument: (optional) OpenAttestation document
 
-  The following is a code example: 
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -90,10 +95,11 @@ const action = {
 ```
 
 - Select a template among those provided by the decentralized renderer (A renderer may provide one to many different templates to display a document):
+
   - type: `SELECT_TEMPLATE`
   - payload: (mandatory) The template ID to display
 
-  The following is a code example: 
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -103,9 +109,10 @@ const action = {
 ```
 
 - Request for printing a document
+
   - type: `PRINT`
 
-  The following is a code example: 
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -116,10 +123,11 @@ const action = {
 There is a fourth action that can be used in the context of React Native application (which doesn't use iframe under the hood)
 
 - Request for the list of templates for a document. The action directly returns the list of templates
+
   - type: `GET_TEMPLATES`
   - payload: (mandatory) document data as returned by the `getData` method from [@govtechsg/open-attestation](https://github.com/Open-Attestation/open-attestation)
 
-  The following is a code example: 
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -133,10 +141,11 @@ const action = {
 The following shows a list of actions made for the iframe to communicate to the host (and thus must be handled by the application which embeds the iframe):
 
 - Provide the full content height of the iframe, so that the host can adapt automatically to the embedded iframe size.
+
   - type: `UPDATE_HEIGHT`
   - payload: (mandatory) full content height of the iframe
 
-  The following is a code example: 
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -146,10 +155,11 @@ const action = {
 ```
 
 - Provide the name of a field on the document to obfuscate. The value must follow the path property as handled by [lodash#get](https://lodash.com/docs/4.17.15#get)
+
   - type: `OBFUSCATE`
   - payload: (mandatory) path to the field
 
-  The following is a code example: 
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -159,10 +169,11 @@ const action = {
 ```
 
 - Provide the list of templates that can be used to render a document
+
   - type: `UPDATE_TEMPLATES`
   - payload: (mandatory) an array where each element is an object composed of a string and a label
-  
-  The following is a code example: 
+
+  The following is a code example:
 
 ```javascript
 const action = {
@@ -199,19 +210,22 @@ Please check the code in `example/application` to see how to use this component.
 
 This component will establish a connection with a host embedding the application within an iframe. Its properties include:
 
-- `templateRegistry`: The configuration of the templates handled by the decentralized renderer. `templateRegistry` is an object where each key holds an array of `Template Configuration`. 
+- `templateRegistry`: The configuration of the templates handled by the decentralized renderer. `templateRegistry` is an object where each key holds an array of `Template Configuration`.
 
   One `Template Configuration` consists of:
+
   - `id`: A unique identifier within the current array of the template
   - `label`: A string to represent what the template is (used when verifiers display tabs)
   - `template`: A `Template`, i.e. a React component that will render a document
-- `attachmentToComponent`: A function that maps attachments to the component depending on the attachment type. 
+
+- `attachmentToComponent`: A function that maps attachments to the component depending on the attachment type.
 
   Currently the library exposes two functions:
+
   1. `noAttachmentRenderer`: Uses `UnsupportedRenderer`
   1. `fullAttachmentRenderer`: Uses all the supported attachment types by the library (see the function).
-    
-      This property defaults to `noAttachmentRenderer` to avoid the bundles from growing unnecessarily huge.
+
+     This property defaults to `noAttachmentRenderer` to avoid the bundles from growing unnecessarily huge.
 
 `FramedDocumentRenderer` handles all the logic around the communication with the hosted application and the renderer:
 
@@ -240,6 +254,7 @@ Run the following commands for different development tasks:
 - `npm run example:application`: to run an example application built with this library
 
   Be sure to update the example if you update this library.
+
 - `npm run example:renderer`: to run an example decentralized renderer built with this library
 
   Be sure to update the example if you update this library.
@@ -249,3 +264,129 @@ You can also build your own decentralized-renderer based on this [React template
 ## Penpal
 
 There are compatibility [issues](https://github.com/Aaronius/penpal/issues/52) between Penpal version ^5 and ^4. If you must use Penpal version ^4, get version [4.1.1](https://github.com/Aaronius/penpal/releases/tag/v4.1.1).
+
+# SVG Rendering
+
+The implementation for SVG rendering is based on the [W3C draft](https://w3c-ccg.github.io/vc-render-method/#render-svgrenderingtemplate2023).
+
+## How it works
+
+SVG renderering is an alternative to the existing embedded renderer method that can be achieved without creating a decentralized renderer.
+
+Instead, an SVG image needs to be provided either by directly embedded it inside an OA document, or by providing a publicly accessible link that dereferences to an SVG image. In order to correctly display data, the provided SVG should include [handlebars expressions](https://handlebarsjs.com/guide/expressions.html).
+
+At the point of display, the document to be rendered is passed to the SvgRenderer component in order for the final output to be compiled.
+
+## Usage
+
+The library provides the `SvgRenderer` component.
+
+### SvgRenderer
+
+This component has two mandatory properties: `document` and `svgRef`.
+
+- `document`: OA document in the form of an object with the corresponding fields to display.
+- `svgRef`: HTMLIFrameElement RefObject which is used to automatically adjust the height after loading.
+- `svgData?`: Allows for pre-fetched SVG data to be used instead. By default, SVG data will be fetched from `document.renderMethod.id`.
+- `style?`: To style the iframe element.
+- `className?`: To set the className for the iframe.
+- `sandbox?`: To set the sandbox for the iframe.
+- `onConnected?`: Accepts a void function that is called once the SVG is loaded.
+- `forceV2?`: Allow OA v2 documents to be rendered using SVGs. WARNING: This is an experimental feature meant for users who want to try SVG rendering before OA v4. We will not be maintaining this interoperability.
+
+### renderMethod object
+
+The object to be included in the OA doc, for more information refer to the [w3c specification](https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023).
+
+## Example
+
+Illustrated example for SVG rendering. For simplicity we will not be specifying a `digestMultibase`.
+
+### Step 1 - Prepare your template SVG
+
+```
+<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
+  <text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving {{qualification}}!</text>
+  <text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: {{recipient.name}}</text>
+</svg>
+```
+
+Preview of the template SVG:
+
+<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
+  <rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
+  <text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving {{qualification}}!</text>
+  <text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: {{recipient.name}}</text>
+</svg>
+
+Ensure that the data fields referenced by the SVG are within the raw/unwrapped OA document, the SVG can be hosted or embedded directly.
+
+### Step 2 - Create Sample Raw/Unwrapped OpenAttestation doc
+
+Sample A - v2 doc with hosted SVG:
+
+> [!NOTE]  
+> Note: Using SVG rendering with OA v2 requires the `renderMethod` property instead of `$template`.
+
+```
+{
+  <!-- Issuers field -->
+  "renderMethod": {
+    "id": "http://example.com/static/svg_test.svg",  // Put SVG data here to embed it directly
+    "type": "SvgRenderingTemplate2023",
+    "name": "SVG Demo",
+  },
+  "qualification": "SVG rendering",
+  "recipient": {
+    "name": "Yourself"
+  }
+}
+```
+
+Sample B - v2 doc with embedded SVG:
+
+```
+{
+  <!-- Issuers field -->
+  "renderMethod": {
+    "id": `<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
+<text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving {{qualification}}!</text>
+<text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: {{recipient.name}}</text>
+</svg>`,
+    "type": "SvgRenderingTemplate2023",
+    "name": "SVG Demo",
+  },
+  "qualification": "SVG rendering",
+  "recipient": {
+    "name": "Yourself"
+  }
+}
+```
+
+### Step 3 - Basic Usage of the SvgRenderer
+
+```
+import React, { useRef } from "react";
+import { SvgRenderer } from "@govtechsg/decentralized-renderer-react-components";
+
+// Your renderer component
+const export DocumentRenderer: React.FC<RendererProps> = ({ rawDocument }) => {
+  const svgRef = useRef<HTMLIFrameElement>(null)
+
+  return
+    (<SvgRenderer
+      document={rawDocument}
+      svgRef={svgRef}
+      forceV2={true} // Only set if you want to support SVG rendering for v2 documents
+    ></SvgRenderer>)
+}
+```
+
+When compiled, the final rendered image should be:
+<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
+<text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving SVG rendering!</text>
+<text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: Yourself</text>
+</svg>
