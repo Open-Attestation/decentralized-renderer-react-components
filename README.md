@@ -314,11 +314,7 @@ Illustrated example for SVG rendering. For simplicity we will not be specifying 
 
 Preview of the template SVG:
 
-<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
-  <rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
-  <text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving {{qualification}}!</text>
-  <text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: {{recipient.name}}</text>
-</svg>
+![template svg](example/application/fixtures/images/demo-cert.svg)
 
 Ensure that the data fields referenced by the SVG are within the raw/unwrapped OA document, the SVG can be hosted or embedded directly.
 
@@ -327,7 +323,7 @@ Ensure that the data fields referenced by the SVG are within the raw/unwrapped O
 Sample A - v2 doc with hosted SVG:
 
 > [!NOTE]  
-> Note: Using SVG rendering with OA v2 requires the `renderMethod` property instead of `$template`.
+> Using SVG rendering with OA v2 requires the `renderMethod` property instead of `$template`.
 
 ```
 {
@@ -376,17 +372,13 @@ const export DocumentRenderer: React.FC<RendererProps> = ({ rawDocument }) => {
   const svgRef = useRef<HTMLIFrameElement>(null)
 
   return
-    (<SvgRenderer
+    <SvgRenderer
       document={rawDocument}
       svgRef={svgRef}
       forceV2={true} // Only set if you want to support SVG rendering for v2 documents
-    ></SvgRenderer>)
+    />
 }
 ```
 
-When compiled, the final rendered image should be:
-<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
-<rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
-<text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving SVG rendering!</text>
-<text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: Yourself</text>
-</svg>
+When compiled, the final rendered image should look something like:
+![template svg](example/application/fixtures/images/demo-cert-compiled.png)

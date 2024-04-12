@@ -47,7 +47,7 @@ export const svgHostedDemoV2 = {
   ],
   renderMethod: {
     id:
-      "https://raw.githubusercontent.com/Open-Attestation/decentralized-renderer-react-components/master/example/application/fixtures/demo-cert.svg",
+      "https://raw.githubusercontent.com/Open-Attestation/decentralized-renderer-react-components/master/example/application/fixtures/images/demo-cert.svg",
     type: "SvgRenderingTemplate2023",
     name: "SVG Demo",
   },
