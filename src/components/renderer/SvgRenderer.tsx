@@ -57,7 +57,7 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     }
 
     const svgInDoc = docAsAny.renderMethod.id;
-    const urlPattern = /^(http(s)?:\/\/)?(www\.)?[\w-]+\.[\w]{2,}(\/[\w-]+)*\.svg$/;
+    const urlPattern = /^https?:\/\/.*\.svg$/;
     const isSvgUrl = urlPattern.test(svgInDoc);
 
     if (svgData) {
