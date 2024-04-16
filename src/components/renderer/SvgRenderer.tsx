@@ -1,7 +1,7 @@
 import { v2, utils } from "@govtechsg/open-attestation";
 import React, { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import crypto from "crypto";
+import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
@@ -111,13 +111,16 @@ export const SvgRenderer: FunctionComponent<SvgRendererProps> = ({
     const text = decoder.decode(svgUint8Array);
 
     if (digestMultibaseInDoc) {
-      const shaDigest = crypto.createHash("sha256").update(svgUint8Array).digest();
-      const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
-      if (recomputedDigestMultibase === digestMultibaseInDoc) {
-        setSvgDataAndTriggerCallback(text);
-      } else {
-        setToDisplay(DisplayResult.DIGEST_ERROR);
-      }
+      const hash = new Sha256();
+      hash.update(svgUint8Array);
+      hash.digest().then((shaDigest) => {
+        const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
+        if (recomputedDigestMultibase === digestMultibaseInDoc) {
+          setSvgDataAndTriggerCallback(text);
+        } else {
+          setToDisplay(DisplayResult.DIGEST_ERROR);
+        }
+      });
     } else {
       setSvgDataAndTriggerCallback(text);
     }
