@@ -26,7 +26,7 @@ enum DisplayResult {
   DIGEST_ERROR = 3,
 }
 
-export const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
+const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
   ({ document, svgData, style, className, sandbox = "allow-same-origin", onConnected, forceV2 = false }, ref) => {
     const [buffer, setBuffer] = useState<ArrayBuffer>();
     const [svgFetchedData, setFetchedSvgData] = useState<string>("");
@@ -177,3 +177,7 @@ export const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>
     }
   }
 );
+
+SvgRenderer.displayName = "SvgRendererComponent";
+
+export { SvgRenderer };
