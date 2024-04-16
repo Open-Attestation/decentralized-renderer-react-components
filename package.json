@@ -9,6 +9,7 @@
   "module": "build/esm/index.js",
   "types": "build/types/index.d.ts",
   "dependencies": {
+    "@aws-crypto/sha256-browser": "^5.2.0",
     "@babel/runtime-corejs3": "^7.15.4",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",

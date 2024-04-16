@@ -24,7 +24,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTitle } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
+    const { findByTitle } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 
     const iFrame = await findByTitle("Svg Renderer Frame");
     const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
@@ -38,7 +38,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTitle } = render(<SvgRenderer document={v4WithEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />);
+    const { findByTitle } = render(<SvgRenderer document={v4WithEmbeddedSvgAndDigestMultibase} ref={svgRef} />);
 
     const iFrame = await findByTitle("Svg Renderer Frame");
     const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
@@ -53,7 +53,7 @@ describe("svgRenderer component", () => {
     const svgRef = React.createRef<HTMLIFrameElement>();
 
     const { findByTitle } = render(
-      <SvgRenderer document={v2WithSvgUrlAndDigestMultibase} svgRef={svgRef} forceV2={true} />
+      <SvgRenderer document={v2WithSvgUrlAndDigestMultibase} ref={svgRef} forceV2={true} />
     );
 
     const iFrame = await findByTitle("Svg Renderer Frame");
@@ -73,9 +73,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTitle } = render(
-      <SvgRenderer document={v4WithTamperedEmbeddedSvgAndDigestMultibase} svgRef={svgRef} />
-    );
+    const { findByTitle } = render(<SvgRenderer document={v4WithTamperedEmbeddedSvgAndDigestMultibase} ref={svgRef} />);
 
     const iFrame = await findByTitle("Svg Renderer Frame");
     const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
@@ -91,7 +89,7 @@ describe("svgRenderer component", () => {
     const svgUrl = v4WithOnlyTamperedEmbeddedSvg.renderMethod.id;
 
     const { findByTitle } = render(
-      <SvgRenderer svgData={svgUrl} document={v4WithOnlyTamperedEmbeddedSvg} svgRef={svgRef} />
+      <SvgRenderer svgData={svgUrl} document={v4WithOnlyTamperedEmbeddedSvg} ref={svgRef} />
     );
 
     const iFrame = await findByTitle("Svg Renderer Frame");
@@ -106,7 +104,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
+    const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("The remote content for this document has been modified");
@@ -117,7 +115,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTestId } = render(<SvgRenderer document={v4WithNoRenderMethod} svgRef={svgRef} />);
+    const { findByTestId } = render(<SvgRenderer document={v4WithNoRenderMethod} ref={svgRef} />);
 
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("The contents of this document have not been formatted");
@@ -129,7 +127,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(badMockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} svgRef={svgRef} />);
+    const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
