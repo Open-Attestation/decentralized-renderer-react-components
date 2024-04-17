@@ -3,45 +3,83 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
+import { v2 } from "@govtechsg/open-attestation";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
 
+interface RenderMethod {
+  id: string;
+  type: string;
+  name?: string;
+  css3MediaQuery?: string;
+  digestMultibase?: string;
+}
+// TODO: Replace temporary interface with v4.OpenAttestationDocument
+export interface v4OpenAttestationDocument {
+  credentialSubject: {
+    id?: string;
+    type?: string[] | string;
+  };
+  issuer: {
+    id: string;
+    identityProof: {
+      identifier: string;
+      identityProofType: v2.IdentityProofType;
+    };
+    name: string;
+    type?: string[] | string;
+  };
+  renderMethod?: RenderMethod[];
+}
+
 interface SvgRendererProps {
-  document: any; // TODO: Update to OpenAttestationDocument
+  /** The OpenAttestation v4 document to display */
+  document: v4OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
+  /** Override the img style */
   style?: CSSProperties;
+  /** Override the img className */
   className?: string;
+  // TODO: How to handle if svg fails at img? Currently it will return twice
+  /** An optional callback method that returns the display result  */
   onResult?: (result: DisplayResult) => void;
 }
 
-enum DisplayResult {
+/** Indicates the result of SVG rendering */
+export enum DisplayResult {
   OK = 0,
   DEFAULT = 1,
   CONNECTION_ERROR = 2,
   DIGEST_ERROR = 3,
 }
 
+const fetchSvg = async (svgInDoc: string) => {
+  try {
+    const response = await fetch(svgInDoc);
+    if (!response.ok) {
+      throw new Error("Failed to fetch remote SVG");
+    }
+    const blob = await response.blob();
+    const res = await blob.arrayBuffer();
+    return res;
+  } catch (error) {
+    throw new Error("Failed to fetch SVG");
+  }
+};
+
+/**
+ * Component that accepts a v4 document to fetch and display the first available template SVG
+ */
 const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
-    let source = "";
     const [svgFetchedData, setFetchedSvgData] = useState<string>("");
     const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
     const svgRef = useRef<HTMLIFrameElement>(null);
     useImperativeHandle(ref, () => svgRef.current as HTMLIFrameElement);
 
-    const fetchSvg = async (svgInDoc: string) => {
-      try {
-        const response = await fetch(svgInDoc);
-        if (!response.ok) {
-          throw new Error("Failed to fetch remote SVG");
-        }
-        const blob = await response.blob();
-        const res = await blob.arrayBuffer();
-        return res;
-      } catch (error) {
-        source = svgInDoc;
-        handleResult(DisplayResult.CONNECTION_ERROR);
-      }
-    };
+    const renderMethod = document.renderMethod?.find((method) => method.type === "SvgRenderingTemplate2023");
+    const svgInDoc = renderMethod?.id ?? "";
+    const urlPattern = /^https?:\/\/.*\.svg$/;
+    const isSvgUrl = urlPattern.test(svgInDoc);
 
     useEffect(() => {
       if (!("renderMethod" in document)) {
@@ -49,38 +87,36 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
         return;
       }
 
-      const svgInDoc = document.renderMethod.id;
-      const urlPattern = /^https?:\/\/.*\.svg$/;
-      const isSvgUrl = urlPattern.test(svgInDoc);
-
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
         handleResult(DisplayResult.OK, svgInDoc);
       } else {
         // Case 2: SVG is a url, fetch and check digestMultibase if provided
-        fetchSvg(svgInDoc).then((buffer) => {
-          if (!buffer) return;
+        fetchSvg(svgInDoc)
+          .then((buffer) => {
+            const digestMultibaseInDoc = renderMethod?.digestMultibase;
+            const svgUint8Array = new Uint8Array(buffer ?? []);
+            const decoder = new TextDecoder();
+            const svgText = decoder.decode(svgUint8Array);
 
-          const digestMultibaseInDoc = document.renderMethod.digestMultibase;
-          const svgUint8Array = new Uint8Array(buffer ?? []);
-          const decoder = new TextDecoder();
-          const svgText = decoder.decode(svgUint8Array);
-
-          if (digestMultibaseInDoc) {
-            const hash = new Sha256();
-            hash.update(svgUint8Array);
-            hash.digest().then((shaDigest) => {
-              const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
-              if (recomputedDigestMultibase === digestMultibaseInDoc) {
-                handleResult(DisplayResult.OK, svgText);
-              } else {
-                handleResult(DisplayResult.DIGEST_ERROR);
-              }
-            });
-          } else {
-            handleResult(DisplayResult.OK, svgText);
-          }
-        });
+            if (!digestMultibaseInDoc) {
+              handleResult(DisplayResult.OK, svgText);
+            } else {
+              const hash = new Sha256();
+              hash.update(svgUint8Array);
+              hash.digest().then((shaDigest) => {
+                const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
+                if (recomputedDigestMultibase === digestMultibaseInDoc) {
+                  handleResult(DisplayResult.OK, svgText);
+                } else {
+                  handleResult(DisplayResult.DIGEST_ERROR);
+                }
+              });
+            }
+          })
+          .catch(() => {
+            handleResult(DisplayResult.CONNECTION_ERROR);
+          });
       }
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
@@ -125,7 +161,7 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
       case DisplayResult.DEFAULT:
         return <NoTemplate document={document} handleObfuscation={() => null} />;
       case DisplayResult.CONNECTION_ERROR:
-        return <ConnectionFailureTemplate document={document} source={source} />;
+        return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
       case DisplayResult.DIGEST_ERROR:
         return <TamperedSvgTemplate document={document} />;
       case DisplayResult.OK:

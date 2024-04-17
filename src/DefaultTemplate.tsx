@@ -3,6 +3,7 @@ import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { isV2Document, isV3Document, isV4Document } from "./utils";
 import { JsonView } from "./JsonView";
+import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
 
 interface DefaultTemplateProps {
   title: string;
@@ -59,12 +60,13 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
       };
     }
   } else if (isV4Document(document)) {
-    const docAsAny = document as any;
-    if (docAsAny.renderMethod !== undefined) {
+    const docAsAny = document as v4OpenAttestationDocument; // TODO: Update to v4
+    const renderMethod = docAsAny.renderMethod?.find((method) => method.type === "SvgRenderingTemplate2023");
+    if (renderMethod !== undefined) {
       return {
-        name: docAsAny.renderMethod?.name,
-        type: docAsAny.renderMethod?.type as string, // TODO: Remove cast once v4 is updated
-        url: (docAsAny.renderMethod as any).id, // TODO: Remove cast once v4 is updated
+        name: renderMethod.name ?? "",
+        type: renderMethod.type,
+        url: renderMethod.id,
       };
     }
   }

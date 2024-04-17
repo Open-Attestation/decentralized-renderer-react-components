@@ -11,19 +11,21 @@ export const v4WithSvgUrlAndDigestMultibase = {
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
     // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
   },
   // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
   credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
-  renderMethod: {
-    id: "http://mockbucket.com/static/svg_test.svg",
-    type: "SvgRenderingTemplate2023",
-    name: "SVG Certificate",
-    digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-    url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-    // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-    renderMethodType: "EMBEDDED_RENDERER",
-  },
+  renderMethod: [
+    {
+      id: "http://mockbucket.com/static/svg_test.svg",
+      type: "SvgRenderingTemplate2023",
+      name: "SVG Certificate",
+      digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
+      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
+      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
+      renderMethodType: "EMBEDDED_RENDERER",
+    },
+  ],
   credentialSubject: {
     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     type: ["SvgExample"],
@@ -42,12 +44,13 @@ export const v4WithEmbeddedSvgAndDigestMultibase = {
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
     // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
   },
   // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
   credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
-  renderMethod: {
-    id: `<?xml version="1.0" encoding="UTF-8"?>
+  renderMethod: [
+    {
+      id: `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="776" height="496" viewBox="0 0 776 496" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="SVG export trial">
 <rect width="100%" height="100%" fill="#e8e8e8" />
@@ -59,13 +62,14 @@ export const v4WithEmbeddedSvgAndDigestMultibase = {
 <text id="{{course.name}} {{course.fromDate}} - {{ course.endDate }}" fill="#145080" xml:space="preserve" style="white-space: pre" font-family="Nunito" font-size="20" font-weight="bold" letter-spacing="0em"><tspan text-anchor="middle" x="388.0" y="323.58">{{course.name}}</tspan><tspan text-anchor="middle" x="388.0" y="355.58">{{course.fromDate}} - {{course.endDate}}</tspan></text>
 </g>
 </svg>`,
-    type: "SvgRenderingTemplate2023",
-    name: "SVG Certificate",
-    digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-    url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-    // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-    renderMethodType: "EMBEDDED_RENDERER",
-  },
+      type: "SvgRenderingTemplate2023",
+      name: "SVG Certificate",
+      digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
+      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
+      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
+      renderMethodType: "EMBEDDED_RENDERER",
+    },
+  ],
   credentialSubject: {
     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     type: ["SvgExample"],
@@ -84,12 +88,13 @@ export const v4WithTamperedEmbeddedSvgAndDigestMultibase = {
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
     // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
   },
   // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
   credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
-  renderMethod: {
-    id: `<?xml version="1.0" encoding="UTF-8"?>
+  renderMethod: [
+    {
+      id: `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="776" height="496" viewBox="0 0 776 496" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="SVG export trial">
 <rect width="100%" height="100%" fill="#e8e8e8" />
@@ -101,13 +106,14 @@ export const v4WithTamperedEmbeddedSvgAndDigestMultibase = {
 <text id="{{course.name}} {{course.fromDate}} - {{ course.endDate }}" fill="#145080" xml:space="preserve" style="white-space: pre" font-family="Nunito" font-size="20" font-weight="bold" letter-spacing="0em"><tspan text-anchor="middle" x="388.0" y="323.58">{{course.name}}</tspan><tspan text-anchor="middle" x="388.0" y="355.58">{{course.fromDate}} - {{course.endDate}}</tspan></text>
 </g>
 </svg>`,
-    type: "SvgRenderingTemplate2023",
-    name: "SVG Certificate",
-    digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-    url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-    // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-    renderMethodType: "EMBEDDED_RENDERER",
-  },
+      type: "SvgRenderingTemplate2023",
+      name: "SVG Certificate",
+      digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
+      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
+      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
+      renderMethodType: "EMBEDDED_RENDERER",
+    },
+  ],
   credentialSubject: {
     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     type: ["SvgExample"],
@@ -126,12 +132,13 @@ export const v4WithOnlyTamperedEmbeddedSvg = {
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
     // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
   },
   // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
   credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
-  renderMethod: {
-    id: `<?xml version="1.0" encoding="UTF-8"?>
+  renderMethod: [
+    {
+      id: `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="776" height="496" viewBox="0 0 776 496" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="SVG export trial">
 <rect width="100%" height="100%" fill="#e8e8e8" />
@@ -143,12 +150,13 @@ export const v4WithOnlyTamperedEmbeddedSvg = {
 <text id="{{course.name}} {{course.fromDate}} - {{ course.endDate }}" fill="#145080" xml:space="preserve" style="white-space: pre" font-family="Nunito" font-size="20" font-weight="bold" letter-spacing="0em"><tspan text-anchor="middle" x="388.0" y="323.58">{{course.name}}</tspan><tspan text-anchor="middle" x="388.0" y="355.58">{{course.fromDate}} - {{course.endDate}}</tspan></text>
 </g>
 </svg>`,
-    type: "SvgRenderingTemplate2023",
-    name: "SVG Certificate",
-    url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-    // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-    renderMethodType: "EMBEDDED_RENDERER",
-  },
+      type: "SvgRenderingTemplate2023",
+      name: "SVG Certificate",
+      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
+      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
+      renderMethodType: "EMBEDDED_RENDERER",
+    },
+  ],
   credentialSubject: {
     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     type: ["SvgExample"],
@@ -172,12 +180,14 @@ export const v2WithSvgUrlAndDigestMultibase = {
       },
     },
   ],
-  renderMethod: {
-    id: "http://mockbucket.com/static/svg_test.svg",
-    type: "SvgRenderingTemplate2023",
-    name: "SVG Certificate",
-    digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-  },
+  renderMethod: [
+    {
+      id: "http://mockbucket.com/static/svg_test.svg",
+      type: "SvgRenderingTemplate2023",
+      name: "SVG Certificate",
+      digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
+    },
+  ],
   course: {
     name: "SVG Basics Workshop",
     fromDate: "01/01/2024",
@@ -198,7 +208,7 @@ export const v4WithNoRenderMethod = {
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
     // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
   },
   // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
   credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },

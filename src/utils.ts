@@ -28,7 +28,9 @@ export const isV3Document = (document: any): document is v3.OpenAttestationDocum
 };
 
 export const isV4Document = (document: any): boolean => {
-  return !!document["@context"] && !document.openAttestationMetadata;
+  return !!document["@context"]?.includes(
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+  );
 };
 
 const getTemplateName = (document: OpenAttestationDocument): string => {
