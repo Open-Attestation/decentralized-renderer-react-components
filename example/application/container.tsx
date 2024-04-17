@@ -223,7 +223,7 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
             `}
           >
             {isSvg ? (
-              <SvgRenderer document={document.document} svgRef={svgRef} forceV2={true} />
+              <SvgRenderer document={document.document} ref={svgRef} />
             ) : (
               <FrameConnector
                 source={document.frameSource}

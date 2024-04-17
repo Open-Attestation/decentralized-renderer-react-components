@@ -52,9 +52,7 @@ describe("svgRenderer component", () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
 
-    const { findByTitle } = render(
-      <SvgRenderer document={v2WithSvgUrlAndDigestMultibase} ref={svgRef} forceV2={true} />
-    );
+    const { findByTitle } = render(<SvgRenderer document={v2WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 
     const iFrame = await findByTitle("Svg Renderer Frame");
     const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
@@ -86,11 +84,8 @@ describe("svgRenderer component", () => {
   it("should render v4 doc with modified SVG when no digestMultibase", async () => {
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
     const svgRef = React.createRef<HTMLIFrameElement>();
-    const svgUrl = v4WithOnlyTamperedEmbeddedSvg.renderMethod.id;
 
-    const { findByTitle } = render(
-      <SvgRenderer svgData={svgUrl} document={v4WithOnlyTamperedEmbeddedSvg} ref={svgRef} />
-    );
+    const { findByTitle } = render(<SvgRenderer document={v4WithOnlyTamperedEmbeddedSvg} ref={svgRef} />);
 
     const iFrame = await findByTitle("Svg Renderer Frame");
     const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
