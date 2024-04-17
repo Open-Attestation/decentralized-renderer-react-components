@@ -13,8 +13,6 @@ interface SvgRendererProps {
   onResult?: (result: DisplayResult) => void;
 }
 
-const EMBEDDED_IN_DOCUMENT = "[Embedded SVG]";
-
 enum DisplayResult {
   OK = 0,
   DEFAULT = 1,
@@ -24,8 +22,8 @@ enum DisplayResult {
 
 const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
+    let source = "";
     const [svgFetchedData, setFetchedSvgData] = useState<string>("");
-    const [source, setSource] = useState<string>("");
     const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
     const svgRef = useRef<HTMLIFrameElement>(null);
     useImperativeHandle(ref, () => svgRef.current as HTMLIFrameElement);
@@ -40,13 +38,14 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
         const res = await blob.arrayBuffer();
         return res;
       } catch (error) {
-        setSvgDataAndTriggerCallback(DisplayResult.CONNECTION_ERROR);
+        source = svgInDoc;
+        handleResult(DisplayResult.CONNECTION_ERROR);
       }
     };
 
     useEffect(() => {
       if (!("renderMethod" in document)) {
-        setSvgDataAndTriggerCallback(DisplayResult.DEFAULT);
+        handleResult(DisplayResult.DEFAULT);
         return;
       }
 
@@ -54,7 +53,11 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
       const urlPattern = /^https?:\/\/.*\.svg$/;
       const isSvgUrl = urlPattern.test(svgInDoc);
 
-      if (isSvgUrl) {
+      if (!isSvgUrl) {
+        // Case 1: SVG is embedded in the doc, can directly display
+        handleResult(DisplayResult.OK, svgInDoc);
+      } else {
+        // Case 2: SVG is a url, fetch and check digestMultibase if provided
         fetchSvg(svgInDoc).then((buffer) => {
           if (!buffer) return;
 
@@ -69,24 +72,20 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
             hash.digest().then((shaDigest) => {
               const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
               if (recomputedDigestMultibase === digestMultibaseInDoc) {
-                setSvgDataAndTriggerCallback(DisplayResult.OK, svgText);
+                handleResult(DisplayResult.OK, svgText);
               } else {
-                setSvgDataAndTriggerCallback(DisplayResult.DIGEST_ERROR);
+                handleResult(DisplayResult.DIGEST_ERROR);
               }
             });
           } else {
-            setSvgDataAndTriggerCallback(DisplayResult.OK, svgText);
+            handleResult(DisplayResult.OK, svgText);
           }
         });
-        setSource(svgInDoc);
-      } else {
-        setSvgDataAndTriggerCallback(DisplayResult.OK, svgInDoc);
-        setSource(EMBEDDED_IN_DOCUMENT);
       }
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
 
-    const setSvgDataAndTriggerCallback = (result: DisplayResult, svgToSet = "") => {
+    const handleResult = (result: DisplayResult, svgToSet = "") => {
       setFetchedSvgData(svgToSet);
       setToDisplay(result);
       setTimeout(() => {
