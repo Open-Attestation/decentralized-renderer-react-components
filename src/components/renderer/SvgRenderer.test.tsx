@@ -14,6 +14,7 @@ import {
   v4WithOnlyTamperedEmbeddedSvg,
   v4WithNoRenderMethod,
 } from "./fixtures/svgRendererSamples";
+import { __unsafe__not__for__production__v2__SvgRenderer } from "./SvgV2Adapter";
 
 describe("svgRenderer component", () => {
   const mockSvg = fs.readFileSync("./src/components/renderer/fixtures/example_cert.svg");
@@ -48,19 +49,21 @@ describe("svgRenderer component", () => {
     expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
-  // it("should render v2 doc correctly with a valid SVG URL", async () => {
-  //   global.fetch = jest.fn().mockResolvedValue(mockResponse);
-  //   const svgRef = React.createRef<HTMLIFrameElement>();
+  it("should render v2 doc correctly with a valid SVG URL", async () => {
+    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    const svgRef = React.createRef<HTMLIFrameElement>();
 
-  //   const { findByTitle } = render(<SvgRenderer document={v2WithSvgUrlAndDigestMultibase} ref={svgRef} />);
+    const { findByTitle } = render(
+      <__unsafe__not__for__production__v2__SvgRenderer document={v2WithSvgUrlAndDigestMultibase} ref={svgRef} />
+    );
 
-  //   const iFrame = await findByTitle("Svg Renderer Frame");
-  //   const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+    const iFrame = await findByTitle("Svg Renderer Frame");
+    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
 
-  //   expect(srcdocContent).toContain("SVG document image");
-  //   expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
-  //   expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
-  // });
+    expect(srcdocContent).toContain("SVG document image");
+    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+  });
 
   const tamperedSvgBuffer = Buffer.concat([mockSvg, Buffer.from([0x12, 0x34])]); // Add some random bytes to tamper svg
   const tamperedSvgBlob = new Blob([tamperedSvgBuffer], { type: "image/svg+xml" });

@@ -14,6 +14,7 @@ interface RenderMethod {
   css3MediaQuery?: string;
   digestMultibase?: string;
 }
+
 // TODO: Replace temporary interface with v4.OpenAttestationDocument
 export interface v4OpenAttestationDocument {
   credentialSubject: {
@@ -66,6 +67,9 @@ const fetchSvg = async (svgInDoc: string) => {
   }
 };
 
+// As specified in - https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023
+export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
+
 /**
  * Component that accepts a v4 document to fetch and display the first available template SVG
  */
@@ -76,7 +80,7 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
     const svgRef = useRef<HTMLIFrameElement>(null);
     useImperativeHandle(ref, () => svgRef.current as HTMLIFrameElement);
 
-    const renderMethod = document.renderMethod?.find((method) => method.type === "SvgRenderingTemplate2023");
+    const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
     const urlPattern = /^https?:\/\/.*\.svg$/;
     const isSvgUrl = urlPattern.test(svgInDoc);
