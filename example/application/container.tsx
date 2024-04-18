@@ -7,7 +7,8 @@ import {
   updateHeight,
   updateTemplates,
   timeout,
-  SvgRenderer,
+  __unsafe__not__for__production__v2__SvgRenderer,
+  SVG_RENDERER_TYPE,
 } from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -67,7 +68,8 @@ const DocumentsContainer = styled.div`
 `;
 
 const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
-  const isSvg = document.document.renderMethod?.type === "SvgRenderingTemplate2023";
+  const renderMethod = document.document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
+  const isSvg = renderMethod.type === SVG_RENDERER_TYPE;
   const svgRef = useRef<HTMLIFrameElement>(null);
 
   const [toFrame, setToFrame] = useState<HostActionsHandler>();
@@ -223,7 +225,7 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
             `}
           >
             {isSvg ? (
-              <SvgRenderer document={document.document} ref={svgRef} />
+              <__unsafe__not__for__production__v2__SvgRenderer document={document.document} ref={svgRef} />
             ) : (
               <FrameConnector
                 source={document.frameSource}

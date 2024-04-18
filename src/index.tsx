@@ -7,6 +7,7 @@ export * from "./components/renderer/FullAttachmentRenderer";
 export * from "./components/renderer/PdfRenderer";
 export * from "./components/renderer/UnsupportedRenderer";
 export * from "./components/renderer/SvgRenderer";
+export * from "./components/renderer/SvgV2Adapter";
 export * from "./types";
 export * as utils from "./utils";
 export * from "./components/frame/host.actions";

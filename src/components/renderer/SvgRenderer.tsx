@@ -33,7 +33,7 @@ export interface v4OpenAttestationDocument {
   renderMethod?: RenderMethod[];
 }
 
-interface SvgRendererProps {
+export interface SvgRendererProps {
   /** The OpenAttestation v4 document to display */
   document: v4OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
   /** Override the img style */

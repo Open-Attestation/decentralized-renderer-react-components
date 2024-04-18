@@ -42,6 +42,6 @@ const __unsafe__not__for__production__v2__SvgRenderer = React.forwardRef<
   return <SvgRenderer document={remappedDocument} style={style} className={className} onResult={onResult} ref={ref} />;
 });
 
-__unsafe__not__for__production__v2__SvgRenderer.displayName = "SvgRendererComponentv2";
+__unsafe__not__for__production__v2__SvgRenderer.displayName = "SvgRendererAdapterComponent";
 
 export { __unsafe__not__for__production__v2__SvgRenderer };
