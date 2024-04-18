@@ -35,7 +35,7 @@ export interface __unsafe__not__for__production__v2__SvgRendererProps {
 }
 
 const __unsafe__not__for__production__v2__SvgRenderer = React.forwardRef<
-  HTMLIFrameElement,
+  HTMLImageElement,
   __unsafe__not__for__production__v2__SvgRendererProps
 >(({ document, style, className, onResult }, ref) => {
   const remappedDocument = mapV2toV4(document);

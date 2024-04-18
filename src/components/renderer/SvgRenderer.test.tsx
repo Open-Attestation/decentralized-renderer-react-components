@@ -23,46 +23,49 @@ describe("svgRenderer component", () => {
 
   it("should render v4 doc correctly with a valid SVG URL", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTitle } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 
-    const iFrame = await findByTitle("Svg Renderer Frame");
-    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+    const image = (await findByTitle("Svg Renderer Image")) as HTMLImageElement;
+    const imageSrc = image.src;
+    const imageAlt = image.alt;
 
-    expect(srcdocContent).toContain("SVG document image");
-    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
-    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+    expect(imageAlt).toContain("Svg image of the verified document");
+    expect(imageSrc).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(imageSrc).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
   it("should render v4 doc correctly with a valid embedded SVG", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTitle } = render(<SvgRenderer document={v4WithEmbeddedSvgAndDigestMultibase} ref={svgRef} />);
 
-    const iFrame = await findByTitle("Svg Renderer Frame");
-    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+    const image = (await findByTitle("Svg Renderer Image")) as HTMLImageElement;
+    const imageSrc = image.src;
+    const imageAlt = image.alt;
 
-    expect(srcdocContent).toContain("SVG document image");
-    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
-    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+    expect(imageAlt).toContain("Svg image of the verified document");
+    expect(imageSrc).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(imageSrc).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
   it("should render v2 doc correctly with a valid SVG URL", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTitle } = render(
       <__unsafe__not__for__production__v2__SvgRenderer document={v2WithSvgUrlAndDigestMultibase} ref={svgRef} />
     );
 
-    const iFrame = await findByTitle("Svg Renderer Frame");
-    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+    const image = (await findByTitle("Svg Renderer Image")) as HTMLImageElement;
+    const imageSrc = image.src;
+    const imageAlt = image.alt;
 
-    expect(srcdocContent).toContain("SVG document image");
-    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
-    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+    expect(imageAlt).toContain("Svg image of the verified document");
+    expect(imageSrc).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(imageSrc).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
   const tamperedSvgBuffer = Buffer.concat([mockSvg, Buffer.from([0x12, 0x34])]); // Add some random bytes to tamper svg
@@ -72,35 +75,36 @@ describe("svgRenderer component", () => {
   it("should render v4 doc with embedded SVG with digestMultibase", async () => {
     // If SVG is embedded, digestMultibase will be ignored
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTitle } = render(<SvgRenderer document={v4WithTamperedEmbeddedSvgAndDigestMultibase} ref={svgRef} />);
 
-    const iFrame = await findByTitle("Svg Renderer Frame");
-    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
+    const image = (await findByTitle("Svg Renderer Image")) as HTMLImageElement;
+    const imageSrc = image.src;
+    const imageAlt = image.alt;
 
-    expect(srcdocContent).toContain("SVG document image");
-    expect(srcdocContent).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
-    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+    expect(imageAlt).toContain("Svg image of the verified document");
+    expect(imageSrc).toContain(encodeURIComponent("CERTIFICATE OF COMPLETION"));
+    expect(imageSrc).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
   it("should render v4 doc with modified SVG when no digestMultibase", async () => {
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTitle } = render(<SvgRenderer document={v4WithOnlyTamperedEmbeddedSvg} ref={svgRef} />);
+    const image = (await findByTitle("Svg Renderer Image")) as HTMLImageElement;
+    const imageSrc = image.src;
+    const imageAlt = image.alt;
 
-    const iFrame = await findByTitle("Svg Renderer Frame");
-    const srcdocContent = (iFrame as HTMLIFrameElement).srcdoc;
-
-    expect(srcdocContent).toContain("SVG document image");
-    expect(srcdocContent).toContain(encodeURIComponent("TAMPERED CERTIFICATE OF COMPLETION"));
-    expect(srcdocContent).toContain(encodeURIComponent("TAN CHEN CHEN"));
+    expect(imageAlt).toContain("Svg image of the verified document");
+    expect(imageSrc).toContain(encodeURIComponent("TAMPERED CERTIFICATE OF COMPLETION"));
+    expect(imageSrc).toContain(encodeURIComponent("TAN CHEN CHEN"));
   });
 
   it("should render SvgModifiedTemplate when SVG at URL has been tampered with", async () => {
     global.fetch = jest.fn().mockResolvedValue(tamperedMockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 
@@ -111,7 +115,7 @@ describe("svgRenderer component", () => {
 
   it("should render default template when document.RenderMethod is undefined", async () => {
     global.fetch = jest.fn().mockResolvedValue(mockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTestId } = render(<SvgRenderer document={v4WithNoRenderMethod} ref={svgRef} />);
 
@@ -123,7 +127,7 @@ describe("svgRenderer component", () => {
   const badMockResponse = { ok: false };
   it("should render connection error template when SVG cannot be fetched", async () => {
     global.fetch = jest.fn().mockResolvedValue(badMockResponse);
-    const svgRef = React.createRef<HTMLIFrameElement>();
+    const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTestId } = render(<SvgRenderer document={v4WithSvgUrlAndDigestMultibase} ref={svgRef} />);
 

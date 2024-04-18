@@ -1,5 +1,4 @@
 import React, { CSSProperties, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
@@ -73,12 +72,12 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
 /**
  * Component that accepts a v4 document to fetch and display the first available template SVG
  */
-const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
+const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
     const [svgFetchedData, setFetchedSvgData] = useState<string>("");
     const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
-    const svgRef = useRef<HTMLIFrameElement>(null);
-    useImperativeHandle(ref, () => svgRef.current as HTMLIFrameElement);
+    const svgRef = useRef<HTMLImageElement>(null);
+    useImperativeHandle(ref, () => svgRef.current as HTMLImageElement);
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
@@ -133,7 +132,7 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
       setFetchedSvgData(svgToSet);
       setToDisplay(result);
       setTimeout(() => {
-        updateIframeHeight();
+        // updateIframeHeight();
         if (typeof onResult === "function") {
           onResult(result);
         }
@@ -148,22 +147,12 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
 
     const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document))}`;
 
-    const updateIframeHeight = () => {
-      if (svgRef.current) {
-        const contentHeight = svgRef.current?.contentDocument?.body?.offsetHeight;
-        svgRef.current.style.height = `${contentHeight}px`;
-      }
-    };
-
-    const iframeContent = `
-      <html>
-          <head></head>
-          <body style="margin: 0; display: flex; justify-content: center; align-items: center;">
-          ${renderToStaticMarkup(
-            <>{svgFetchedData !== "" ? <img src={compiledSvgData} alt="SVG document image" /> : <></>}</>
-          )}
-          </body>
-      </html>`;
+    // const updateIframeHeight = () => {
+    //   if (svgRef.current) {
+    //     const contentHeight = svgRef.current?.contentDocument?.body?.offsetHeight;
+    //     svgRef.current.style.height = `${contentHeight}px`;
+    //   }
+    // };
 
     switch (toDisplay) {
       case DisplayResult.DEFAULT:
@@ -174,13 +163,14 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
         return <TamperedSvgTemplate document={document} />;
       case DisplayResult.OK:
         return (
-          <iframe
+          <img
             className={className}
             style={style}
-            title="Svg Renderer Frame"
+            title="Svg Renderer Image"
             width="100%"
-            srcDoc={iframeContent}
+            src={compiledSvgData}
             ref={svgRef}
+            alt="Svg image of the verified document"
           />
         );
       default:

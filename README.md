@@ -283,20 +283,19 @@ The library provides the `SvgRenderer` component.
 
 ### SvgRenderer
 
-This component has two mandatory properties: `document` and `svgRef`.
+This component only has one mandatory property `document`.
 
 - `document`: OA document in the form of an object with the corresponding fields to display.
-- `svgRef`: HTMLIFrameElement RefObject which is used to automatically adjust the height after loading.
-- `svgData?`: Allows for pre-fetched SVG data to be used instead. By default, SVG data will be fetched from `document.renderMethod.id`.
 - `style?`: To style the iframe element.
 - `className?`: To set the className for the iframe.
-- `sandbox?`: To set the sandbox for the iframe.
-- `onConnected?`: Accepts a void function that is called once the SVG is loaded.
-- `forceV2?`: Allow OA v2 documents to be rendered using SVGs. WARNING: This is an experimental feature meant for users who want to try SVG rendering before OA v4. We will not be maintaining this interoperability.
+- `onResult?`: Callback function containing the DisplayResult once the SVG is loaded.
+- `ref`: A ref of type HTMLImageElement can be passed which will expose the DOM node of the rendered element.
 
-### renderMethod object
+### renderMethod property
 
-The object to be included in the OA doc, for more information refer to the [w3c specification](https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023).
+The array of objects to be included in the OA doc, for more information refer to the [w3c specification](https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023).
+
+Currently the SvgRenderer in this library only accepts single SVG templates. It will iterate through all renderMethod objects provided within the document and display the first one of type `SvgRenderingTemplate2023`.`
 
 ## Example
 
@@ -328,11 +327,11 @@ Sample A - v2 doc with hosted SVG:
 ```
 {
   <!-- Issuers field -->
-  "renderMethod": {
+  "renderMethod": [{
     "id": "http://example.com/static/svg_test.svg",  // Put SVG data here to embed it directly
     "type": "SvgRenderingTemplate2023",
     "name": "SVG Demo",
-  },
+  }],
   "qualification": "SVG rendering",
   "recipient": {
     "name": "Yourself"
@@ -345,7 +344,7 @@ Sample B - v2 doc with embedded SVG:
 ```
 {
   <!-- Issuers field -->
-  "renderMethod": {
+  "renderMethod": [{
     "id": `<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
 <rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
 <text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving {{qualification}}!</text>
@@ -353,7 +352,7 @@ Sample B - v2 doc with embedded SVG:
 </svg>`,
     "type": "SvgRenderingTemplate2023",
     "name": "SVG Demo",
-  },
+  }],
   "qualification": "SVG rendering",
   "recipient": {
     "name": "Yourself"
@@ -363,16 +362,18 @@ Sample B - v2 doc with embedded SVG:
 
 ### Step 3 - Basic Usage of the SvgRenderer
 
+For non-production trials, an adapter component is provided to allow OA v2 documents to be rendered using SVGs. WARNING: This is an experimental option meant for users who want to try SVG rendering before OA v4. This component will not be actively maintained.
+
 ```
 import React, { useRef } from "react";
-import { SvgRenderer } from "@govtechsg/decentralized-renderer-react-components";
+import { __unsafe__not__for__production__v2__SvgRenderer } from "@govtechsg/decentralized-renderer-react-components";
 
 // Your renderer component
 const export DocumentRenderer: React.FC<RendererProps> = ({ rawDocument }) => {
-  const svgRef = useRef<HTMLIFrameElement>(null)
+  const svgRef = useRef<HTMLImageElement>(null)
 
   return
-    <SvgRenderer
+    < __unsafe__not__for__production__v2__SvgRenderer
       document={rawDocument}
       svgRef={svgRef}
       forceV2={true} // Only set if you want to support SVG rendering for v2 documents
