@@ -53,9 +53,9 @@ export enum DisplayResult {
   DIGEST_ERROR = 3,
 }
 
-const fetchSvg = async (svgInDoc: string) => {
+const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   try {
-    const response = await fetch(svgInDoc);
+    const response = await fetch(svgInDoc, { signal: abortController.signal });
     if (!response.ok) {
       throw new Error("Failed to fetch remote SVG");
     }
@@ -90,13 +90,14 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
         handleResult(DisplayResult.DEFAULT);
         return;
       }
+      const abortController = new AbortController();
 
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
         handleResult(DisplayResult.OK, svgInDoc);
       } else {
         // Case 2: SVG is a url, fetch and check digestMultibase if provided
-        fetchSvg(svgInDoc)
+        fetchSvg(svgInDoc, abortController)
           .then((buffer) => {
             const digestMultibaseInDoc = renderMethod?.digestMultibase;
             const svgUint8Array = new Uint8Array(buffer ?? []);
@@ -122,6 +123,9 @@ const SvgRenderer = React.forwardRef<HTMLIFrameElement, SvgRendererProps>(
             handleResult(DisplayResult.CONNECTION_ERROR);
           });
       }
+      return () => {
+        abortController.abort();
+      };
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
 

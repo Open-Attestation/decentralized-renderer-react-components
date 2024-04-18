@@ -6,12 +6,13 @@ const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocum
   const clonedDocument = { ...document };
   const propsToOmit = ["$template", "id", "issuers", "network", "renderMethod"];
   propsToOmit.forEach((v2Property) => delete (clonedDocument as any)[v2Property]);
+
   return {
     issuer: {
-      id: document.issuers[0].id || "default id",
+      id: document.issuers[0].id || "issuers[0].id not found",
       identityProof: {
-        identifier: document.issuers[0].identityProof!.location!,
-        identityProofType: document.issuers[0].identityProof!.type,
+        identifier: document.issuers[0].identityProof?.location || "issuers[0].identityProof.location not found",
+        identityProofType: document.issuers[0].identityProof?.type || v2.IdentityProofType.DNSDid,
       },
       name: document.issuers[0].name,
       type: "OpenAttestationIssuer",
