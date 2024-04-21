@@ -41,29 +41,25 @@ export interface SvgRendererProps {
   className?: string;
   // TODO: How to handle if svg fails at img? Currently it will return twice
   /** An optional callback method that returns the display result  */
-  onResult?: (result: DisplayResult) => void;
+  onResult?: (result: DisplayResult, err?: Error) => void;
 }
 
 /** Indicates the result of SVG rendering */
 export enum DisplayResult {
-  OK = 0,
-  DEFAULT = 1,
-  CONNECTION_ERROR = 2,
-  DIGEST_ERROR = 3,
+  OK = "OK",
+  DEFAULT = "DEFAULT",
+  CONNECTION_ERROR = "CONNECTION_ERROR",
+  DIGEST_ERROR = "DIGEST_ERROR",
 }
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
-  try {
-    const response = await fetch(svgInDoc, { signal: abortController.signal });
-    if (!response.ok) {
-      throw new Error("Failed to fetch remote SVG");
-    }
-    const blob = await response.blob();
-    const res = await blob.arrayBuffer();
-    return res;
-  } catch (error) {
-    throw new Error("Failed to fetch SVG");
+  const response = await fetch(svgInDoc, { signal: abortController.signal });
+  if (!response.ok) {
+    throw new Error("Failed to fetch remote SVG");
   }
+  const blob = await response.blob();
+  const res = await blob.arrayBuffer();
+  return res;
 };
 
 // As specified in - https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023
@@ -118,8 +114,10 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
               });
             }
           })
-          .catch(() => {
-            handleResult(DisplayResult.CONNECTION_ERROR);
+          .catch((error) => {
+            if ((error as Error).name !== "AbortError") {
+              handleResult(DisplayResult.CONNECTION_ERROR, undefined, error);
+            }
           });
       }
       return () => {
@@ -128,15 +126,12 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
 
-    const handleResult = (result: DisplayResult, svgToSet = "") => {
+    const handleResult = (result: DisplayResult, svgToSet = "", error?: Error) => {
       setFetchedSvgData(svgToSet);
       setToDisplay(result);
-      setTimeout(() => {
-        // updateIframeHeight();
-        if (typeof onResult === "function") {
-          onResult(result);
-        }
-      }, 200); // wait for 200ms before manually updating the height
+      if (typeof onResult === "function") {
+        onResult(result, error);
+      }
     };
 
     const renderTemplate = (template: string, document: any) => {
@@ -146,13 +141,6 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     };
 
     const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document))}`;
-
-    // const updateIframeHeight = () => {
-    //   if (svgRef.current) {
-    //     const contentHeight = svgRef.current?.contentDocument?.body?.offsetHeight;
-    //     svgRef.current.style.height = `${contentHeight}px`;
-    //   }
-    // };
 
     switch (toDisplay) {
       case DisplayResult.DEFAULT:

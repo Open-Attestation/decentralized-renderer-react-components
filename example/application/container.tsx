@@ -70,7 +70,7 @@ const DocumentsContainer = styled.div`
 const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
   const renderMethod = document.document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
   const isSvg = renderMethod?.type === SVG_RENDERER_TYPE;
-  const svgRef = useRef<HTMLIFrameElement>(null);
+  const svgRef = useRef<HTMLImageElement>(null);
 
   const [toFrame, setToFrame] = useState<HostActionsHandler>();
   const [height, setHeight] = useState(250);
