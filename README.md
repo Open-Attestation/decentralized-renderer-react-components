@@ -289,7 +289,7 @@ This component only has one mandatory property `document`.
 - `style?`: To style the iframe element.
 - `className?`: To set the className for the iframe.
 - `onResult?`: Callback function containing the DisplayResult once the SVG is loaded.
-- `ref`: A ref of type HTMLImageElement can be passed which will expose the DOM node of the rendered element.
+- `ref?`: A ref of type HTMLImageElement can be passed which will expose the DOM node of the rendered element.
 
 ### renderMethod property
 
@@ -376,7 +376,6 @@ const export DocumentRenderer: React.FC<RendererProps> = ({ rawDocument }) => {
     < __unsafe__not__for__production__v2__SvgRenderer
       document={rawDocument}
       svgRef={svgRef}
-      forceV2={true} // Only set if you want to support SVG rendering for v2 documents
     />
 }
 ```
