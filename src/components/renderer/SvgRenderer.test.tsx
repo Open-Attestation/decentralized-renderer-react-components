@@ -2,7 +2,7 @@
 // Disable the spyOn check due to known issues with mocking fetch in jsDom env
 // https://stackoverflow.com/questions/74945569/cannot-access-built-in-node-js-fetch-function-from-jest-tests
 import { render } from "@testing-library/react";
-import { DisplayResult, SvgRenderer } from "./SvgRenderer";
+import { SvgRenderer } from "./SvgRenderer";
 import fs from "fs";
 import { Blob } from "buffer";
 import React from "react";
@@ -114,7 +114,7 @@ describe("svgRenderer component", () => {
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("The remote content for this document has been modified");
     expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
-    expect(mockHandleResult).toHaveBeenCalledWith(DisplayResult.DIGEST_ERROR, undefined);
+    expect(mockHandleResult).toHaveBeenCalledWith({ status: "DIGEST_ERROR" });
   });
 
   it("should render default template when document.RenderMethod is undefined", async () => {
@@ -141,10 +141,10 @@ describe("svgRenderer component", () => {
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
     expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
-    expect(mockHandleResult).toHaveBeenCalledWith(
-      DisplayResult.CONNECTION_ERROR,
-      new Error("Failed to fetch remote SVG")
-    );
+    expect(mockHandleResult).toHaveBeenCalledWith({
+      error: new Error("Failed to fetch remote SVG"),
+      status: "FETCH_SVG_ERROR",
+    });
   });
 });
 /* eslint-enable jest/prefer-spy-on */
