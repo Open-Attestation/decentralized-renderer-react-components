@@ -54,6 +54,11 @@ type ValidSvgTemplateDisplayResult =
       svgDataUri: string;
     };
 
+type PendingImgLoadDisplayResult = {
+  status: "PENDING_OK";
+  svgDataUri: string;
+};
+
 type LoadingDisplayResult = {
   status: "LOADING";
 };
@@ -97,7 +102,7 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult, loadingComponent }, ref) => {
-    const [toDisplay, setToDisplay] = useState<DisplayResult | LoadingDisplayResult>({
+    const [toDisplay, setToDisplay] = useState<DisplayResult | LoadingDisplayResult | PendingImgLoadDisplayResult>({
       status: "LOADING",
     });
 
@@ -121,7 +126,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
        */
       const handleValidSvgTemplate = (rawSvgTemplate: string) => {
         setToDisplay({
-          status: "OK",
+          status: "PENDING_OK",
           svgDataUri: `data:image/svg+xml,${encodeURIComponent(renderSvg(rawSvgTemplate, document))}`,
         });
       };
@@ -178,16 +183,13 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     }, [document, onResult, isSvgUrl, renderMethod, svgInDoc]);
 
     const handleImgResolved = (result: ValidSvgTemplateDisplayResult) => () => {
-      if (result.status === "MALFORMED_SVG_ERROR") {
-        setToDisplay(result);
-      }
+      setToDisplay(result);
       onResult?.(result);
     };
 
     switch (toDisplay.status) {
       case "LOADING":
         return loadingComponent ? <>{loadingComponent}</> : null;
-
       case "MALFORMED_SVG_ERROR":
         return (
           <DefaultTemplate
@@ -200,11 +202,18 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
         return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
       case "DIGEST_ERROR":
         return <TamperedSvgTemplate document={document} />;
-      case "OK":
+      case "PENDING_OK":
+      case "OK": {
         return (
           <img
             className={className}
-            style={style}
+            style={
+              toDisplay.status === "PENDING_OK"
+                ? {
+                    display: "none",
+                  }
+                : style
+            }
             title="Svg Renderer Image"
             width="100%"
             src={toDisplay.svgDataUri}
@@ -214,6 +223,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             onError={handleImgResolved({ status: "MALFORMED_SVG_ERROR", svgDataUri: toDisplay.svgDataUri })}
           />
         );
+      }
       default:
         return <NoTemplate document={document} handleObfuscation={() => null} />;
     }
