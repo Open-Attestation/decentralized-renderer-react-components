@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
