@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from "react";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
-import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
+import { ConnectionFailureTemplate, DefaultTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
 import { v2 } from "@govtechsg/open-attestation";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
@@ -175,9 +175,24 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       };
     }, [document, onResult, isSvgUrl, renderMethod, svgInDoc]);
 
+    const handleImgResolved = (result: ValidSvgTemplateDisplayResult) => () => {
+      if (result.status === "MALFORMED_SVG_ERROR") {
+        setToDisplay(result);
+      }
+      onResult?.(result);
+    };
+
     switch (toDisplay.status) {
       case "DEFAULT":
         return <NoTemplate document={document} handleObfuscation={() => null} />;
+      case "MALFORMED_SVG_ERROR":
+        return (
+          <DefaultTemplate
+            title="The resolved SVG is malformed"
+            description={<>The resolved SVG is malformed. Please contact the issuer.</>}
+            document={document}
+          />
+        );
       case "FETCH_SVG_ERROR":
         return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
       case "DIGEST_ERROR":
@@ -192,6 +207,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             src={toDisplay.svgDataUri}
             ref={ref}
             alt="Svg image of the verified document"
+            onLoad={handleImgResolved({ status: "OK", svgDataUri: toDisplay.svgDataUri })}
+            onError={handleImgResolved({ status: "MALFORMED_SVG_ERROR", svgDataUri: toDisplay.svgDataUri })}
           />
         );
       default:
