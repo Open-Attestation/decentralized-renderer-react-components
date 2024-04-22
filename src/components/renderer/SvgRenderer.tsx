@@ -49,6 +49,7 @@ export type DisplayResult =
     }
   | {
       status: "INVALID_SVG_ERROR";
+      svg: string;
     };
 
 // this immediate loading state does not need to be exposed
@@ -217,6 +218,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             onError={() => {
               handleResult({
                 status: "INVALID_SVG_ERROR",
+                svg: toDisplay.svg,
               });
             }}
           />

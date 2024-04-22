@@ -158,13 +158,12 @@ describe("svgRenderer component", () => {
 
     fireEvent.error(getByAltText("Svg image of the verified document"));
 
-    const defaultTemplate = await findByTestId("default-template", undefined, {
-      timeout: 5000,
-    });
+    const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("The resolved SVG is malformedThe resolved SVG is malformed");
     expect(queryByTestId("Svg image of the verified document")).not.toBeInTheDocument();
     expect(mockHandleResult).toHaveBeenCalledWith({
       status: "INVALID_SVG_ERROR",
+      svg: "",
     });
   });
 });
