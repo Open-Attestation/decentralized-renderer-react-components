@@ -34,10 +34,6 @@ export interface v4OpenAttestationDocument {
 
 export type DisplayResult =
   | {
-      status: "PENDING_IMG_LOAD";
-      svg: string;
-    }
-  | {
       status: "OK";
       svg: string;
     }
@@ -53,6 +49,14 @@ export type DisplayResult =
     }
   | {
       status: "INVALID_SVG_ERROR";
+    };
+
+// this immediate loading state does not need to be exposed
+type InternalDisplayResult =
+  | DisplayResult
+  | {
+      status: "PENDING_IMG_LOAD";
+      svg: string;
     };
 
 export interface SvgRendererProps {
@@ -88,7 +92,7 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
-    const [toDisplay, setToDisplay] = useState<DisplayResult | null>(null);
+    const [toDisplay, setToDisplay] = useState<InternalDisplayResult | null>(null);
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
@@ -107,7 +111,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
         handleResult({
-          status: "OK",
+          status: "PENDING_IMG_LOAD",
           svg: svgInDoc,
         });
       } else {
@@ -157,7 +161,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
 
-    const handleResult = (result: DisplayResult) => {
+    const handleResult = (result: InternalDisplayResult) => {
       setToDisplay(result);
 
       if (onResult) {
