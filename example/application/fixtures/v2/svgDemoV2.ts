@@ -32,6 +32,34 @@ export const svgEmbeddedDemoV2 = {
   },
 };
 
+export const malformSvgDemoV2 = {
+  issuers: [
+    {
+      id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
+      name: "Government Technology Agency of Singapore (GovTech)",
+      revocation: {
+        type: v2.RevocationType.None,
+      },
+      identityProof: {
+        type: v2.IdentityProofType.DNSDid,
+        location: "example.openattestation.com",
+        key: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90#controller",
+      },
+    },
+  ],
+  renderMethod: [
+    {
+      id: `<sv.`,
+      type: "SvgRenderingTemplate2023",
+      name: "SVG Demo",
+    },
+  ],
+  qualification: "SVG rendering",
+  recipient: {
+    name: "Yourself",
+  },
+};
+
 export const svgHostedDemoV2 = {
   issuers: [
     {
