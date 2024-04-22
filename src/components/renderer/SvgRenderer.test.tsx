@@ -162,8 +162,8 @@ describe("svgRenderer component", () => {
     expect(defaultTemplate.textContent).toContain("The resolved SVG is malformedThe resolved SVG is malformed");
     expect(queryByTestId("Svg image of the verified document")).not.toBeInTheDocument();
     expect(mockHandleResult).toHaveBeenCalledWith({
-      status: "INVALID_SVG_ERROR",
-      svg: "",
+      status: "MALFORMED_SVG_ERROR",
+      svgDataUri: "data:image/svg+xml,",
     });
   });
 });
