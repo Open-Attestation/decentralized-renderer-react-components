@@ -90,8 +90,10 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
-    const [svgFetchedData, setFetchedSvgData] = useState<string>("");
-    const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
+    const [toDisplay, setToDisplay] = useState<DisplayResult>({
+      status: "OK",
+      svgDataUri: "",
+    });
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
@@ -99,15 +101,34 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     const isSvgUrl = urlPattern.test(svgInDoc);
 
     useEffect(() => {
+      /** for what ever reason, the SVG template is missing or invalid */
+      const handleInvalidSvgTemplate = (result: InvalidSvgTemplateDisplayResult) => {
+        setToDisplay(result);
+        onResult?.(result);
+      };
+
+      /** we have everything we need to generate the svg data uri, but we do not know if
+       * it is malformed or not until it is loaded by the image element, hence we do not
+       * call onResult here, instead we call it in the img onLoad and onError handlers
+       */
+      const handleValidSvgTemplate = (rawSvgTemplate: string) => {
+        setToDisplay({
+          status: "OK",
+          svgDataUri: `data:image/svg+xml,${encodeURIComponent(renderTemplate(rawSvgTemplate, document))}`,
+        });
+      };
+
       if (!("renderMethod" in document)) {
-        handleResult(DisplayResult.DEFAULT);
+        handleInvalidSvgTemplate({
+          status: "DEFAULT",
+        });
         return;
       }
       const abortController = new AbortController();
 
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
-        handleResult(DisplayResult.OK, svgInDoc);
+        handleValidSvgTemplate(svgInDoc);
       } else {
         // Case 2: SVG is a url, fetch and check digestMultibase if provided
         fetchSvg(svgInDoc, abortController)
@@ -115,26 +136,31 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             const digestMultibaseInDoc = renderMethod?.digestMultibase;
             const svgUint8Array = new Uint8Array(buffer ?? []);
             const decoder = new TextDecoder();
-            const svgText = decoder.decode(svgUint8Array);
+            const rawSvgTemplate = decoder.decode(svgUint8Array);
 
             if (!digestMultibaseInDoc) {
-              handleResult(DisplayResult.OK, svgText);
+              handleValidSvgTemplate(rawSvgTemplate);
             } else {
               const hash = new Sha256();
               hash.update(svgUint8Array);
               hash.digest().then((shaDigest) => {
                 const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
                 if (recomputedDigestMultibase === digestMultibaseInDoc) {
-                  handleResult(DisplayResult.OK, svgText);
+                  handleValidSvgTemplate(rawSvgTemplate);
                 } else {
-                  handleResult(DisplayResult.DIGEST_ERROR);
+                  handleInvalidSvgTemplate({
+                    status: "DIGEST_ERROR",
+                  });
                 }
               });
             }
           })
           .catch((error) => {
             if ((error as Error).name !== "AbortError") {
-              handleResult(DisplayResult.CONNECTION_ERROR, undefined, error);
+              handleInvalidSvgTemplate({
+                status: "FETCH_SVG_ERROR",
+                error,
+              });
             }
           });
       }
@@ -144,37 +170,27 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
 
-    const handleResult = (result: DisplayResult, svgToSet = "", error?: Error) => {
-      setFetchedSvgData(svgToSet);
-      setToDisplay(result);
-      if (typeof onResult === "function") {
-        onResult(result, error);
-      }
-    };
-
     const renderTemplate = (template: string, document: any) => {
       if (template.length === 0) return "";
       const compiledTemplate = handlebars.compile(template);
       return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
     };
 
-    const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document))}`;
-
-    switch (toDisplay) {
-      case DisplayResult.DEFAULT:
+    switch (toDisplay.status) {
+      case "DEFAULT":
         return <NoTemplate document={document} handleObfuscation={() => null} />;
-      case DisplayResult.CONNECTION_ERROR:
+      case "FETCH_SVG_ERROR":
         return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
-      case DisplayResult.DIGEST_ERROR:
+      case "DIGEST_ERROR":
         return <TamperedSvgTemplate document={document} />;
-      case DisplayResult.OK:
+      case "OK":
         return (
           <img
             className={className}
             style={style}
             title="Svg Renderer Image"
             width="100%"
-            src={compiledSvgData}
+            src={toDisplay.svgDataUri}
             ref={ref}
             alt="Svg image of the verified document"
           />
