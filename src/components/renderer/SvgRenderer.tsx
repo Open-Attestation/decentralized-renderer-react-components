@@ -82,6 +82,12 @@ const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   return res;
 };
 
+const renderSvg = (template: string, document: any) => {
+  if (template.length === 0) return "";
+  const compiledTemplate = handlebars.compile(template);
+  return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
+};
+
 // As specified in - https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023
 export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
 
@@ -114,7 +120,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       const handleValidSvgTemplate = (rawSvgTemplate: string) => {
         setToDisplay({
           status: "OK",
-          svgDataUri: `data:image/svg+xml,${encodeURIComponent(renderTemplate(rawSvgTemplate, document))}`,
+          svgDataUri: `data:image/svg+xml,${encodeURIComponent(renderSvg(rawSvgTemplate, document))}`,
         });
       };
 
@@ -169,12 +175,6 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       };
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
-
-    const renderTemplate = (template: string, document: any) => {
-      if (template.length === 0) return "";
-      const compiledTemplate = handlebars.compile(template);
-      return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
-    };
 
     switch (toDisplay.status) {
       case "DEFAULT":
