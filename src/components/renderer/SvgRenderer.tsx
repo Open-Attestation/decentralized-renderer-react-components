@@ -67,9 +67,10 @@ export interface SvgRendererProps {
   style?: CSSProperties;
   /** Override the img className */
   className?: string;
-  // TODO: How to handle if svg fails at img? Currently it will return twice
   /** An optional callback method that returns the display result  */
   onResult?: (result: DisplayResult, err?: Error) => void;
+  /** An optional component to display while loading */
+  loadingComponent?: React.ReactNode;
 }
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
@@ -95,10 +96,9 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  * Component that accepts a v4 document to fetch and display the first available template SVG
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
-  ({ document, style, className, onResult }, ref) => {
-    const [toDisplay, setToDisplay] = useState<DisplayResult>({
-      status: "OK",
-      svgDataUri: "",
+  ({ document, style, className, onResult, loadingComponent }, ref) => {
+    const [toDisplay, setToDisplay] = useState<DisplayResult | LoadingDisplayResult>({
+      status: "LOADING",
     });
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
@@ -183,6 +183,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     };
 
     switch (toDisplay.status) {
+      case "LOADING":
+        return loadingComponent ? <>{loadingComponent}</> : null;
       case "DEFAULT":
         return <NoTemplate document={document} handleObfuscation={() => null} />;
       case "MALFORMED_SVG_ERROR":
