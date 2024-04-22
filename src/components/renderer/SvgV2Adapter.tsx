@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import { DisplayResult, SvgRenderer, v4OpenAttestationDocument } from "./SvgRenderer";
+import { DisplayResult, SvgRenderer, SvgRendererProps, v4OpenAttestationDocument } from "./SvgRenderer";
 import { v2 } from "@govtechsg/open-attestation";
 
 const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocument => {
@@ -22,24 +22,17 @@ const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocum
   };
 };
 
-export interface __unsafe__not__for__production__v2__SvgRendererProps {
-  /** The OpenAttestation v4 document to display */
-  document: v2.OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
-  /** Override the img style */
-  style?: CSSProperties;
-  /** Override the img className */
-  className?: string;
-  // TODO: How to handle if svg fails at img? Currently it will return twice
-  /** An optional callback method that returns the display result  */
-  onResult?: (result: DisplayResult) => void;
-}
+export type __unsafe__not__for__production__v2__SvgRendererProps = Omit<SvgRendererProps, "document"> & {
+  /** The OpenAttestation v2 document to display */
+  document: v2.OpenAttestationDocument;
+};
 
 const __unsafe__not__for__production__v2__SvgRenderer = React.forwardRef<
   HTMLImageElement,
   __unsafe__not__for__production__v2__SvgRendererProps
->(({ document, style, className, onResult }, ref) => {
+>(({ document, ...rest }, ref) => {
   const remappedDocument = mapV2toV4(document);
-  return <SvgRenderer document={remappedDocument} style={style} className={className} onResult={onResult} ref={ref} />;
+  return <SvgRenderer {...rest} document={remappedDocument} ref={ref} />;
 });
 
 __unsafe__not__for__production__v2__SvgRenderer.displayName = "SvgRendererAdapterComponent";

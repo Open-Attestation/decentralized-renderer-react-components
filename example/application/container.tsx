@@ -231,6 +231,7 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
                 onResult={(r) => {
                   console.log(r);
                 }}
+                loadingComponent={<div>Loading...</div>}
               />
             ) : (
               <FrameConnector

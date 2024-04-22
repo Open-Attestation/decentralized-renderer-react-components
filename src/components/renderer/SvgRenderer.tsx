@@ -75,6 +75,8 @@ export interface SvgRendererProps {
   // TODO: How to handle if svg fails at img? Currently it will return twice
   /** An optional callback method that returns the display result  */
   onResult?: (result: DisplayResult) => void;
+  /** An optional component to display while loading */
+  loadingComponent?: React.ReactNode;
 }
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
@@ -94,7 +96,7 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  * Component that accepts a v4 document to fetch and display the first available template SVG
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
-  ({ document, style, className, onResult }, ref) => {
+  ({ document, style, className, onResult, loadingComponent }, ref) => {
     const [toDisplay, setToDisplay] = useState<
       InternalDisplayResult | PendingImgLoadDisplayResult | ResolvedImgLoadDisplayResult | null
     >(null);
@@ -184,7 +186,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
     };
 
-    if (!toDisplay) return <></>;
+    if (!toDisplay) return loadingComponent ? <>{loadingComponent}</> : <></>;
 
     const handleImgResolved = (resolvedDisplayResult: ResolvedImgLoadDisplayResult) => () => {
       setToDisplay(resolvedDisplayResult);
