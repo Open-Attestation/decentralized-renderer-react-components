@@ -32,6 +32,34 @@ export interface v4OpenAttestationDocument {
   renderMethod?: RenderMethod[];
 }
 
+type InvalidSvgTemplateDisplayResult =
+  | {
+      status: "DEFAULT";
+    }
+  | {
+      status: "DIGEST_ERROR";
+    }
+  | {
+      status: "FETCH_SVG_ERROR";
+      error: Error;
+    };
+
+type ValidSvgTemplateDisplayResult =
+  | {
+      status: "OK";
+      svgDataUri: string;
+    }
+  | {
+      status: "MALFORMED_SVG_ERROR";
+      svgDataUri: string;
+    };
+
+type LoadingDisplayResult = {
+  status: "LOADING";
+};
+
+export type DisplayResult = InvalidSvgTemplateDisplayResult | ValidSvgTemplateDisplayResult;
+
 export interface SvgRendererProps {
   /** The OpenAttestation v4 document to display */
   document: v4OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
@@ -42,14 +70,6 @@ export interface SvgRendererProps {
   // TODO: How to handle if svg fails at img? Currently it will return twice
   /** An optional callback method that returns the display result  */
   onResult?: (result: DisplayResult, err?: Error) => void;
-}
-
-/** Indicates the result of SVG rendering */
-export enum DisplayResult {
-  OK = "OK",
-  DEFAULT = "DEFAULT",
-  CONNECTION_ERROR = "CONNECTION_ERROR",
-  DIGEST_ERROR = "DIGEST_ERROR",
 }
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
