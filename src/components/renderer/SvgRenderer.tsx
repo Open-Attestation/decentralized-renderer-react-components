@@ -32,7 +32,7 @@ export interface v4OpenAttestationDocument {
   renderMethod?: RenderMethod[];
 }
 
-export type DisplayResult =
+export type InternalDisplayResult =
   | {
       status: "OK";
       svg: string;
@@ -46,19 +46,24 @@ export type DisplayResult =
     }
   | {
       status: "DIGEST_ERROR";
+    };
+
+type PendingImgLoadDisplayResult = {
+  status: "PENDING_IMG_LOAD";
+  svg: string;
+};
+
+type ResolvedImgLoadDisplayResult =
+  | {
+      status: "OK";
+      svg: string;
     }
   | {
       status: "INVALID_SVG_ERROR";
       svg: string;
     };
 
-// this immediate loading state does not need to be exposed
-type InternalDisplayResult =
-  | DisplayResult
-  | {
-      status: "PENDING_IMG_LOAD";
-      svg: string;
-    };
+export type DisplayResult = InternalDisplayResult | ResolvedImgLoadDisplayResult;
 
 export interface SvgRendererProps {
   /** The OpenAttestation v4 document to display */
@@ -71,9 +76,6 @@ export interface SvgRendererProps {
   /** An optional callback method that returns the display result  */
   onResult?: (result: DisplayResult) => void;
 }
-
-/** Indicates the result of SVG rendering */
-export type DisplayStatusCode = DisplayResult["status"];
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   const response = await fetch(svgInDoc, { signal: abortController.signal });
@@ -93,7 +95,9 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
-    const [toDisplay, setToDisplay] = useState<InternalDisplayResult | null>(null);
+    const [toDisplay, setToDisplay] = useState<
+      InternalDisplayResult | PendingImgLoadDisplayResult | ResolvedImgLoadDisplayResult | null
+    >(null);
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
@@ -101,6 +105,17 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     const isSvgUrl = urlPattern.test(svgInDoc);
 
     useEffect(() => {
+      const handleResult = (result: InternalDisplayResult | PendingImgLoadDisplayResult) => {
+        setToDisplay(result);
+
+        if (onResult) {
+          // we wait for img load
+          if (result.status !== "PENDING_IMG_LOAD") {
+            onResult(result);
+          }
+        }
+      };
+
       if (!("renderMethod" in document)) {
         handleResult({
           status: "DEFAULT",
@@ -159,20 +174,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       return () => {
         abortController.abort();
       };
-      /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    }, [document]);
-
-    const handleResult = (result: InternalDisplayResult) => {
-      setToDisplay(result);
-
-      if (onResult) {
-        if (result.status === "PENDING_IMG_LOAD") {
-          // we wait for img load
-        } else {
-          onResult(result);
-        }
-      }
-    };
+    }, [document, onResult, isSvgUrl, renderMethod, svgInDoc]);
 
     const renderTemplate = (template: string, document: any) => {
       if (template.length === 0) return "";
@@ -181,6 +183,11 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     };
 
     if (!toDisplay) return <></>;
+
+    const handleImgResolved = (resolvedDisplayResult: ResolvedImgLoadDisplayResult) => () => {
+      setToDisplay(resolvedDisplayResult);
+      onResult?.(resolvedDisplayResult);
+    };
 
     switch (toDisplay.status) {
       case "INVALID_SVG_ERROR":
@@ -209,18 +216,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             src={compiledSvgData}
             ref={ref}
             alt="Svg image of the verified document"
-            onLoad={() => {
-              handleResult({
-                status: "OK",
-                svg: toDisplay.svg,
-              });
-            }}
-            onError={() => {
-              handleResult({
-                status: "INVALID_SVG_ERROR",
-                svg: toDisplay.svg,
-              });
-            }}
+            onLoad={handleImgResolved({ status: "OK", svg: toDisplay.svg })}
+            onError={handleImgResolved({ status: "INVALID_SVG_ERROR", svg: toDisplay.svg })}
           />
         );
       }
