@@ -173,8 +173,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       return () => {
         abortController.abort();
       };
-      /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    }, [document]);
+    }, [document, onResult, isSvgUrl, renderMethod, svgInDoc]);
 
     switch (toDisplay.status) {
       case "DEFAULT":
