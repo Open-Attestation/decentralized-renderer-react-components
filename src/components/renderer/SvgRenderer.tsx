@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from "react";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
-import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
+import { ConnectionFailureTemplate, DefaultTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
 import { v2 } from "@govtechsg/open-attestation";
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const handlebars = require("handlebars");
@@ -34,7 +34,7 @@ export interface v4OpenAttestationDocument {
 
 export type DisplayResult =
   | {
-      status: "PENDING_OK";
+      status: "PENDING_IMG_LOAD";
       svg: string;
     }
   | {
@@ -45,14 +45,14 @@ export type DisplayResult =
       status: "DEFAULT";
     }
   | {
-      status: "CONNECTION_ERROR";
+      status: "FETCH_SVG_ERROR";
       error: Error;
     }
   | {
       status: "DIGEST_ERROR";
     }
   | {
-      status: "SVG_LOAD_ERROR";
+      status: "INVALID_SVG_ERROR";
     };
 
 export interface SvgRendererProps {
@@ -145,7 +145,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
           .catch((error) => {
             if ((error as Error).name !== "AbortError") {
               handleResult({
-                status: "CONNECTION_ERROR",
+                status: "FETCH_SVG_ERROR",
                 error,
               });
             }
@@ -161,8 +161,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       setToDisplay(result);
 
       if (onResult) {
-        if (result.status === "PENDING_OK") {
-          // let onload and onerror handle onresults call
+        if (result.status === "PENDING_IMG_LOAD") {
+          // we wait for img load
         } else {
           onResult(result);
         }
@@ -178,14 +178,21 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     if (!toDisplay) return <></>;
 
     switch (toDisplay.status) {
-      case "SVG_LOAD_ERROR":
+      case "INVALID_SVG_ERROR":
+        return (
+          <DefaultTemplate
+            title="The resolved SVG is malformed"
+            description={<>The resolved SVG is malformed. Please contact the issuer.</>}
+            document={document}
+          />
+        );
       case "DEFAULT":
         return <NoTemplate document={document} handleObfuscation={() => null} />;
-      case "CONNECTION_ERROR":
+      case "FETCH_SVG_ERROR":
         return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
       case "DIGEST_ERROR":
         return <TamperedSvgTemplate document={document} />;
-      case "PENDING_OK":
+      case "PENDING_IMG_LOAD":
       case "OK": {
         const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(toDisplay.svg, document))}`;
         return (
@@ -205,7 +212,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             }}
             onError={() => {
               handleResult({
-                status: "SVG_LOAD_ERROR",
+                status: "INVALID_SVG_ERROR",
               });
             }}
           />
