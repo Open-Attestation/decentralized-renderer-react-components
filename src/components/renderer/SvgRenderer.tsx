@@ -72,8 +72,6 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
     const [svgFetchedData, setFetchedSvgData] = useState<string>("");
     const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
-    const svgRef = useRef<HTMLImageElement>(null);
-    useImperativeHandle(ref, () => svgRef.current as HTMLImageElement);
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
@@ -157,7 +155,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             title="Svg Renderer Image"
             width="100%"
             src={compiledSvgData}
-            ref={svgRef}
+            ref={ref}
             alt="Svg image of the verified document"
           />
         );
