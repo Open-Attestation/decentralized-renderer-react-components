@@ -32,11 +32,7 @@ export interface v4OpenAttestationDocument {
   renderMethod?: RenderMethod[];
 }
 
-export type InternalDisplayResult =
-  | {
-      status: "OK";
-      svg: string;
-    }
+type InternalDisplayResult =
   | {
       status: "DEFAULT";
     }
@@ -145,7 +141,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
 
             if (!digestMultibaseInDoc) {
               handleResult({
-                status: "OK",
+                status: "PENDING_IMG_LOAD",
                 svg: svgText,
               });
             } else {
@@ -155,7 +151,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
                 const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
                 if (recomputedDigestMultibase === digestMultibaseInDoc) {
                   handleResult({
-                    status: "OK",
+                    status: "PENDING_IMG_LOAD",
                     svg: svgText,
                   });
                 } else {
