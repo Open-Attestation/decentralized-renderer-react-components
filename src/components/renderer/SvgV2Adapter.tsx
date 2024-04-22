@@ -1,6 +1,6 @@
 import React from "react";
 import { SvgRenderer, SvgRendererProps, v4OpenAttestationDocument } from "./SvgRenderer";
-import { v2 } from "@govtechsg/open-attestation";
+import type { v2 } from "@govtechsg/open-attestation";
 
 const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocument => {
   const clonedDocument = { ...document };
@@ -12,7 +12,9 @@ const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocum
       id: document.issuers[0].id || "issuers[0].id not found",
       identityProof: {
         identifier: document.issuers[0].identityProof?.location || "issuers[0].identityProof.location not found",
-        identityProofType: document.issuers[0].identityProof?.type || v2.IdentityProofType.DNSDid,
+        identityProofType:
+          document.issuers[0].identityProof?.type ||
+          ("DNS-DID" as v4OpenAttestationDocument["issuer"]["identityProof"]["identityProofType"]),
       },
       name: document.issuers[0].name,
       type: "OpenAttestationIssuer",
