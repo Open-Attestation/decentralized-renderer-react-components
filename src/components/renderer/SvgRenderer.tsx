@@ -32,6 +32,29 @@ export interface v4OpenAttestationDocument {
   renderMethod?: RenderMethod[];
 }
 
+export type DisplayResult =
+  | {
+      status: "PENDING_OK";
+      svg: string;
+    }
+  | {
+      status: "OK";
+      svg: string;
+    }
+  | {
+      status: "DEFAULT";
+    }
+  | {
+      status: "CONNECTION_ERROR";
+      error: Error;
+    }
+  | {
+      status: "DIGEST_ERROR";
+    }
+  | {
+      status: "SVG_LOAD_ERROR";
+    };
+
 export interface SvgRendererProps {
   /** The OpenAttestation v4 document to display */
   document: v4OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
@@ -41,16 +64,11 @@ export interface SvgRendererProps {
   className?: string;
   // TODO: How to handle if svg fails at img? Currently it will return twice
   /** An optional callback method that returns the display result  */
-  onResult?: (result: DisplayResult, err?: Error) => void;
+  onResult?: (result: DisplayResult) => void;
 }
 
 /** Indicates the result of SVG rendering */
-export enum DisplayResult {
-  OK = "OK",
-  DEFAULT = "DEFAULT",
-  CONNECTION_ERROR = "CONNECTION_ERROR",
-  DIGEST_ERROR = "DIGEST_ERROR",
-}
+export type DisplayStatusCode = DisplayResult["status"];
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   const response = await fetch(svgInDoc, { signal: abortController.signal });
@@ -70,8 +88,7 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
   ({ document, style, className, onResult }, ref) => {
-    const [svgFetchedData, setFetchedSvgData] = useState<string>("");
-    const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
+    const [toDisplay, setToDisplay] = useState<DisplayResult | null>(null);
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
@@ -80,14 +97,19 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
 
     useEffect(() => {
       if (!("renderMethod" in document)) {
-        handleResult(DisplayResult.DEFAULT);
+        handleResult({
+          status: "DEFAULT",
+        });
         return;
       }
       const abortController = new AbortController();
 
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
-        handleResult(DisplayResult.OK, svgInDoc);
+        handleResult({
+          status: "OK",
+          svg: svgInDoc,
+        });
       } else {
         // Case 2: SVG is a url, fetch and check digestMultibase if provided
         fetchSvg(svgInDoc, abortController)
@@ -98,23 +120,34 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             const svgText = decoder.decode(svgUint8Array);
 
             if (!digestMultibaseInDoc) {
-              handleResult(DisplayResult.OK, svgText);
+              handleResult({
+                status: "OK",
+                svg: svgText,
+              });
             } else {
               const hash = new Sha256();
               hash.update(svgUint8Array);
               hash.digest().then((shaDigest) => {
                 const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
                 if (recomputedDigestMultibase === digestMultibaseInDoc) {
-                  handleResult(DisplayResult.OK, svgText);
+                  handleResult({
+                    status: "OK",
+                    svg: svgText,
+                  });
                 } else {
-                  handleResult(DisplayResult.DIGEST_ERROR);
+                  handleResult({
+                    status: "DIGEST_ERROR",
+                  });
                 }
               });
             }
           })
           .catch((error) => {
             if ((error as Error).name !== "AbortError") {
-              handleResult(DisplayResult.CONNECTION_ERROR, undefined, error);
+              handleResult({
+                status: "CONNECTION_ERROR",
+                error,
+              });
             }
           });
       }
@@ -124,11 +157,15 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       /* eslint-disable-next-line react-hooks/exhaustive-deps */
     }, [document]);
 
-    const handleResult = (result: DisplayResult, svgToSet = "", error?: Error) => {
-      setFetchedSvgData(svgToSet);
+    const handleResult = (result: DisplayResult) => {
       setToDisplay(result);
-      if (typeof onResult === "function") {
-        onResult(result, error);
+
+      if (onResult) {
+        if (result.status === "PENDING_OK") {
+          // let onload and onerror handle onresults call
+        } else {
+          onResult(result);
+        }
       }
     };
 
@@ -138,16 +175,19 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
     };
 
-    const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document))}`;
+    if (!toDisplay) return <></>;
 
-    switch (toDisplay) {
-      case DisplayResult.DEFAULT:
+    switch (toDisplay.status) {
+      case "SVG_LOAD_ERROR":
+      case "DEFAULT":
         return <NoTemplate document={document} handleObfuscation={() => null} />;
-      case DisplayResult.CONNECTION_ERROR:
+      case "CONNECTION_ERROR":
         return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
-      case DisplayResult.DIGEST_ERROR:
+      case "DIGEST_ERROR":
         return <TamperedSvgTemplate document={document} />;
-      case DisplayResult.OK:
+      case "PENDING_OK":
+      case "OK": {
+        const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(toDisplay.svg, document))}`;
         return (
           <img
             className={className}
@@ -157,8 +197,20 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             src={compiledSvgData}
             ref={ref}
             alt="Svg image of the verified document"
+            onLoad={() => {
+              handleResult({
+                status: "OK",
+                svg: toDisplay.svg,
+              });
+            }}
+            onError={() => {
+              handleResult({
+                status: "SVG_LOAD_ERROR",
+              });
+            }}
           />
         );
+      }
       default:
         return <></>;
     }
