@@ -108,9 +108,6 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
-    const urlPattern = /^https?:\/\/.*\.svg$/;
-    const isSvgUrl = urlPattern.test(svgInDoc);
-
     useEffect(() => {
       setToDisplay({ status: "LOADING" });
 
@@ -139,6 +136,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       }
       const abortController = new AbortController();
 
+      const urlPattern = /^https?:\/\/.*\.svg$/;
+      const isSvgUrl = urlPattern.test(svgInDoc);
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
         handleValidSvgTemplate(svgInDoc);
@@ -180,7 +179,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       return () => {
         abortController.abort();
       };
-    }, [document, onResult, isSvgUrl, renderMethod, svgInDoc]);
+    }, [document, onResult, svgInDoc, renderMethod?.digestMultibase]);
 
     const handleImgResolved = (result: ValidSvgTemplateDisplayResult) => () => {
       setToDisplay(result);
