@@ -107,6 +107,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     const isSvgUrl = urlPattern.test(svgInDoc);
 
     useEffect(() => {
+      setToDisplay({ status: "LOADING" });
+
       /** for what ever reason, the SVG template is missing or invalid */
       const handleInvalidSvgTemplate = (result: InvalidSvgTemplateDisplayResult) => {
         setToDisplay(result);
