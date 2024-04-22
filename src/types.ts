@@ -8,7 +8,7 @@ export interface Renderer {
 }
 
 export interface TemplateProps<D extends OpenAttestationDocument = OpenAttestationDocument> {
-  document: D | v4OpenAttestationDocument;
+  document: D | v4OpenAttestationDocument; // TODO: Remove after OpenAttestation library has been updated with v4 types
   wrappedDocument?: WrappedDocument<D>;
   handleObfuscation: (field: string) => void;
 }
