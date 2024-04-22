@@ -1,7 +1,7 @@
 /* eslint-disable jest/prefer-spy-on */
 // Disable the spyOn check due to known issues with mocking fetch in jsDom env
 // https://stackoverflow.com/questions/74945569/cannot-access-built-in-node-js-fetch-function-from-jest-tests
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { SvgRenderer } from "./SvgRenderer";
 import fs from "fs";
 import { Blob } from "buffer";
@@ -13,6 +13,7 @@ import {
   v2WithSvgUrlAndDigestMultibase,
   v4WithOnlyTamperedEmbeddedSvg,
   v4WithNoRenderMethod,
+  v4MalformedEmbeddedSvg,
 } from "./fixtures/svgRendererSamples";
 import { __unsafe__not__for__production__v2__SvgRenderer } from "./SvgV2Adapter";
 
@@ -144,6 +145,26 @@ describe("svgRenderer component", () => {
     expect(mockHandleResult).toHaveBeenCalledWith({
       error: new Error("Failed to fetch remote SVG"),
       status: "FETCH_SVG_ERROR",
+    });
+  });
+
+  it("should render svg malformed template when img load event is fired", async () => {
+    const svgRef = React.createRef<HTMLImageElement>();
+    const mockHandleResult = jest.fn();
+
+    const { findByTestId, getByAltText, queryByTestId } = render(
+      <SvgRenderer document={v4MalformedEmbeddedSvg} ref={svgRef} onResult={mockHandleResult} />
+    );
+
+    fireEvent.error(getByAltText("Svg image of the verified document"));
+
+    const defaultTemplate = await findByTestId("default-template", undefined, {
+      timeout: 5000,
+    });
+    expect(defaultTemplate.textContent).toContain("The resolved SVG is malformedThe resolved SVG is malformed");
+    expect(queryByTestId("Svg image of the verified document")).not.toBeInTheDocument();
+    expect(mockHandleResult).toHaveBeenCalledWith({
+      status: "INVALID_SVG_ERROR",
     });
   });
 });
