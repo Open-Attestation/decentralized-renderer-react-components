@@ -105,6 +105,8 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     const isSvgUrl = urlPattern.test(svgInDoc);
 
     useEffect(() => {
+      setToDisplay(null);
+
       const handleResult = (result: InternalDisplayResult | PendingImgLoadDisplayResult) => {
         setToDisplay(result);
 
