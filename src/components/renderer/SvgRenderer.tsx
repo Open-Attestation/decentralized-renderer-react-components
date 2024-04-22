@@ -185,8 +185,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     switch (toDisplay.status) {
       case "LOADING":
         return loadingComponent ? <>{loadingComponent}</> : null;
-      case "DEFAULT":
-        return <NoTemplate document={document} handleObfuscation={() => null} />;
+
       case "MALFORMED_SVG_ERROR":
         return (
           <DefaultTemplate
@@ -214,7 +213,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
           />
         );
       default:
-        return <></>;
+        return <NoTemplate document={document} handleObfuscation={() => null} />;
     }
   }
 );
