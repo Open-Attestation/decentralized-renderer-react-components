@@ -225,7 +225,13 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
             `}
           >
             {isSvg ? (
-              <__unsafe__not__for__production__v2__SvgRenderer document={document.document} ref={svgRef} />
+              <__unsafe__not__for__production__v2__SvgRenderer
+                document={document.document}
+                ref={svgRef}
+                onResult={(r) => {
+                  console.log(r);
+                }}
+              />
             ) : (
               <FrameConnector
                 source={document.frameSource}
