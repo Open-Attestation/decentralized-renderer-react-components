@@ -128,7 +128,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
         });
       };
 
-      if (!("renderMethod" in document)) {
+      if (renderMethod === undefined) {
         handleInvalidSvgTemplate({
           status: "DEFAULT",
         });
@@ -179,7 +179,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       return () => {
         abortController.abort();
       };
-    }, [document, onResult, svgInDoc, renderMethod?.digestMultibase]);
+    }, [document, onResult, svgInDoc, renderMethod]);
 
     const handleImgResolved = (result: ValidSvgTemplateDisplayResult) => () => {
       setToDisplay(result);

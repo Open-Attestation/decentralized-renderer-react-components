@@ -14,6 +14,7 @@ import {
   v4WithOnlyTamperedEmbeddedSvg,
   v4WithNoRenderMethod,
   v4MalformedEmbeddedSvg,
+  v4NotUsingSvgRenderMethod,
 } from "./fixtures/svgRendererSamples";
 import { __unsafe__not__for__production__v2__SvgRenderer } from "./SvgV2Adapter";
 
@@ -123,6 +124,17 @@ describe("svgRenderer component", () => {
     const svgRef = React.createRef<HTMLImageElement>();
 
     const { findByTestId } = render(<SvgRenderer document={v4WithNoRenderMethod} ref={svgRef} />);
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("The contents of this document have not been formatted");
+    expect(defaultTemplate.textContent).toContain("identifier: example.openattestation.com");
+  });
+
+  it("should render default template when document.RenderMethod does not have at least one SvgRenderingTemplate2023 defined", async () => {
+    global.fetch = jest.fn().mockResolvedValue(mockResponse);
+    const svgRef = React.createRef<HTMLImageElement>();
+
+    const { findByTestId } = render(<SvgRenderer document={v4NotUsingSvgRenderMethod} ref={svgRef} />);
 
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("The contents of this document have not been formatted");
