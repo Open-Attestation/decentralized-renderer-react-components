@@ -49,7 +49,7 @@ type ValidSvgTemplateDisplayResult =
       svgDataUri: string;
     }
   | {
-      status: "MALFORMED_SVG_ERROR";
+      status: "SVG_LOAD_ERROR";
       svgDataUri: string;
     };
 
@@ -117,8 +117,9 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       };
 
       /** we have everything we need to generate the svg data uri, but we do not know if
-       * it is malformed or not until it is loaded by the image element, hence we do not
-       * call onResult here, instead we call it in the img onLoad and onError handlers
+       * it is malformed/blocked by CORS or not until it is loaded by the image element,
+       * hence we do not call onResult here, instead we call it in the img onLoad and
+       * onError handlers
        */
       const handleValidSvgTemplate = (rawSvgTemplate: string) => {
         setToDisplay({
@@ -188,11 +189,11 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
     switch (toDisplay.status) {
       case "LOADING":
         return loadingComponent ? <>{loadingComponent}</> : null;
-      case "MALFORMED_SVG_ERROR":
+      case "SVG_LOAD_ERROR":
         return (
           <DefaultTemplate
-            title="The resolved SVG is malformed"
-            description={<>The resolved SVG is malformed. Please contact the issuer.</>}
+            title="The resolved SVG could not be loaded"
+            description={<>The resolved SVG is either blocked or malformed. Please contact the issuer.</>}
             document={document}
           />
         );
@@ -217,7 +218,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             ref={ref}
             alt="Svg image of the verified document"
             onLoad={handleImgResolved({ status: "OK", svgDataUri: toDisplay.svgDataUri })}
-            onError={handleImgResolved({ status: "MALFORMED_SVG_ERROR", svgDataUri: toDisplay.svgDataUri })}
+            onError={handleImgResolved({ status: "SVG_LOAD_ERROR", svgDataUri: toDisplay.svgDataUri })}
           />
         );
       }

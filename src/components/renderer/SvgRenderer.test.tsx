@@ -148,7 +148,7 @@ describe("svgRenderer component", () => {
     });
   });
 
-  it("should render svg malformed template when img load event is fired", async () => {
+  it("should render svg svg load error template when img load event is fired", async () => {
     const svgRef = React.createRef<HTMLImageElement>();
     const mockHandleResult = jest.fn();
 
@@ -159,10 +159,10 @@ describe("svgRenderer component", () => {
     fireEvent.error(getByAltText("Svg image of the verified document"));
 
     const defaultTemplate = await findByTestId("default-template");
-    expect(defaultTemplate.textContent).toContain("The resolved SVG is malformedThe resolved SVG is malformed");
+    expect(defaultTemplate.textContent).toContain("The resolved SVG could not be loaded");
     expect(queryByTestId("Svg image of the verified document")).not.toBeInTheDocument();
     expect(mockHandleResult).toHaveBeenCalledWith({
-      status: "MALFORMED_SVG_ERROR",
+      status: "SVG_LOAD_ERROR",
       svgDataUri: "data:image/svg+xml,",
     });
   });
