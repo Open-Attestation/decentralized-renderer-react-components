@@ -1,10 +1,9 @@
 import React, { CSSProperties, useEffect, useState } from "react";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
-import { ConnectionFailureTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
-import { v2 } from "@govtechsg/open-attestation";
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
-const handlebars = require("handlebars");
+import { ConnectionFailureTemplate, DefaultTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
+import type { v2 } from "@govtechsg/open-attestation";
+import handlebars from "handlebars";
 
 interface RenderMethod {
   id: string;
@@ -32,6 +31,39 @@ export interface v4OpenAttestationDocument {
   renderMethod?: RenderMethod[];
 }
 
+type InvalidSvgTemplateDisplayResult =
+  | {
+      status: "DEFAULT";
+    }
+  | {
+      status: "DIGEST_ERROR";
+    }
+  | {
+      status: "FETCH_SVG_ERROR";
+      error: Error;
+    };
+
+type ValidSvgTemplateDisplayResult =
+  | {
+      status: "OK";
+      svgDataUri: string;
+    }
+  | {
+      status: "SVG_LOAD_ERROR";
+      svgDataUri: string;
+    };
+
+type PendingImgLoadDisplayResult = {
+  status: "PENDING_OK";
+  svgDataUri: string;
+};
+
+type LoadingDisplayResult = {
+  status: "LOADING";
+};
+
+export type DisplayResult = InvalidSvgTemplateDisplayResult | ValidSvgTemplateDisplayResult;
+
 export interface SvgRendererProps {
   /** The OpenAttestation v4 document to display */
   document: v4OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
@@ -39,17 +71,10 @@ export interface SvgRendererProps {
   style?: CSSProperties;
   /** Override the img className */
   className?: string;
-  // TODO: How to handle if svg fails at img? Currently it will return twice
   /** An optional callback method that returns the display result  */
   onResult?: (result: DisplayResult, err?: Error) => void;
-}
-
-/** Indicates the result of SVG rendering */
-export enum DisplayResult {
-  OK = "OK",
-  DEFAULT = "DEFAULT",
-  CONNECTION_ERROR = "CONNECTION_ERROR",
-  DIGEST_ERROR = "DIGEST_ERROR",
+  /** An optional component to display while loading */
+  loadingComponent?: React.ReactNode;
 }
 
 const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
@@ -62,6 +87,12 @@ const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   return res;
 };
 
+const renderSvg = (template: string, document: any) => {
+  if (template.length === 0) return "";
+  const compiledTemplate = handlebars.compile(template);
+  return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
+};
+
 // As specified in - https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023
 export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
 
@@ -69,25 +100,47 @@ export const SVG_RENDERER_TYPE = "SvgRenderingTemplate2023";
  * Component that accepts a v4 document to fetch and display the first available template SVG
  */
 const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
-  ({ document, style, className, onResult }, ref) => {
-    const [svgFetchedData, setFetchedSvgData] = useState<string>("");
-    const [toDisplay, setToDisplay] = useState<DisplayResult>(DisplayResult.OK);
+  ({ document, style, className, onResult, loadingComponent }, ref) => {
+    const [toDisplay, setToDisplay] = useState<DisplayResult | LoadingDisplayResult | PendingImgLoadDisplayResult>({
+      status: "LOADING",
+    });
 
     const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
     const svgInDoc = renderMethod?.id ?? "";
-    const urlPattern = /^https?:\/\/.*\.svg$/;
-    const isSvgUrl = urlPattern.test(svgInDoc);
-
     useEffect(() => {
+      setToDisplay({ status: "LOADING" });
+
+      /** for what ever reason, the SVG template is missing or invalid */
+      const handleInvalidSvgTemplate = (result: InvalidSvgTemplateDisplayResult) => {
+        setToDisplay(result);
+        onResult?.(result);
+      };
+
+      /** we have everything we need to generate the svg data uri, but we do not know if
+       * it is malformed/blocked by CORS or not until it is loaded by the image element,
+       * hence we do not call onResult here, instead we call it in the img onLoad and
+       * onError handlers
+       */
+      const handleValidSvgTemplate = (rawSvgTemplate: string) => {
+        setToDisplay({
+          status: "PENDING_OK",
+          svgDataUri: `data:image/svg+xml,${encodeURIComponent(renderSvg(rawSvgTemplate, document))}`,
+        });
+      };
+
       if (!("renderMethod" in document)) {
-        handleResult(DisplayResult.DEFAULT);
+        handleInvalidSvgTemplate({
+          status: "DEFAULT",
+        });
         return;
       }
       const abortController = new AbortController();
 
+      const urlPattern = /^https?:\/\/.*\.svg$/;
+      const isSvgUrl = urlPattern.test(svgInDoc);
       if (!isSvgUrl) {
         // Case 1: SVG is embedded in the doc, can directly display
-        handleResult(DisplayResult.OK, svgInDoc);
+        handleValidSvgTemplate(svgInDoc);
       } else {
         // Case 2: SVG is a url, fetch and check digestMultibase if provided
         fetchSvg(svgInDoc, abortController)
@@ -95,72 +148,82 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             const digestMultibaseInDoc = renderMethod?.digestMultibase;
             const svgUint8Array = new Uint8Array(buffer ?? []);
             const decoder = new TextDecoder();
-            const svgText = decoder.decode(svgUint8Array);
+            const rawSvgTemplate = decoder.decode(svgUint8Array);
 
             if (!digestMultibaseInDoc) {
-              handleResult(DisplayResult.OK, svgText);
+              handleValidSvgTemplate(rawSvgTemplate);
             } else {
               const hash = new Sha256();
               hash.update(svgUint8Array);
               hash.digest().then((shaDigest) => {
                 const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
                 if (recomputedDigestMultibase === digestMultibaseInDoc) {
-                  handleResult(DisplayResult.OK, svgText);
+                  handleValidSvgTemplate(rawSvgTemplate);
                 } else {
-                  handleResult(DisplayResult.DIGEST_ERROR);
+                  handleInvalidSvgTemplate({
+                    status: "DIGEST_ERROR",
+                  });
                 }
               });
             }
           })
           .catch((error) => {
             if ((error as Error).name !== "AbortError") {
-              handleResult(DisplayResult.CONNECTION_ERROR, undefined, error);
+              handleInvalidSvgTemplate({
+                status: "FETCH_SVG_ERROR",
+                error,
+              });
             }
           });
       }
       return () => {
         abortController.abort();
       };
-      /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    }, [document]);
+    }, [document, onResult, svgInDoc, renderMethod?.digestMultibase]);
 
-    const handleResult = (result: DisplayResult, svgToSet = "", error?: Error) => {
-      setFetchedSvgData(svgToSet);
+    const handleImgResolved = (result: ValidSvgTemplateDisplayResult) => () => {
       setToDisplay(result);
-      if (typeof onResult === "function") {
-        onResult(result, error);
-      }
+      onResult?.(result);
     };
 
-    const renderTemplate = (template: string, document: any) => {
-      if (template.length === 0) return "";
-      const compiledTemplate = handlebars.compile(template);
-      return document.credentialSubject ? compiledTemplate(document.credentialSubject) : compiledTemplate(document);
-    };
-
-    const compiledSvgData = `data:image/svg+xml,${encodeURIComponent(renderTemplate(svgFetchedData, document))}`;
-
-    switch (toDisplay) {
-      case DisplayResult.DEFAULT:
-        return <NoTemplate document={document} handleObfuscation={() => null} />;
-      case DisplayResult.CONNECTION_ERROR:
+    switch (toDisplay.status) {
+      case "LOADING":
+        return loadingComponent ? <>{loadingComponent}</> : null;
+      case "SVG_LOAD_ERROR":
+        return (
+          <DefaultTemplate
+            title="The resolved SVG could not be loaded"
+            description={<>The resolved SVG is either blocked or malformed. Please contact the issuer.</>}
+            document={document}
+          />
+        );
+      case "FETCH_SVG_ERROR":
         return <ConnectionFailureTemplate document={document} source={svgInDoc} />;
-      case DisplayResult.DIGEST_ERROR:
+      case "DIGEST_ERROR":
         return <TamperedSvgTemplate document={document} />;
-      case DisplayResult.OK:
+      case "PENDING_OK":
+      case "OK": {
         return (
           <img
             className={className}
-            style={style}
+            style={
+              toDisplay.status === "PENDING_OK"
+                ? {
+                    display: "none",
+                  }
+                : style
+            }
             title="Svg Renderer Image"
-            width="100%"
-            src={compiledSvgData}
+            src={toDisplay.svgDataUri}
             ref={ref}
             alt="Svg image of the verified document"
+            onLoad={handleImgResolved({ status: "OK", svgDataUri: toDisplay.svgDataUri })}
+            onError={handleImgResolved({ status: "SVG_LOAD_ERROR", svgDataUri: toDisplay.svgDataUri })}
           />
         );
+      }
       default:
-        return <></>;
+        return <NoTemplate document={document} handleObfuscation={() => null} />;
     }
   }
 );

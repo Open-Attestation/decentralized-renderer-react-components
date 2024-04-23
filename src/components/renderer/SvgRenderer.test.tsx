@@ -1,8 +1,8 @@
 /* eslint-disable jest/prefer-spy-on */
 // Disable the spyOn check due to known issues with mocking fetch in jsDom env
 // https://stackoverflow.com/questions/74945569/cannot-access-built-in-node-js-fetch-function-from-jest-tests
-import { render } from "@testing-library/react";
-import { DisplayResult, SvgRenderer } from "./SvgRenderer";
+import { fireEvent, render } from "@testing-library/react";
+import { SvgRenderer } from "./SvgRenderer";
 import fs from "fs";
 import { Blob } from "buffer";
 import React from "react";
@@ -13,6 +13,7 @@ import {
   v2WithSvgUrlAndDigestMultibase,
   v4WithOnlyTamperedEmbeddedSvg,
   v4WithNoRenderMethod,
+  v4MalformedEmbeddedSvg,
 } from "./fixtures/svgRendererSamples";
 import { __unsafe__not__for__production__v2__SvgRenderer } from "./SvgV2Adapter";
 
@@ -114,7 +115,7 @@ describe("svgRenderer component", () => {
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("The remote content for this document has been modified");
     expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
-    expect(mockHandleResult).toHaveBeenCalledWith(DisplayResult.DIGEST_ERROR, undefined);
+    expect(mockHandleResult).toHaveBeenCalledWith({ status: "DIGEST_ERROR" });
   });
 
   it("should render default template when document.RenderMethod is undefined", async () => {
@@ -141,10 +142,29 @@ describe("svgRenderer component", () => {
     const defaultTemplate = await findByTestId("default-template");
     expect(defaultTemplate.textContent).toContain("This document might be having loading issues");
     expect(defaultTemplate.textContent).toContain(`URL: “http://mockbucket.com/static/svg_test.svg”`);
-    expect(mockHandleResult).toHaveBeenCalledWith(
-      DisplayResult.CONNECTION_ERROR,
-      new Error("Failed to fetch remote SVG")
+    expect(mockHandleResult).toHaveBeenCalledWith({
+      error: new Error("Failed to fetch remote SVG"),
+      status: "FETCH_SVG_ERROR",
+    });
+  });
+
+  it("should render svg svg load error template when img load event is fired", async () => {
+    const svgRef = React.createRef<HTMLImageElement>();
+    const mockHandleResult = jest.fn();
+
+    const { findByTestId, getByAltText, queryByTestId } = render(
+      <SvgRenderer document={v4MalformedEmbeddedSvg} ref={svgRef} onResult={mockHandleResult} />
     );
+
+    fireEvent.error(getByAltText("Svg image of the verified document"));
+
+    const defaultTemplate = await findByTestId("default-template");
+    expect(defaultTemplate.textContent).toContain("The resolved SVG could not be loaded");
+    expect(queryByTestId("Svg image of the verified document")).not.toBeInTheDocument();
+    expect(mockHandleResult).toHaveBeenCalledWith({
+      status: "SVG_LOAD_ERROR",
+      svgDataUri: "data:image/svg+xml,",
+    });
   });
 });
 /* eslint-enable jest/prefer-spy-on */
