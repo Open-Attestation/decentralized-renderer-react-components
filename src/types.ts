@@ -1,5 +1,5 @@
 import { ComponentType } from "react";
-import { v2, WrappedDocument, OpenAttestationDocument, v3 } from "@govtechsg/open-attestation";
+import type { v2, WrappedDocument, OpenAttestationDocument, v3 } from "@govtechsg/open-attestation";
 import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
 
 export type Attachment = v2.Attachment | v3.Attachment;
