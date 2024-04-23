@@ -2,10 +2,20 @@ import React from "react";
 import { SvgRenderer, SvgRendererProps, v4OpenAttestationDocument } from "./SvgRenderer";
 import type { v2 } from "@govtechsg/open-attestation";
 
-const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocument => {
+type V2OpenAttestationDocumentWithSvgBase = v2.OpenAttestationDocument &
+  Pick<SvgRendererProps["document"], "renderMethod">;
+type V2OpenAttestationDocumentWithSvg = V2OpenAttestationDocumentWithSvgBase & { [k: string]: unknown };
+
+const mapV2toV4 = (document: V2OpenAttestationDocumentWithSvg): v4OpenAttestationDocument => {
   const clonedDocument = { ...document };
-  const propsToOmit = ["$template", "id", "issuers", "network", "renderMethod"];
-  propsToOmit.forEach((v2Property) => delete (clonedDocument as any)[v2Property]);
+  const propsToOmit: (keyof V2OpenAttestationDocumentWithSvgBase)[] = [
+    "$template",
+    "id",
+    "issuers",
+    "network",
+    "renderMethod",
+  ];
+  propsToOmit.forEach((v2Property) => delete clonedDocument[v2Property]);
 
   return {
     issuer: {
@@ -19,14 +29,14 @@ const mapV2toV4 = (document: v2.OpenAttestationDocument): v4OpenAttestationDocum
       name: document.issuers[0].name,
       type: "OpenAttestationIssuer",
     },
-    renderMethod: (document as any)["renderMethod"],
+    renderMethod: document.renderMethod,
     credentialSubject: clonedDocument,
   };
 };
 
 export type __unsafe__not__for__production__v2__SvgRendererProps = Omit<SvgRendererProps, "document"> & {
   /** The OpenAttestation v2 document to display */
-  document: v2.OpenAttestationDocument;
+  document: V2OpenAttestationDocumentWithSvg;
 };
 
 const __unsafe__not__for__production__v2__SvgRenderer = React.forwardRef<
