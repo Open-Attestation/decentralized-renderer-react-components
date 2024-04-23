@@ -214,7 +214,6 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
                 : style
             }
             title="Svg Renderer Image"
-            width="100%"
             src={toDisplay.svgDataUri}
             ref={ref}
             alt="Svg image of the verified document"
