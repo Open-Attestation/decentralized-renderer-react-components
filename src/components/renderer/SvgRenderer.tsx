@@ -3,8 +3,7 @@ import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, DefaultTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
 import type { v2 } from "@govtechsg/open-attestation";
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
-const handlebars = require("handlebars");
+import handlebars from "handlebars";
 
 interface RenderMethod {
   id: string;
