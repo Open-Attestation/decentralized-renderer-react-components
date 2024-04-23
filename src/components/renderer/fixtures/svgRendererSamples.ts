@@ -21,9 +21,6 @@ export const v4WithSvgUrlAndDigestMultibase = {
       type: "SvgRenderingTemplate2023",
       name: "SVG Certificate",
       digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-      renderMethodType: "EMBEDDED_RENDERER",
     },
   ],
   credentialSubject: {
@@ -65,9 +62,6 @@ export const v4WithEmbeddedSvgAndDigestMultibase = {
       type: "SvgRenderingTemplate2023",
       name: "SVG Certificate",
       digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-      renderMethodType: "EMBEDDED_RENDERER",
     },
   ],
   credentialSubject: {
@@ -109,9 +103,6 @@ export const v4WithTamperedEmbeddedSvgAndDigestMultibase = {
       type: "SvgRenderingTemplate2023",
       name: "SVG Certificate",
       digestMultibase: "z97B2X5Qw9mVzyMhp46dQgWXtX7ipEALvg1coK26eS4f4",
-      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-      renderMethodType: "EMBEDDED_RENDERER",
     },
   ],
   credentialSubject: {
@@ -152,9 +143,6 @@ export const v4WithOnlyTamperedEmbeddedSvg = {
 </svg>`,
       type: "SvgRenderingTemplate2023",
       name: "SVG Certificate",
-      url: "https://ignorethisurlthisisjusttopasstheschemacheck.com",
-      // renderMethodType: v4.RenderMethodType.EmbeddedRenderer,
-      renderMethodType: "EMBEDDED_RENDERER",
     },
   ],
   credentialSubject: {
