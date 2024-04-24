@@ -313,7 +313,7 @@ Illustrated example for SVG rendering. For simplicity we will not be specifying 
 
 Preview of the template SVG:
 
-![template svg](example/application/fixtures/images/demo-cert.svg)
+<img src="https://github.com/Open-Attestation/decentralized-renderer-react-components/blob/master/example/application/fixtures/images/demo-cert.svg?raw=true" alt="demo template svg" />
 
 Ensure that the data fields referenced by the SVG are within the raw/unwrapped OA document, the SVG can be hosted or embedded directly.
 
@@ -381,4 +381,5 @@ const export DocumentRenderer: React.FC<RendererProps> = ({ rawDocument }) => {
 ```
 
 When compiled, the final rendered image should look something like:
-![template svg](example/application/fixtures/images/demo-cert-compiled.png)
+
+<img src="https://github.com/Open-Attestation/decentralized-renderer-react-components/blob/master/example/application/fixtures/images/demo-cert-compiled.png?raw=true" alt="demo compiled template svg" />
