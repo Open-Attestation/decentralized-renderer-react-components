@@ -1,8 +1,9 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
-import { isV2Document, isV3Document } from "./utils";
+import { isV2Document, isV3Document, isV4Document } from "./utils";
 import { JsonView } from "./JsonView";
+import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
 
 interface DefaultTemplateProps {
   title: string;
@@ -13,6 +14,10 @@ interface DefaultTemplateProps {
 interface ConnectionFailureProps {
   source: string;
   document?: TemplateProps["document"];
+}
+
+interface SvgModifiedProps {
+  document: TemplateProps["document"];
 }
 
 const DEFAULT_ID = "default-template";
@@ -54,6 +59,16 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
         url: template.url,
       };
     }
+  } else if (isV4Document(document)) {
+    const docAsAny = document as v4OpenAttestationDocument; // TODO: Update to v4
+    const renderMethod = docAsAny.renderMethod?.find((method) => method.type === "SvgRenderingTemplate2023");
+    if (renderMethod !== undefined) {
+      return {
+        name: renderMethod.name ?? "",
+        type: renderMethod.type,
+        url: renderMethod.id,
+      };
+    }
   }
 
   return undefined;
@@ -81,7 +96,7 @@ const TemplateInfoComponent: React.FunctionComponent<TemplateInfoComponentProps>
 
 export const DefaultTemplate: React.FunctionComponent<DefaultTemplateProps> = (props) => {
   return (
-    <div id={DEFAULT_ID}>
+    <div id={DEFAULT_ID} data-testid={DEFAULT_ID}>
       <div style={{ ...container, fontFamily: "Arial", wordBreak: "break-all" }}>
         {/* Banner */}
         <div style={{ backgroundColor: "#FDFDEA", borderLeft: "2px solid #8E4B10", padding: "16px 16px 16px 18px" }}>
@@ -149,6 +164,29 @@ export const ConnectionFailureTemplate: React.FunctionComponent<ConnectionFailur
             <TemplateInfoComponent template={templateInfo} />
           ) : (
             <span style={{ fontFamily: "Courier" }}>Template URL: “{props.source}”</span>
+          )}
+        </>
+      }
+      document={props.document}
+    />
+  );
+};
+
+export const TamperedSvgTemplate: React.FunctionComponent<SvgModifiedProps> = (props) => {
+  const templateInfo = extractTemplateInfo(props.document);
+  return (
+    <DefaultTemplate
+      title="The remote content for this document has been modified"
+      description={
+        <>
+          The display for this document has been modified and no longer matches its original state. Please contact the
+          issuer with the information below:
+          {templateInfo && (
+            <>
+              <br />
+              <br />
+              <TemplateInfoComponent template={templateInfo} />
+            </>
           )}
         </>
       }

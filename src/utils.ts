@@ -24,7 +24,13 @@ export const isV2Document = (document: any): document is v2.OpenAttestationDocum
 };
 
 export const isV3Document = (document: any): document is v3.OpenAttestationDocument => {
-  return !!document["@context"];
+  return !!document["@context"] && !!document.openAttestationMetadata;
+};
+
+export const isV4Document = (document: any): boolean => {
+  return !!document["@context"]?.includes(
+    "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json"
+  );
 };
 
 const getTemplateName = (document: OpenAttestationDocument): string => {
@@ -54,8 +60,11 @@ export function documentTemplates(
   attachmentToComponent: (attachment: Attachment, document: OpenAttestationDocument) => FunctionComponent | null
 ): TemplateWithTypes[] {
   if (!document) return [];
+  const docAsV2orV3 = isV2Document(document)
+    ? (document as v2.OpenAttestationDocument)
+    : (document as v3.OpenAttestationDocument);
   // Find the template in the template registry or use a default template
-  const templateName = getTemplateName(document);
+  const templateName = getTemplateName(docAsV2orV3);
 
   const selectedTemplate: TemplateWithComponent[] =
     templateName === "" ? [noTemplate] : (templateName && templateRegistry[templateName]) || [wrongTemplate];
@@ -67,7 +76,7 @@ export function documentTemplates(
     })
     .filter((template) => (template.predicate ? template.predicate({ document }) : truePredicate()));
 
-  const tabsRenderedFromAttachments = (document.attachments || ([] as Attachment[]))
+  const tabsRenderedFromAttachments = (docAsV2orV3.attachments || ([] as Attachment[]))
     .map((attachment, index) =>
       isV2Attachment(attachment)
         ? {

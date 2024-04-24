@@ -1,6 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { isActionOf } from "typesafe-actions";
-import { FrameActions, FrameConnector, HostActionsHandler, updateHeight, updateTemplates, timeout } from "../../src";
+import {
+  FrameActions,
+  FrameConnector,
+  HostActionsHandler,
+  updateHeight,
+  updateTemplates,
+  timeout,
+  __unsafe__not__for__production__v2__SvgRenderer,
+  SVG_RENDERER_TYPE,
+} from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
@@ -59,6 +68,10 @@ const DocumentsContainer = styled.div`
 `;
 
 const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
+  const renderMethod = document.document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
+  const isSvg = renderMethod?.type === SVG_RENDERER_TYPE;
+  const svgRef = useRef<HTMLImageElement>(null);
+
   const [toFrame, setToFrame] = useState<HostActionsHandler>();
   const [height, setHeight] = useState(250);
   const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
@@ -211,19 +224,30 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
               margin-right: 0.5rem;
             `}
           >
-            <FrameConnector
-              source={document.frameSource}
-              dispatch={fromFrame}
-              onConnected={fn}
-              onConnectionFailure={(setDocumentToRender) => setDocumentToRender(document.document)}
-              css={css`
-                display: block;
-                margin: auto;
-                max-width: 1120px;
-                width: 100%;
-                height: ${height}px;
-              `}
-            />
+            {isSvg ? (
+              <__unsafe__not__for__production__v2__SvgRenderer
+                document={document.document}
+                ref={svgRef}
+                onResult={(r) => {
+                  console.log(r);
+                }}
+                loadingComponent={<div>Loading...</div>}
+              />
+            ) : (
+              <FrameConnector
+                source={document.frameSource}
+                dispatch={fromFrame}
+                onConnected={fn}
+                onConnectionFailure={(setDocumentToRender) => setDocumentToRender(document.document)}
+                css={css`
+                  display: block;
+                  margin: auto;
+                  max-width: 1120px;
+                  width: 100%;
+                  height: ${height}px;
+                `}
+              />
+            )}
           </div>
         </div>
       </div>
