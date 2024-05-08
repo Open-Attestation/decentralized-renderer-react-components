@@ -23,7 +23,7 @@
     "handlebars": "^4.7.8",
     "penpal": "^5.3.0",
     "penpal-v4": "npm:penpal@^4.1.1",
-    "react-pdf": "^5.2.0",
+    "react-pdf": "^7.7.3",
     "stream-browserify": "^3.0.0",
     "typesafe-actions": "^5.1.0"
   },
