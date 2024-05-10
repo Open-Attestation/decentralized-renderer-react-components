@@ -1,3 +1,4 @@
+export * from "./components/TheRenderer";
 export { FrameConnector } from "./components/frame/FrameConnector";
 export { ObfuscatableValue } from "./components/common/ObfuscatableValue";
 export { RedactableValue } from "./components/common/RedactableValue";

@@ -1,15 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { isActionOf } from "typesafe-actions";
-import {
-  FrameActions,
-  FrameConnector,
-  HostActionsHandler,
-  updateHeight,
-  updateTemplates,
-  timeout,
-  __unsafe__not__for__production__v2__SvgRenderer,
-  SVG_RENDERER_TYPE,
-} from "../../src";
+import React, { useCallback, useState } from "react";
+import { TheRenderer, ConnectedResults } from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
@@ -68,62 +58,17 @@ const DocumentsContainer = styled.div`
 `;
 
 const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.ReactElement => {
-  const renderMethod = document.document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
-  const isSvg = renderMethod?.type === SVG_RENDERER_TYPE;
-  const svgRef = useRef<HTMLImageElement>(null);
-
-  const [toFrame, setToFrame] = useState<HostActionsHandler>();
-  const [height, setHeight] = useState(250);
-  const [templates, setTemplates] = useState<{ id: string; label: string }[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const fn = useCallback((toFrame: HostActionsHandler) => {
-    // wrap into a function otherwise toFrame function will be executed
-    setToFrame(() => toFrame);
+  const [rendererResults, setRendererResults] = useState<ConnectedResults>();
+
+  const onConnected = useCallback((results) => {
+    setRendererResults(results);
+    setSelectedTemplate(results.templates?.[0]?.id ?? "");
   }, []);
 
-  const fromFrame = (action: FrameActions): void => {
-    if (isActionOf(updateHeight, action)) {
-      setHeight(action.payload);
-    }
-    if (isActionOf(updateTemplates, action)) {
-      setTemplates(action.payload);
-      setSelectedTemplate(action.payload[0].id);
-    }
-    if (isActionOf(timeout, action)) {
-      alert(`Connection timeout on renderer.\nPlease contact the administrator of ${document.frameSource}.`);
-    }
-  };
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.renderDocument = (document) => {
-    if (toFrame && document) {
-      toFrame({
-        type: "RENDER_DOCUMENT",
-        payload: {
-          document,
-        },
-      });
-    }
-  };
-  useEffect(() => {
-    if (toFrame && document) {
-      toFrame({
-        type: "RENDER_DOCUMENT",
-        payload: {
-          document: document.document,
-        },
-      });
-    }
-  }, [toFrame, document]);
-  useEffect(() => {
-    if (toFrame && selectedTemplate) {
-      toFrame({
-        type: "SELECT_TEMPLATE",
-        payload: selectedTemplate,
-      });
-    }
-  }, [selectedTemplate, toFrame]);
+  const onError = useCallback((error) => {
+    console.error(error);
+  }, []);
 
   return (
     <div
@@ -134,11 +79,7 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
       <ActionsContainer>
         <button
           onClick={() => {
-            if (toFrame) {
-              toFrame({
-                type: "PRINT",
-              });
-            }
+            rendererResults?.print();
           }}
         >
           Print
@@ -163,59 +104,66 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
             display: ${document ? "block" : "none"};
           `}
         >
-          <TemplatesContainer>
-            <ul
-              css={css`
-                display: flex;
-                border-bottom: 1px solid #e2e8f0;
-                list-style: none;
-                margin: 0;
-                padding: 0;
-                li {
-                  margin-right: 0.25rem;
-                }
-                li.selected {
-                  margin-bottom: -1px;
-                }
-                a {
-                  text-decoration: none;
-                  padding-left: 1rem;
-                  padding-right: 1rem;
-                  padding-top: 0.5rem;
-                  padding-bottom: 0.5rem;
-                  font-weight: 600;
-                  display: inline-block;
-                  background-color: white;
-                  border-style: solid;
-                  border-color: #e2e8f0;
-                }
-                li.selected a {
-                  color: #2b6cb0;
-                  border-bottom: none;
-                  border-left-width: 1px;
-                  border-right-width: 1px;
-                  border-top-width: 1px;
-                  border-top-left-radius: 0.25rem;
-                  border-top-right-radius: 0.25rem;
-                }
+          {rendererResults?.type === "EMBEDDED_RENDERER" && (
+            <TemplatesContainer>
+              <ul
+                css={css`
+                  display: flex;
+                  border-bottom: 1px solid #e2e8f0;
+                  list-style: none;
+                  margin: 0;
+                  padding: 0;
+                  li {
+                    margin-right: 0.25rem;
+                  }
+                  li.selected {
+                    margin-bottom: -1px;
+                  }
+                  a {
+                    text-decoration: none;
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                    padding-top: 0.5rem;
+                    padding-bottom: 0.5rem;
+                    font-weight: 600;
+                    display: inline-block;
+                    background-color: white;
+                    border-style: solid;
+                    border-color: #e2e8f0;
+                  }
+                  li.selected a {
+                    color: #2b6cb0;
+                    border-bottom: none;
+                    border-left-width: 1px;
+                    border-right-width: 1px;
+                    border-top-width: 1px;
+                    border-top-left-radius: 0.25rem;
+                    border-top-right-radius: 0.25rem;
+                  }
 
-                li a {
-                  color: #4299e1;
-                  border-width: 0px;
-                }
-              `}
-            >
-              {templates.map((template) => (
-                <li
-                  key={template.id}
-                  className={`tab ${selectedTemplate === template.id ? "selected" : ""}`}
-                  onClick={() => setSelectedTemplate(template.id)}
-                >
-                  <a href="#">{template.label}</a>
-                </li>
-              ))}
-            </ul>
-          </TemplatesContainer>
+                  li a {
+                    color: #4299e1;
+                    border-width: 0px;
+                  }
+                `}
+              >
+                {rendererResults.templates.map((template) => (
+                  <li
+                    key={template.id}
+                    className={`tab ${selectedTemplate === template.id ? "selected" : ""}`}
+                    onClick={() => {
+                      setSelectedTemplate(template.id);
+                      rendererResults.selectTemplate({
+                        id: template.id,
+                      });
+                    }}
+                  >
+                    <a href="#">{template.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </TemplatesContainer>
+          )}
           <div
             css={css`
               border: 1px solid #e2e8f0;
@@ -224,30 +172,12 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
               margin-right: 0.5rem;
             `}
           >
-            {isSvg ? (
-              <__unsafe__not__for__production__v2__SvgRenderer
-                document={document.document}
-                ref={svgRef}
-                onResult={(r) => {
-                  console.log(r);
-                }}
-                loadingComponent={<div>Loading...</div>}
-              />
-            ) : (
-              <FrameConnector
-                source={document.frameSource}
-                dispatch={fromFrame}
-                onConnected={fn}
-                onConnectionFailure={(setDocumentToRender) => setDocumentToRender(document.document)}
-                css={css`
-                  display: block;
-                  margin: auto;
-                  max-width: 1120px;
-                  width: 100%;
-                  height: ${height}px;
-                `}
-              />
-            )}
+            <TheRenderer
+              document={document.document}
+              onConnected={onConnected}
+              onError={onError}
+              loadingComponent={<>loading...</>}
+            />
           </div>
         </div>
       </div>

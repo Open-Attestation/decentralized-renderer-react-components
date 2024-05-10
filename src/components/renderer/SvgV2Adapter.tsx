@@ -4,7 +4,7 @@ import type { v2 } from "@govtechsg/open-attestation";
 
 type V2OpenAttestationDocumentWithSvgBase = v2.OpenAttestationDocument &
   Pick<SvgRendererProps["document"], "renderMethod">;
-type V2OpenAttestationDocumentWithSvg = V2OpenAttestationDocumentWithSvgBase & { [k: string]: unknown };
+export type V2OpenAttestationDocumentWithSvg = V2OpenAttestationDocumentWithSvgBase & { [k: string]: unknown };
 
 const mapV2toV4 = (document: V2OpenAttestationDocumentWithSvg): v4OpenAttestationDocument => {
   const clonedDocument = { ...document };
@@ -43,7 +43,8 @@ const __unsafe__not__for__production__v2__SvgRenderer = React.forwardRef<
   HTMLImageElement,
   __unsafe__not__for__production__v2__SvgRendererProps
 >(({ document, ...rest }, ref) => {
-  const remappedDocument = mapV2toV4(document);
+  // prevent re-rendering when documenet does not change
+  const remappedDocument = React.useMemo(() => mapV2toV4(document), [document]);
   return <SvgRenderer {...rest} document={remappedDocument} ref={ref} />;
 });
 

@@ -8,7 +8,7 @@ import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
 interface DefaultTemplateProps {
   title: string;
   description: EmotionJSX.Element;
-  document?: TemplateProps["document"];
+  document?: unknown;
 }
 
 interface ConnectionFailureProps {

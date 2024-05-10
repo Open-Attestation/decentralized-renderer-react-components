@@ -8,7 +8,7 @@ export const rawOpencerts: OpencertsDocuments = {
   $template: {
     name: "GOVTECH_DEMO",
     type: v2.TemplateType.EmbeddedRenderer,
-    url: "https://demo-cnm.openattestation.com",
+    url: "http://localhost:9000",
   },
   admissionDate: "2017-08-01T00:00:00+08:00",
   graduationDate: "2022-08-01T00:00:00+08:00",
