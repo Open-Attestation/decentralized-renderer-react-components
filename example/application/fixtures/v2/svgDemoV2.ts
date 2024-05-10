@@ -81,6 +81,7 @@ export const svgHostedDemoV2 = {
         "https://raw.githubusercontent.com/Open-Attestation/decentralized-renderer-react-components/master/example/application/fixtures/images/demo-cert.svg",
       type: "SvgRenderingTemplate2023",
       name: "SVG Demo",
+      digestMultibase: "zBdoZx96T79aPtzLtEBQpNgvRJc1KDaeEL1i7qn8tPnCG",
     },
   ],
   qualification: "SVG rendering",
