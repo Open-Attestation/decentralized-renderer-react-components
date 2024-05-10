@@ -1,8 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from "react";
-import { Sha256 } from "@aws-crypto/sha256-browser";
-import bs58 from "bs58";
 import { ConnectionFailureTemplate, DefaultTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
 import type { v2 } from "@govtechsg/open-attestation";
+import { v4 } from "@govtechsg/open-attestation";
 import handlebars from "handlebars";
 
 interface RenderMethod {
@@ -82,8 +81,7 @@ const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   if (!response.ok) {
     throw new Error("Failed to fetch remote SVG");
   }
-  const blob = await response.blob();
-  const res = await blob.arrayBuffer();
+  const res = await response.arrayBuffer();
   return res;
 };
 
@@ -153,10 +151,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
             if (!digestMultibaseInDoc) {
               handleValidSvgTemplate(rawSvgTemplate);
             } else {
-              const hash = new Sha256();
-              hash.update(svgUint8Array);
-              hash.digest().then((shaDigest) => {
-                const recomputedDigestMultibase = "z" + bs58.encode(shaDigest); // manually prefix with 'z' as per https://w3c-ccg.github.io/multibase/#mh-registry
+              v4.computeDigestMultibase(svgUint8Array).then((recomputedDigestMultibase: string) => {
                 if (recomputedDigestMultibase === digestMultibaseInDoc) {
                   handleValidSvgTemplate(rawSvgTemplate);
                 } else {
