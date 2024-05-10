@@ -81,7 +81,8 @@ const fetchSvg = async (svgInDoc: string, abortController: AbortController) => {
   if (!response.ok) {
     throw new Error("Failed to fetch remote SVG");
   }
-  const res = await response.arrayBuffer();
+  const blob = await response.blob();
+  const res = await blob.arrayBuffer();
   return res;
 };
 
