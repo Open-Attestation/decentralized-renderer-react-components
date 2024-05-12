@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { TheRenderer, ConnectedResults } from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -171,6 +171,7 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
                 if (results.type === "EMBEDDED_RENDERER") setSelectedTemplate(results.templates?.[0]?.id ?? "");
               }}
               onError={console.error}
+              onObfuscation={console.log}
               loadingComponent={<>loading...</>}
             />
           </div>
