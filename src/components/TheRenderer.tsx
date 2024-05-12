@@ -215,7 +215,18 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
   const dispatchToFrameRef = useRef<HostActionsHandler>();
 
   const handleFrameConnected = useCallback((dispatchToFrame: HostActionsHandler) => {
-    dispatchToFrameRef.current = dispatchToFrame;
+    dispatchToFrameRef.current = (...params) => {
+      try {
+        dispatchToFrame(...params);
+      } catch (error) {
+        if (error instanceof Error && error.message.includes("destroyed connection")) {
+          // the previous dispatch should not work any more, ignore
+          return;
+        }
+
+        throw error;
+      }
+    };
     // this will trigger a rerender
     setFrameLoading(false);
   }, []);
