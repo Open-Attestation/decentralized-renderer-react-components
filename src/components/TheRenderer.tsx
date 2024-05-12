@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { isActionOf } from "typesafe-actions";
 
-import { HostActionsHandler } from "./frame/host.actions";
+import { HostActionsHandler, renderDocument, selectTemplate, print as printAction } from "./frame/host.actions";
 import { FrameActions, obfuscateField, timeout, updateHeight, updateTemplates } from "./frame/frame.actions";
 import { DisplayResult, SvgRenderer } from "./renderer/SvgRenderer";
 import {
@@ -9,13 +9,14 @@ import {
   __unsafe__not__for__production__v2__SvgRenderer,
 } from "./renderer/SvgV2Adapter";
 import { FrameConnector } from "./frame/FrameConnector";
-import { getData, utils, v2, v4 } from "@govtechsg/open-attestation";
+import { getData, obfuscate, utils, v2, v4 } from "@govtechsg/open-attestation";
 import { DefaultTemplate } from "../DefaultTemplate";
 
 type EmbeddedRendererConnectedResults = {
   type: "EMBEDDED_RENDERER";
   templates: { id: string; label: string }[];
   selectTemplate: (props: { id: string }) => void;
+  selectedTemplateId: string;
   print: () => void;
 };
 type SvgRendererConnectedResults = {
@@ -43,12 +44,13 @@ type RendererError =
 type VersionedDocument =
   | {
       version: "2.0";
-      rawDocument?: v2.WrappedDocument;
+      wrappedDocument?: v2.WrappedDocument;
       document: v2.OpenAttestationDocument;
     }
   | {
       version: "4.0";
-      document: v4.WrappedDocument;
+      document: v4.Document;
+      wrappedDocument?: v4.WrappedDocument;
     };
 function getVersionedDocument(
   document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document
@@ -56,7 +58,7 @@ function getVersionedDocument(
   if (utils.isWrappedV2Document(document)) {
     return {
       version: "2.0",
-      rawDocument: document,
+      wrappedDocument: document,
       document: getData(document),
     };
   } else if (utils.isRawV2Document(document)) {
@@ -64,10 +66,16 @@ function getVersionedDocument(
       version: "2.0",
       document,
     };
+  } else if (v4.isWrappedDocument(document)) {
+    return {
+      version: "4.0",
+      document,
+      wrappedDocument: document,
+    };
   } else if (v4.isDocument(document)) {
     return {
       version: "4.0",
-      document: document as v4.WrappedDocument,
+      document,
     };
   }
 
@@ -210,20 +218,23 @@ const TheSvgRenderer: React.FunctionComponent<TheSvgRendererProps> = ({
   );
 };
 
-const INIT_FRAME_HEIGHT = 250;
+const INIT_FRAME_HEIGHT = 0;
 type TheEmbeddedRendererProps = TheSvgRendererProps & { frameSource: string };
 const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = ({
   versionedDocument,
   frameSource,
   onError,
   onConnected,
-  onObfuscateField,
+  onObfuscation,
   loadingComponent,
+  iframeSandbox,
   ...rest
 }) => {
   const [iframeHeight, setIframeHeight] = useState(INIT_FRAME_HEIGHT);
   const [isFrameLoading, setFrameLoading] = useState(true);
   const dispatchToFrameRef = useRef<HostActionsHandler>();
+
+  const obfuscatedDocumentRef = useRef<VersionedDocument & { isObfuscated?: boolean }>(versionedDocument);
 
   const onConnectedRef = useRef(onConnected);
   onConnectedRef.current = onConnected;
@@ -231,8 +242,8 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
 
-  const onObfuscateFieldRef = useRef(onObfuscateField);
-  onObfuscateFieldRef.current = onObfuscateField;
+  const onObfuscationRef = useRef(onObfuscation);
+  onObfuscationRef.current = onObfuscation;
 
   const handleFrameConnected = useCallback((dispatchToFrame: HostActionsHandler) => {
     dispatchToFrameRef.current = (...params) => {
@@ -254,13 +265,13 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
   // runs whenever frame connected + new document
   useEffect(() => {
     if (!isFrameLoading && dispatchToFrameRef.current) {
-      dispatchToFrameRef.current({
-        type: "RENDER_DOCUMENT",
-        payload: {
+      obfuscatedDocumentRef.current = versionedDocument;
+      dispatchToFrameRef.current(
+        renderDocument({
           document: versionedDocument.document,
-          rawDocument: versionedDocument.version === "2.0" ? versionedDocument.rawDocument : versionedDocument.document,
-        },
-      });
+          rawDocument: versionedDocument.wrappedDocument,
+        })
+      );
     }
   }, [versionedDocument, isFrameLoading]);
 
@@ -269,32 +280,58 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
       setIframeHeight(action.payload);
     }
     if (isActionOf(obfuscateField, action)) {
-      onObfuscateFieldRef.current?.(action.payload);
+      let isObfuscated = false;
+      if (obfuscatedDocumentRef.current) {
+        if (obfuscatedDocumentRef.current.version === "2.0") {
+          if (obfuscatedDocumentRef.current.wrappedDocument) {
+            const obfuscated = obfuscate(obfuscatedDocumentRef.current.wrappedDocument, action.payload);
+            obfuscatedDocumentRef.current.document = getData(obfuscated);
+            obfuscatedDocumentRef.current.wrappedDocument = obfuscated;
+            isObfuscated = true;
+          }
+        } else if (obfuscatedDocumentRef.current.wrappedDocument) {
+          const obfuscated = obfuscate(obfuscatedDocumentRef.current.wrappedDocument, action.payload);
+          obfuscatedDocumentRef.current.document = obfuscated;
+          obfuscatedDocumentRef.current.wrappedDocument = obfuscated;
+          isObfuscated = true;
+        }
+        if (isObfuscated) {
+          obfuscatedDocumentRef.current.isObfuscated = true;
+          dispatchToFrameRef.current?.(
+            renderDocument({
+              document: obfuscatedDocumentRef.current.document,
+              rawDocument: obfuscatedDocumentRef.current.wrappedDocument,
+            })
+          );
+          if (obfuscatedDocumentRef.current.wrappedDocument)
+            onObfuscationRef.current?.({
+              updatedDocument: obfuscatedDocumentRef.current.wrappedDocument,
+              field: action.payload,
+            });
+        }
+      }
     }
     if (isActionOf(updateTemplates, action)) {
-      const templates = action.payload;
-      if (!dispatchToFrameRef.current) throw new Error("This should not happen");
-      dispatchToFrameRef.current({
-        type: "SELECT_TEMPLATE",
-        payload: templates[0].id,
-      });
+      // call on connected only if this is action is not a result from obfuscation
+      if (!obfuscatedDocumentRef.current.isObfuscated) {
+        const templates = action.payload;
+        if (!dispatchToFrameRef.current) throw new Error("This should not happen");
+        const selectedTemplateId = templates[0].id;
+        dispatchToFrameRef.current(selectTemplate(selectedTemplateId));
 
-      // call on connected here
-      onConnectedRef.current({
-        type: "EMBEDDED_RENDERER",
-        templates,
-        selectTemplate(props) {
-          dispatchToFrameRef.current?.({
-            type: "SELECT_TEMPLATE",
-            payload: props.id,
-          });
-        },
-        print() {
-          dispatchToFrameRef.current?.({
-            type: "PRINT",
-          });
-        },
-      });
+        // call on connected here
+        onConnectedRef.current({
+          type: "EMBEDDED_RENDERER",
+          templates,
+          selectTemplate(props) {
+            dispatchToFrameRef.current?.(selectTemplate(props.id));
+          },
+          selectedTemplateId,
+          print() {
+            dispatchToFrameRef.current?.(printAction());
+          },
+        });
+      }
     }
 
     if (isActionOf(timeout, action)) {
@@ -312,7 +349,7 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
       <div {...rest}>
         <FrameConnector
           style={{
-            height: iframeHeight,
+            height: iframeHeight + "px",
             width: "100%",
             display: isFrameLoading ? "none" : "block",
           }}
@@ -322,6 +359,7 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
           onConnectionFailure={(setDocumentToRender) => {
             setDocumentToRender(document);
           }}
+          sandbox={iframeSandbox}
         />
       </div>
     </>
@@ -331,11 +369,12 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
 type TheRendererProps = {
   className?: string;
   style?: React.CSSProperties;
-  document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document;
+  document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document | v4.WrappedDocument;
   loadingComponent?: React.ReactNode;
   onConnected: (results: ConnectedResults) => void;
   onError?: (error: RendererError) => void;
-  onObfuscateField?: (field: string) => void;
+  onObfuscation?: (props: { updatedDocument: v2.WrappedDocument | v4.WrappedDocument; field: string }) => void;
+  iframeSandbox?: string;
 };
 export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ document, ...props }) => {
   const onErrorRef = useRef(props.onError);
