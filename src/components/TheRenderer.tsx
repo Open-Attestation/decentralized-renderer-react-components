@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isActionOf } from "typesafe-actions";
 
 import { HostActionsHandler } from "./frame/host.actions";
@@ -149,39 +149,43 @@ const TheSvgRenderer: React.FunctionComponent<TheSvgRendererProps> = ({
   ...rest
 }) => {
   const svgRef = useRef<HTMLImageElement>(null);
-  const onSvgRendererResult = useCallback(
-    (displayResult: DisplayResult) => {
-      if (displayResult.status === "OK") {
-        onConnected({
-          type: "SVG_RENDERER",
-          print() {
-            if (!svgRef.current) return;
-            printImageElement(svgRef.current);
-          },
-        });
-      } else {
-        let rendererError: RendererError = { type: "UNKNOWN_ERROR" };
-        switch (displayResult.status) {
-          case "DIGEST_ERROR": {
-            rendererError = { type: "SVG_INVALID_MULTIBASE_DIGEST_ERROR" };
-            break;
-          }
-          case "FETCH_SVG_ERROR": {
-            rendererError = { type: "SVG_FETCH_ERROR", error: displayResult.error };
-            break;
-          }
-          case "SVG_LOAD_ERROR": {
-            rendererError = { type: "SVG_LOAD_ERROR" };
-            break;
-          }
-          default:
-            rendererError = { type: "UNKNOWN_ERROR" };
+
+  const onConnectedRef = useRef(onConnected);
+  onConnectedRef.current = onConnected;
+
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+
+  const onSvgRendererResult = useCallback((displayResult: DisplayResult) => {
+    if (displayResult.status === "OK") {
+      onConnectedRef.current({
+        type: "SVG_RENDERER",
+        print() {
+          if (!svgRef.current) return;
+          printImageElement(svgRef.current);
+        },
+      });
+    } else {
+      let rendererError: RendererError = { type: "UNKNOWN_ERROR" };
+      switch (displayResult.status) {
+        case "DIGEST_ERROR": {
+          rendererError = { type: "SVG_INVALID_MULTIBASE_DIGEST_ERROR" };
+          break;
         }
-        onError(rendererError);
+        case "FETCH_SVG_ERROR": {
+          rendererError = { type: "SVG_FETCH_ERROR", error: displayResult.error };
+          break;
+        }
+        case "SVG_LOAD_ERROR": {
+          rendererError = { type: "SVG_LOAD_ERROR" };
+          break;
+        }
+        default:
+          rendererError = { type: "UNKNOWN_ERROR" };
       }
-    },
-    [onConnected, onError]
-  );
+      onErrorRef.current?.(rendererError);
+    }
+  }, []);
 
   if (versionedDocument.version === "2.0") {
     return (
@@ -221,6 +225,15 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
   const [isFrameLoading, setFrameLoading] = useState(true);
   const dispatchToFrameRef = useRef<HostActionsHandler>();
 
+  const onConnectedRef = useRef(onConnected);
+  onConnectedRef.current = onConnected;
+
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+
+  const onObfuscateFieldRef = useRef(onObfuscateField);
+  onObfuscateFieldRef.current = onObfuscateField;
+
   const handleFrameConnected = useCallback((dispatchToFrame: HostActionsHandler) => {
     dispatchToFrameRef.current = (...params) => {
       try {
@@ -251,50 +264,47 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
     }
   }, [versionedDocument, isFrameLoading]);
 
-  const handleFrameActions = useCallback(
-    (action: FrameActions): void => {
-      if (isActionOf(updateHeight, action)) {
-        setIframeHeight(action.payload);
-      }
-      if (isActionOf(obfuscateField, action)) {
-        onObfuscateField?.(action.payload);
-      }
-      if (isActionOf(updateTemplates, action)) {
-        const templates = action.payload;
-        if (!dispatchToFrameRef.current) throw new Error("This should not happen");
-        dispatchToFrameRef.current({
-          type: "SELECT_TEMPLATE",
-          payload: templates[0].id,
-        });
+  const handleFrameActions = useCallback((action: FrameActions): void => {
+    if (isActionOf(updateHeight, action)) {
+      setIframeHeight(action.payload);
+    }
+    if (isActionOf(obfuscateField, action)) {
+      onObfuscateFieldRef.current?.(action.payload);
+    }
+    if (isActionOf(updateTemplates, action)) {
+      const templates = action.payload;
+      if (!dispatchToFrameRef.current) throw new Error("This should not happen");
+      dispatchToFrameRef.current({
+        type: "SELECT_TEMPLATE",
+        payload: templates[0].id,
+      });
 
-        // call on connected here
-        onConnected({
-          type: "EMBEDDED_RENDERER",
-          templates,
-          selectTemplate(props) {
-            dispatchToFrameRef.current?.({
-              type: "SELECT_TEMPLATE",
-              payload: props.id,
-            });
-          },
-          print() {
-            dispatchToFrameRef.current?.({
-              type: "PRINT",
-            });
-          },
-        });
-      }
+      // call on connected here
+      onConnectedRef.current({
+        type: "EMBEDDED_RENDERER",
+        templates,
+        selectTemplate(props) {
+          dispatchToFrameRef.current?.({
+            type: "SELECT_TEMPLATE",
+            payload: props.id,
+          });
+        },
+        print() {
+          dispatchToFrameRef.current?.({
+            type: "PRINT",
+          });
+        },
+      });
+    }
 
-      if (isActionOf(timeout, action)) {
-        setFrameLoading(false);
+    if (isActionOf(timeout, action)) {
+      setFrameLoading(false);
 
-        onError({
-          type: "CONNECTION_TIMEOUT",
-        });
-      }
-    },
-    [onConnected, onError, onObfuscateField]
-  );
+      onErrorRef.current?.({
+        type: "CONNECTION_TIMEOUT",
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -324,14 +334,17 @@ type TheRendererProps = {
   document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document;
   loadingComponent?: React.ReactNode;
   onConnected: (results: ConnectedResults) => void;
-  onError: (error: RendererError) => void;
+  onError?: (error: RendererError) => void;
   onObfuscateField?: (field: string) => void;
 };
 export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ document, ...props }) => {
+  const onErrorRef = useRef(props.onError);
+  onErrorRef.current = props.onError;
+
   const parsed = React.useMemo(() => {
     const versionedDocument = getVersionedDocument(document);
     if (versionedDocument.version === null) {
-      props?.onError({
+      onErrorRef.current?.({
         type: "UNSUPPORTED_DOCUMENT_VERSION",
       });
       return null;
@@ -339,7 +352,7 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
 
     const renderMethod = getRenderMethod(versionedDocument);
     if (renderMethod.type === "NONE") {
-      props?.onError({
+      onErrorRef.current?.({
         type: "NO_RENDER_METHOD_FOUND",
       });
     }
@@ -348,7 +361,7 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
       renderMethod,
       versionedDocument,
     };
-  }, [document, props]);
+  }, [document]);
 
   if (!parsed) {
     return (
@@ -367,7 +380,6 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
 
   const { renderMethod, versionedDocument } = parsed;
 
-  // TODO: can render default renderer here
   if (renderMethod.type === "NONE")
     return (
       <div className={props.className} style={props.style}>

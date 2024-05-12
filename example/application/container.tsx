@@ -61,15 +61,6 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [rendererResults, setRendererResults] = useState<ConnectedResults>();
 
-  const onConnected = useCallback((results) => {
-    setRendererResults(results);
-    setSelectedTemplate(results.templates?.[0]?.id ?? "");
-  }, []);
-
-  const onError = useCallback((error) => {
-    console.error(error);
-  }, []);
-
   return (
     <div
       css={css`
@@ -174,8 +165,12 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
           >
             <TheRenderer
               document={document.document}
-              onConnected={onConnected}
-              onError={onError}
+              onConnected={(results) => {
+                console.log(results);
+                setRendererResults(results);
+                if (results.type === "EMBEDDED_RENDERER") setSelectedTemplate(results.templates?.[0]?.id ?? "");
+              }}
+              onError={console.error}
               loadingComponent={<>loading...</>}
             />
           </div>
