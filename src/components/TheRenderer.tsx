@@ -45,12 +45,17 @@ type VersionedDocument =
     };
 function getVersionedDocument(
   document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document
-): VersionedDocument {
+): VersionedDocument | { version: null } {
   if (utils.isWrappedV2Document(document)) {
     return {
       version: "2.0",
       rawDocument: document,
       document: getData(document),
+    };
+  } else if (utils.isRawV2Document(document)) {
+    return {
+      version: "2.0",
+      document,
     };
   } else if (v4.isDocument(document)) {
     return {
@@ -60,8 +65,7 @@ function getVersionedDocument(
   }
 
   return {
-    version: "2.0",
-    document,
+    version: null,
   };
 }
 
@@ -307,6 +311,22 @@ type TheRendererProps = {
 };
 export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ document, ...rest }) => {
   const versionedDocument = React.useMemo(() => getVersionedDocument(document), [document]);
+
+  if (versionedDocument.version === null) {
+    return (
+      <DefaultTemplate
+        title="Version of document cannot be determined"
+        description={
+          <>
+            The version of this document cannot be determined and hence cannot be rendered, this current display is
+            intended.
+          </>
+        }
+        document={document}
+      />
+    );
+  }
+
   const renderMethod = getRenderMethod(versionedDocument);
 
   // TODO: can render default renderer here
