@@ -28,6 +28,13 @@ type RendererError =
   | {
       type: "CONNECTION_TIMEOUT";
     }
+  | {
+      type: "NO_RENDER_METHOD_FOUND";
+    }
+  | { type: "UNSUPPORTED_DOCUMENT_VERSION" }
+  | {
+      type: "CONNECTION_TIMEOUT";
+    }
   | { type: "SVG_LOAD_ERROR" }
   | { type: "SVG_FETCH_ERROR"; error: Error }
   | { type: "SVG_INVALID_MULTIBASE_DIGEST_ERROR" }
@@ -320,16 +327,36 @@ type TheRendererProps = {
   onError: (error: RendererError) => void;
   onObfuscateField?: (field: string) => void;
 };
-export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ document, ...rest }) => {
-  const versionedDocument = React.useMemo(() => getVersionedDocument(document), [document]);
+export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ document, ...props }) => {
+  const parsed = React.useMemo(() => {
+    const versionedDocument = getVersionedDocument(document);
+    if (versionedDocument.version === null) {
+      props?.onError({
+        type: "UNSUPPORTED_DOCUMENT_VERSION",
+      });
+      return null;
+    }
 
-  if (versionedDocument.version === null) {
+    const renderMethod = getRenderMethod(versionedDocument);
+    if (renderMethod.type === "NONE") {
+      props?.onError({
+        type: "NO_RENDER_METHOD_FOUND",
+      });
+    }
+
+    return {
+      renderMethod,
+      versionedDocument,
+    };
+  }, [document, props]);
+
+  if (!parsed) {
     return (
       <DefaultTemplate
-        title="Version of document cannot be determined"
+        title="Unsupported document version"
         description={
           <>
-            The version of this document cannot be determined and hence cannot be rendered, this current display is
+            The version of this document is not supported and hence cannot be rendered, this current display is
             intended.
           </>
         }
@@ -338,12 +365,12 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
     );
   }
 
-  const renderMethod = getRenderMethod(versionedDocument);
+  const { renderMethod, versionedDocument } = parsed;
 
   // TODO: can render default renderer here
   if (renderMethod.type === "NONE")
     return (
-      <div className={rest.className} style={rest.style}>
+      <div className={props.className} style={props.style}>
         <DefaultTemplate
           title="No supported render method found"
           description={
@@ -355,7 +382,7 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
     );
 
   if (renderMethod.type === "SVG") {
-    return <TheSvgRenderer versionedDocument={versionedDocument} {...rest} />;
+    return <TheSvgRenderer versionedDocument={versionedDocument} {...props} />;
   }
 
   return (
@@ -364,7 +391,7 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
       key={renderMethod.url + renderMethod.templateName}
       versionedDocument={versionedDocument}
       frameSource={renderMethod.url}
-      {...rest}
+      {...props}
     />
   );
 };
