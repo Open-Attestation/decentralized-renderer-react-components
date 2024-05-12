@@ -101,11 +101,11 @@ function getRenderMethod(versionedDocument: VersionedDocument): RenderMethod {
       ({ type }) => type === "OpenAttestationEmbeddedRenderer"
     );
 
-    if (embeddedRenderMethod) {
+    if (embeddedRenderMethod && embeddedRenderMethod.type === "OpenAttestationEmbeddedRenderer") {
       return {
         type: "EMBEDDED",
         url: embeddedRenderMethod.id,
-        templateName: embeddedRenderMethod.type,
+        templateName: embeddedRenderMethod.templateName,
       };
     }
   }
