@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { TheRenderer, ConnectedResults } from "../../src";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -61,21 +61,30 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [rendererResults, setRendererResults] = useState<ConnectedResults>();
 
+  const documentRef = useRef(document);
+  if (documentRef.current !== document) {
+    documentRef.current = document;
+    setSelectedTemplate("");
+    setRendererResults(undefined);
+  }
+
   return (
     <div
       css={css`
         flex: 1 0 auto;
       `}
     >
-      <ActionsContainer>
-        <button
-          onClick={() => {
-            rendererResults?.print();
-          }}
-        >
-          Print
-        </button>
-      </ActionsContainer>
+      {rendererResults && (
+        <ActionsContainer>
+          <button
+            onClick={() => {
+              rendererResults.print();
+            }}
+          >
+            Print
+          </button>
+        </ActionsContainer>
+      )}
       <div>
         {!document && (
           <div
@@ -168,10 +177,18 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
               onConnected={(results) => {
                 console.log(results);
                 setRendererResults(results);
-                if (results.type === "EMBEDDED_RENDERER") setSelectedTemplate(results.templates?.[0]?.id ?? "");
+                if (results.type === "EMBEDDED_RENDERER") {
+                  setSelectedTemplate(results.selectedTemplateId);
+                }
               }}
-              onError={console.error}
-              onObfuscation={console.log}
+              onError={({ type, ...rest }) => {
+                console.error(type);
+                console.error(rest);
+              }}
+              onObfuscation={({ updatedDocument, field }) => {
+                console.log(updatedDocument);
+                console.log(field);
+              }}
               loadingComponent={<>loading...</>}
             />
           </div>

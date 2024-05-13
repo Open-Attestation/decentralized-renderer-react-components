@@ -308,6 +308,8 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
               updatedDocument: obfuscatedDocumentRef.current.wrappedDocument,
               field: action.payload,
             });
+        } else {
+          console.debug(`Obfuscation of ${action.payload} is not possible without a wrapped document.`);
         }
       }
     }
