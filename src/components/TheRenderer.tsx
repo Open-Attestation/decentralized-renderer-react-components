@@ -18,6 +18,7 @@ type EmbeddedRendererConnectedResults = {
   selectTemplate: (props: { id: string }) => void;
   selectedTemplateId: string;
   print: () => void;
+  download: (filename: string) => void;
 };
 type SvgRendererConnectedResults = {
   type: "SVG_RENDERER";
@@ -332,6 +333,12 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
           print() {
             dispatchToFrameRef.current?.(printAction());
           },
+          download(filename: string) {
+            downloadObject(
+              obfuscatedDocumentRef.current.wrappedDocument ?? obfuscatedDocumentRef.current.document,
+              filename
+            );
+          },
         });
       }
     }
@@ -448,3 +455,13 @@ export const TheRenderer: React.FunctionComponent<TheRendererProps> = ({ documen
     />
   );
 };
+
+function downloadObject(object: unknown, filename: string) {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(object, null, 2));
+  const downloadAnchorNode = document.createElement("a");
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", filename);
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}

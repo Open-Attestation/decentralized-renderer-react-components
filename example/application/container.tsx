@@ -83,6 +83,15 @@ const Viewer: React.FunctionComponent<ViewerProps> = ({ document }): React.React
           >
             Print
           </button>
+          {rendererResults.type === "EMBEDDED_RENDERER" && (
+            <button
+              onClick={() => {
+                rendererResults.download(document.name + ".oa");
+              }}
+            >
+              Download
+            </button>
+          )}
         </ActionsContainer>
       )}
       <div>
