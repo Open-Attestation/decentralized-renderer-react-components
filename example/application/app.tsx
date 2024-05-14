@@ -165,7 +165,7 @@ export const App: React.FunctionComponent = (): React.ReactElement => {
                 name: "Yourself",
               },
             },
-          } as v4.Document,
+          } as v4.OpenAttestationDocument,
           frameSource: "",
         },
         { name: "SVG Embedded Demo (V2)", document: svgEmbeddedDemoV2, frameSource: "" },

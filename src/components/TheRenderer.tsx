@@ -50,11 +50,11 @@ type VersionedDocument =
     }
   | {
       version: "4.0";
-      document: v4.Document;
+      document: v4.OpenAttestationDocument;
       wrappedDocument?: v4.WrappedDocument;
     };
 function getVersionedDocument(
-  document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document
+  document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.OpenAttestationDocument
 ): VersionedDocument | { version: null } {
   if (utils.isWrappedV2Document(document)) {
     return {
@@ -73,7 +73,7 @@ function getVersionedDocument(
       document,
       wrappedDocument: document,
     };
-  } else if (v4.isDocument(document)) {
+  } else if (v4.isOpenAttestationDocument(document)) {
     return {
       version: "4.0",
       document,
@@ -94,9 +94,10 @@ type RenderMethod =
 function getRenderMethod(versionedDocument: VersionedDocument): RenderMethod {
   // we always prioritise svg renderer
   const isSvgRenderer =
-    (versionedDocument.document as Partial<V2OpenAttestationDocumentWithSvg> | v4.Document)?.renderMethod?.find(
-      ({ type }) => type === "SvgRenderingTemplate2023"
-    ) !== undefined;
+    (versionedDocument.document as
+      | Partial<V2OpenAttestationDocumentWithSvg>
+      | v4.OpenAttestationDocument)?.renderMethod?.find(({ type }) => type === "SvgRenderingTemplate2023") !==
+    undefined;
 
   if (isSvgRenderer) {
     return {
@@ -282,10 +283,10 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
     }
     if (isActionOf(obfuscateField, action)) {
       let isObfuscated = false;
-      if (obfuscatedDocumentRef.current) {
+      if (obfuscatedDocumentRef.current.wrappedDocument) {
         if (obfuscatedDocumentRef.current.version === "2.0") {
+          const obfuscated = obfuscate(obfuscatedDocumentRef.current.wrappedDocument, action.payload);
           if (obfuscatedDocumentRef.current.wrappedDocument) {
-            const obfuscated = obfuscate(obfuscatedDocumentRef.current.wrappedDocument, action.payload);
             obfuscatedDocumentRef.current.document = getData(obfuscated);
             obfuscatedDocumentRef.current.wrappedDocument = obfuscated;
             isObfuscated = true;
@@ -378,7 +379,7 @@ const TheEmbeddedRenderer: React.FunctionComponent<TheEmbeddedRendererProps> = (
 type TheRendererProps = {
   className?: string;
   style?: React.CSSProperties;
-  document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.Document | v4.WrappedDocument;
+  document: v2.OpenAttestationDocument | v2.WrappedDocument | v4.OpenAttestationDocument;
   loadingComponent?: React.ReactNode;
   onConnected: (results: ConnectedResults) => void;
   onError?: (error: RendererError) => void;
