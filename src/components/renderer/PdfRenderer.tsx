@@ -2,6 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { repeat } from "../../utils";
 import { Renderer } from "../../types";
+import "react-pdf/dist/Page/TextLayer.css";
 
 // TODO check this https://github.com/wojtekmaj/react-pdf#browserify-and-others
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
