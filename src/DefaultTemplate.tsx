@@ -3,7 +3,7 @@ import { TemplateProps, TemplateWithComponent } from "./types";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { isV2Document, isV3Document, isV4Document } from "./utils";
 import { JsonView } from "./JsonView";
-import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
+import type { v4 } from "@govtechsg/open-attestation";
 
 interface DefaultTemplateProps {
   title: string;
@@ -60,9 +60,9 @@ export function extractTemplateInfo(document: TemplateProps["document"]): Templa
       };
     }
   } else if (isV4Document(document)) {
-    const docAsAny = document as v4OpenAttestationDocument; // TODO: Update to v4
+    const docAsAny = document as v4.OpenAttestationDocument;
     const renderMethod = docAsAny.renderMethod?.find((method) => method.type === "SvgRenderingTemplate2023");
-    if (renderMethod !== undefined) {
+    if (renderMethod?.type === "SvgRenderingTemplate2023") {
       return {
         name: renderMethod.name ?? "",
         type: renderMethod.type,

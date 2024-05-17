@@ -1,6 +1,5 @@
 import { ComponentType } from "react";
 import type { v2, WrappedDocument, OpenAttestationDocument, v3 } from "@govtechsg/open-attestation";
-import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
 
 export type Attachment = v2.Attachment | v3.Attachment;
 export interface Renderer {
@@ -8,7 +7,7 @@ export interface Renderer {
 }
 
 export interface TemplateProps<D extends OpenAttestationDocument = OpenAttestationDocument> {
-  document: D | v4OpenAttestationDocument; // TODO: Remove after OpenAttestation library has been updated with v4 types
+  document: D;
   wrappedDocument?: WrappedDocument<D>;
   handleObfuscation: (field: string) => void;
 }

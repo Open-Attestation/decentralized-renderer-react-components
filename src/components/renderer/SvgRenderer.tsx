@@ -2,34 +2,15 @@ import React, { CSSProperties, useEffect, useState } from "react";
 import { Sha256 } from "@aws-crypto/sha256-browser";
 import bs58 from "bs58";
 import { ConnectionFailureTemplate, DefaultTemplate, NoTemplate, TamperedSvgTemplate } from "../../DefaultTemplate";
-import type { v2 } from "@govtechsg/open-attestation";
+import type { v4 } from "@govtechsg/open-attestation";
 import handlebars from "handlebars";
 
-interface RenderMethod {
+export type SvgRenderMethod = {
+  type: "SvgRenderingTemplate2023";
   id: string;
-  type: string;
-  name?: string;
-  css3MediaQuery?: string;
-  digestMultibase?: string;
-}
-
-// TODO: Replace temporary interface with v4.OpenAttestationDocument
-export interface v4OpenAttestationDocument {
-  credentialSubject: {
-    id?: string;
-    type?: string[] | string;
-  };
-  issuer: {
-    id: string;
-    identityProof: {
-      identifier: string;
-      identityProofType: v2.IdentityProofType;
-    };
-    name: string;
-    type?: string[] | string;
-  };
-  renderMethod?: RenderMethod[];
-}
+  name?: string | undefined;
+  digestMultibase?: string | undefined;
+};
 
 type InvalidSvgTemplateDisplayResult =
   | {
@@ -66,7 +47,7 @@ export type DisplayResult = InvalidSvgTemplateDisplayResult | ValidSvgTemplateDi
 
 export interface SvgRendererProps {
   /** The OpenAttestation v4 document to display */
-  document: v4OpenAttestationDocument; // TODO: Update to OpenAttestationDocument
+  document: v4.OpenAttestationDocument;
   /** Override the img style */
   style?: CSSProperties;
   /** Override the img className */
@@ -105,7 +86,7 @@ const SvgRenderer = React.forwardRef<HTMLImageElement, SvgRendererProps>(
       status: "LOADING",
     });
 
-    const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE);
+    const renderMethod = document.renderMethod?.find((method) => method.type === SVG_RENDERER_TYPE) as SvgRenderMethod;
     const svgInDoc = renderMethod?.id ?? "";
     useEffect(() => {
       setToDisplay({ status: "LOADING" });
