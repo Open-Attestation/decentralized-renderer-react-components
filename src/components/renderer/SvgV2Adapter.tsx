@@ -1,12 +1,13 @@
 import React from "react";
-import { SvgRenderer, SvgRendererProps, v4OpenAttestationDocument } from "./SvgRenderer";
-import type { v2 } from "@govtechsg/open-attestation";
+import { SvgRenderer, SvgRendererProps } from "./SvgRenderer";
+import type { v2, v4 } from "@govtechsg/open-attestation";
 
 type V2OpenAttestationDocumentWithSvgBase = v2.OpenAttestationDocument &
   Pick<SvgRendererProps["document"], "renderMethod">;
-type V2OpenAttestationDocumentWithSvg = V2OpenAttestationDocumentWithSvgBase & { [k: string]: unknown };
+export type V2OpenAttestationDocumentWithSvg = V2OpenAttestationDocumentWithSvgBase & { [k: string]: unknown };
+type V2OpenAttestationDocumentWithSvgNoAttachments = Omit<V2OpenAttestationDocumentWithSvg, "attachments">;
 
-const mapV2toV4 = (document: V2OpenAttestationDocumentWithSvg): v4OpenAttestationDocument => {
+const mapV2toV4 = (document: V2OpenAttestationDocumentWithSvg): v4.OpenAttestationDocument => {
   const clonedDocument = { ...document };
   const propsToOmit: (keyof V2OpenAttestationDocumentWithSvgBase)[] = [
     "$template",
@@ -14,23 +15,29 @@ const mapV2toV4 = (document: V2OpenAttestationDocumentWithSvg): v4OpenAttestatio
     "issuers",
     "network",
     "renderMethod",
+    "attachments",
   ];
   propsToOmit.forEach((v2Property) => delete clonedDocument[v2Property]);
 
   return {
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
+    ],
+    type: ["VerifiableCredential", "OpenAttestationCredential"],
     issuer: {
       id: document.issuers[0].id || "issuers[0].id not found",
       identityProof: {
         identifier: document.issuers[0].identityProof?.location || "issuers[0].identityProof.location not found",
         identityProofType:
           document.issuers[0].identityProof?.type ||
-          ("DNS-DID" as v4OpenAttestationDocument["issuer"]["identityProof"]["identityProofType"]),
+          ("DNS-DID" as v4.OpenAttestationDocument["issuer"]["identityProof"]["identityProofType"]),
       },
       name: document.issuers[0].name,
       type: "OpenAttestationIssuer",
     },
     renderMethod: document.renderMethod,
-    credentialSubject: clonedDocument,
+    credentialSubject: clonedDocument as V2OpenAttestationDocumentWithSvgNoAttachments, // Need to cast due to mismatch in "attachments" typing
   };
 };
 
