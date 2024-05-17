@@ -1,5 +1,5 @@
-import { v2 } from "@govtechsg/open-attestation";
-import type { v4 } from "@govtechsg/open-attestation";
+import { v2, v4 } from "@govtechsg/open-attestation";
+import { V2OpenAttestationDocumentWithSvg } from "../SvgV2Adapter";
 
 export const v4WithSvgUrlAndDigestMultibase: v4.OpenAttestationDocument = {
   "@context": [
@@ -171,7 +171,7 @@ export const v4MalformedEmbeddedSvg: v4.OpenAttestationDocument = {
   },
 };
 
-export const v2WithSvgUrlAndDigestMultibase = {
+export const v2WithSvgUrlAndDigestMultibase: V2OpenAttestationDocumentWithSvg = {
   issuers: [
     {
       id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
