@@ -25,4 +25,4 @@ const config = {
   transformIgnorePatterns: ["node_modules/(?!(uuid|@tradetrust-tt/tradetrust)/)"],
 };
 
-export default config;
+module.exports = config;

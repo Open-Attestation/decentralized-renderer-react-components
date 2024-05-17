@@ -1,5 +1,5 @@
 {
-  "extends": "./babel.config.cjs",
+  "extends": "./babel.config.js",
   "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/*.mdx"],
   "presets": [
     [
