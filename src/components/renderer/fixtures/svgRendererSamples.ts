@@ -1,20 +1,18 @@
 import { v2 } from "@govtechsg/open-attestation";
+import type { v4 } from "@govtechsg/open-attestation";
 
-// TODO: Update types to v4.OpenAttestationDocument
-export const v4WithSvgUrlAndDigestMultibase = {
+export const v4WithSvgUrlAndDigestMultibase: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   renderMethod: [
     {
       id: "http://mockbucket.com/static/svg_test.svg",
@@ -31,20 +29,18 @@ export const v4WithSvgUrlAndDigestMultibase = {
   },
 };
 
-export const v4WithEmbeddedSvgAndDigestMultibase = {
+export const v4WithEmbeddedSvgAndDigestMultibase: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   renderMethod: [
     {
       id: `<?xml version="1.0" encoding="UTF-8"?>
@@ -72,20 +68,18 @@ export const v4WithEmbeddedSvgAndDigestMultibase = {
   },
 };
 
-export const v4WithTamperedEmbeddedSvgAndDigestMultibase = {
+export const v4WithTamperedEmbeddedSvgAndDigestMultibase: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   renderMethod: [
     {
       id: `<?xml version="1.0" encoding="UTF-8"?>
@@ -113,20 +107,18 @@ export const v4WithTamperedEmbeddedSvgAndDigestMultibase = {
   },
 };
 
-export const v4WithOnlyTamperedEmbeddedSvg = {
+export const v4WithOnlyTamperedEmbeddedSvg: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   renderMethod: [
     {
       id: `<?xml version="1.0" encoding="UTF-8"?>
@@ -153,20 +145,18 @@ export const v4WithOnlyTamperedEmbeddedSvg = {
   },
 };
 
-export const v4MalformedEmbeddedSvg = {
+export const v4MalformedEmbeddedSvg: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   renderMethod: [
     {
       id: "",
@@ -214,20 +204,18 @@ export const v2WithSvgUrlAndDigestMultibase = {
   },
 };
 
-export const v4WithNoRenderMethod = {
+export const v4WithNoRenderMethod: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   credentialSubject: {
     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     type: ["SvgExample"],
@@ -236,27 +224,25 @@ export const v4WithNoRenderMethod = {
   },
 };
 
-export const v4NotUsingSvgRenderMethod = {
+export const v4NotUsingSvgRenderMethod: v4.OpenAttestationDocument = {
   "@context": [
-    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/ns/credentials/v2",
     "https://schemata.openattestation.com/com/openattestation/4.0/alpha-context.json",
   ],
+  type: ["VerifiableCredential", "OpenAttestationCredential"],
   issuer: {
     id: "did:ethr:0xB26B4941941C51a4885E5B7D3A1B861E54405f90",
     type: "OpenAttestationIssuer",
     name: "Government Technology Agency of Singapore (GovTech)",
-    // identityProof: { identityProofType: v4.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
-    identityProof: { identityProofType: v2.IdentityProofType.DNSDid, identifier: "example.openattestation.com" },
+    identityProof: { identityProofType: "DNS-DID", identifier: "example.openattestation.com" },
   },
   renderMethod: [
     {
       id: "http://mockbucket.com/static/svg_test.mp3",
-      type: "SomeOtherRendererType",
-      name: "Certificate",
+      type: "OpenAttestationEmbeddedRenderer",
+      templateName: "Certificate",
     },
   ],
-  // credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: v4.CredentialStatusType.None },
-  credentialStatus: { type: "OpenAttestationCredentialStatus", credentialStatusType: "NONE" },
   credentialSubject: {
     id: "urn:uuid:a013fb9d-bb03-4056-b696-05575eceaf42",
     type: ["SvgExample"],
