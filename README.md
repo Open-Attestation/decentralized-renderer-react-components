@@ -319,10 +319,53 @@ Ensure that the data fields referenced by the SVG are within the raw/unwrapped O
 
 ### Step 2 - Create Sample Raw/Unwrapped OpenAttestation doc
 
-Sample A - v2 doc with hosted SVG:
+Sample A - v4 doc with hosted SVG:
+
+```
+{
+  <!-- Issuers field -->
+  "renderMethod": [{
+    "id": "http://example.com/static/svg_test.svg",  // Put SVG data here to embed it directly
+    "type": "SvgRenderingTemplate2023",
+    "name": "SVG Demo",
+  }],
+  "credentialSubject": {
+    "qualification": "SVG rendering",
+    "recipient": {
+      "name": "Yourself"
+    }
+  }
+}
+```
+
+Sample B - v4 doc with embedded SVG:
+
+```
+{
+  <!-- Issuers field -->
+  "renderMethod": [{
+    "id": `<svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="330" height="100" fill="#d4d4d4" stroke="orange" stroke-width="8" rx="10" ry="10" />
+<text x="170" y="45" font-family="Arial" font-size="15" fill="black" text-anchor="middle">Congratulations for achieving {{qualification}}!</text>
+<text x="170" y="70" font-family="Arial" font-size="12" fill="black" text-anchor="middle">Awarded to: {{recipient.name}}</text>
+</svg>`,
+    "type": "SvgRenderingTemplate2023",
+    "name": "SVG Demo",
+  }],
+  "credentialSubject": {
+    "qualification": "SVG rendering",
+    "recipient": {
+      "name": "Yourself"
+    }
+  }
+}
+```
 
 > [!NOTE]  
+> For non-production trials, an adapter component is provided to allow OA v2 documents to be rendered using SVGs. WARNING: This is an experimental option meant for users who want to try SVG rendering before OA v4. This component will not be actively maintained.
 > Using SVG rendering with OA v2 requires the `renderMethod` property instead of `$template`.
+
+Sample C - v2 doc with hosted SVG:
 
 ```
 {
@@ -339,7 +382,7 @@ Sample A - v2 doc with hosted SVG:
 }
 ```
 
-Sample B - v2 doc with embedded SVG:
+Sample D - v2 doc with embedded SVG:
 
 ```
 {
@@ -362,7 +405,25 @@ Sample B - v2 doc with embedded SVG:
 
 ### Step 3 - Basic Usage of the SvgRenderer
 
-For non-production trials, an adapter component is provided to allow OA v2 documents to be rendered using SVGs. WARNING: This is an experimental option meant for users who want to try SVG rendering before OA v4. This component will not be actively maintained.
+Using the v4 SVG renderer:
+
+```
+import React, { useRef } from "react";
+import { SvgRenderer } from "@govtechsg/decentralized-renderer-react-components";
+
+// Your renderer component
+const export DocumentRenderer: React.FC<RendererProps> = ({ rawDocument }) => {
+  const svgRef = useRef<HTMLImageElement>(null)
+
+  return
+    < SvgRenderer
+      document={rawDocument}
+      svgRef={svgRef}
+    />
+}
+```
+
+Using the v2 SVG adapter:
 
 ```
 import React, { useRef } from "react";
