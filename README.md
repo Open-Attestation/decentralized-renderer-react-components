@@ -265,11 +265,11 @@ You can also build your own decentralized-renderer based on this [React template
 
 There are compatibility [issues](https://github.com/Aaronius/penpal/issues/52) between Penpal version ^5 and ^4. If you must use Penpal version ^4, get version [4.1.1](https://github.com/Aaronius/penpal/releases/tag/v4.1.1).
 
-# SVG Rendering
+## SVG Rendering
 
 The implementation for SVG rendering is based on the [W3C draft](https://w3c-ccg.github.io/vc-render-method/#render-svgrenderingtemplate2023).
 
-## How it works
+### How it works
 
 SVG renderering is an alternative to the existing embedded renderer method that can be achieved without creating a decentralized renderer.
 
@@ -277,11 +277,11 @@ Instead, an SVG image needs to be provided either by directly embedded it inside
 
 At the point of display, the document to be rendered is passed to the SvgRenderer component in order for the final output to be compiled.
 
-## Usage
+### Usage
 
 The library provides the `SvgRenderer` component.
 
-### SvgRenderer
+#### SvgRenderer
 
 This component only has one mandatory property `document`.
 
@@ -291,17 +291,17 @@ This component only has one mandatory property `document`.
 - `onResult?`: Callback function containing the DisplayResult once the SVG is loaded.
 - `ref?`: A ref of type HTMLImageElement can be passed which will expose the DOM node of the rendered element.
 
-### renderMethod property
+#### renderMethod property
 
 The array of objects to be included in the OA doc, for more information refer to the [w3c specification](https://w3c-ccg.github.io/vc-render-method/#svgrenderingtemplate2023).
 
 Currently the SvgRenderer in this library only accepts single SVG templates. It will iterate through all renderMethod objects provided within the document and display the first one of type `SvgRenderingTemplate2023`.`
 
-## Example
+### Example
 
 Illustrated example for SVG rendering. For simplicity we will not be specifying a `digestMultibase`.
 
-### Step 1 - Prepare your template SVG
+#### Step 1 - Prepare your template SVG
 
 ```
 <svg width="340" height="110" xmlns="http://www.w3.org/2000/svg">
@@ -317,7 +317,7 @@ Preview of the template SVG:
 
 Ensure that the data fields referenced by the SVG are within the raw/unwrapped OA document, the SVG can be hosted or embedded directly.
 
-### Step 2 - Create Sample Raw/Unwrapped OpenAttestation doc
+#### Step 2 - Create Sample Raw/Unwrapped OpenAttestation doc
 
 Sample A - v4 doc with hosted SVG:
 
@@ -403,7 +403,7 @@ Sample D - v2 doc with embedded SVG:
 }
 ```
 
-### Step 3 - Basic Usage of the SvgRenderer
+#### Step 3 - Basic Usage of the SvgRenderer
 
 Using the v4 SVG renderer:
 
