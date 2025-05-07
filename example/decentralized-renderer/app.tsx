@@ -1,6 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { FramedDocumentRenderer } from "../../src";
 import { registry } from "./templates";
 
-ReactDOM.render(<FramedDocumentRenderer templateRegistry={registry} />, document.getElementById("root"));
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(<FramedDocumentRenderer templateRegistry={registry} />);

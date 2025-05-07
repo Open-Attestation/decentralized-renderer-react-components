@@ -1,10 +1,13 @@
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { rawOpencerts } from "./fixtures/v2/opencerts";
 import { certWithBadTemplateName, certWithNoTemplate } from "./fixtures/v2/certs-to-test-default-renderer";
 import { driverLicense } from "./fixtures/v3/driverLicense";
 import { malformSvgDemoV2, svgEmbeddedDemoV2, svgHostedDemoV2 } from "./fixtures/v2/svgDemoV2";
 import React from "react";
 import { AppContainer } from "./container";
+
+const container = document.getElementById("root");
+const root = createRoot(container);
 
 export const App: React.FunctionComponent = (): React.ReactElement => {
   return (
@@ -31,4 +34,4 @@ export const App: React.FunctionComponent = (): React.ReactElement => {
   );
 };
 
-ReactDOM.render(<App />, document.getElementById("root"));
+root.render(<App />);
