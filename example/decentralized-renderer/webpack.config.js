@@ -3,16 +3,19 @@ const path = require("path");
 
 module.exports = {
   // ...webpackConfig,
+  mode: process.env.NODE_ENV ?? "development",
   entry: path.join(__dirname, "./app.tsx"),
   externals: {},
   output: {
     filename: "bundle.js",
   },
   devServer: {
-    contentBase: path.join(__dirname, "."),
     compress: true,
     port: 9000,
-    index: "index.html",
+    static: {
+      directory: path.join(__dirname, "."),
+      serveIndex: true,
+    },
   },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
