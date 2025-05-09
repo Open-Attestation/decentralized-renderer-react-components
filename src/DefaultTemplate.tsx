@@ -1,6 +1,6 @@
 import React from "react";
 import { TemplateProps, TemplateWithComponent } from "./types";
-import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
+import { EmotionJSX } from "@emotion/react/dist/declarations/src/jsx-namespace";
 import { isV2Document, isV3Document, isV4Document } from "./utils";
 import { JsonView } from "./JsonView";
 import { v4OpenAttestationDocument } from "./components/renderer/SvgRenderer";
