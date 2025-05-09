@@ -3,7 +3,6 @@ import { isActionOf } from "typesafe-actions";
 import {
   FrameActions,
   FrameConnector,
-  FramedDocumentRenderer,
   HostActionsHandler,
   updateHeight,
   updateTemplates,
