@@ -3,8 +3,8 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { repeat } from "../../utils";
 import { Renderer } from "../../types";
 
-// TODO check this https://github.com/wojtekmaj/react-pdf#browserify-and-others
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// react-pdf v9.2.1: https://github.com/wojtekmaj/react-pdf/blob/78da46647d00f2c32477627029555462207603f3/packages/react-pdf/README.md#import-worker-recommended
+pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
 
 /**
  * Component rendering pdf attachments. Uses [react-pdf](http://projects.wojtekmaj.pl/react-pdf/) under the hood.

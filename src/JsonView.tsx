@@ -1,5 +1,5 @@
 import React from "react";
-import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
+import { EmotionJSX } from "@emotion/react/dist/declarations/src/jsx-namespace";
 
 const INDENT_PX = 40;
 const MAX_STACK_COUNT = 10;
